@@ -1,0 +1,4 @@
+﻿Django==5.2.2
+gunicorn
+requests
+python-dotenv

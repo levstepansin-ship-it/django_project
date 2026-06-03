@@ -1,0 +1,151 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Пельмени из телятины — нежные и сочные{% endblock %}
+
+{% block content %}
+<!-- Левая колонка -->
+<div class="recipe-area">
+    <div style="margin-bottom: 24px;">
+        <a href="{% url 'index' %}" style="background: #e67e22; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
+    </div>
+    
+    <h1 style="font-size: 36px;">🥩 Пельмени из телятины</h1>
+    <div class="subhead" style="color: #666; margin-bottom: 20px; font-size: 18px;">Нежное мясо, тонкое тесто — варим так, чтобы не развалились</div>
+
+    <!-- Блок проблем и решений -->
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему пельмени из телятины часто не получаются</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Телятина очень нежная — легко переварить, мясо станет сухим</li>
+            <li>Тесто может разорваться, если вода слишком бурно кипит</li>
+            <li>Слипаются, если мало воды или пельменей слишком много</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Что делать</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Варить <strong>строго 5–7 минут после всплытия</strong> (не больше!)</li>
+            <li>Воды брать <strong>3–4 части на 1 часть пельменей</strong></li>
+            <li>После всплытия <strong>убавить огонь до среднего</strong>, чтобы вода не бурлила</li>
+            <li>Добавить <strong>1 ст. ложку растительного масла</strong> в воду — против слипания</li>
+        </ul>
+    </div>
+
+    <!-- ШАГ 1 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 1. Кипятим воду</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Налей в кастрюлю <strong>2–2,5 литра холодной воды</strong>. Добавь <strong>1,5 столовой ложки соли</strong>. По желанию — лавровый лист, 3–4 горошины чёрного перца и <strong>1 ст. ложку растительного масла</strong> (против слипания). Поставь на сильный огонь и накрой крышкой — так закипит быстрее.
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerWaterVeal" style="font-size: 48px;">4:00</span>
+            <button id="startWaterVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (4 мин)</button>
+            <button id="resetWaterVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 2 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 2. Бросаем пельмени</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Достань пельмени из морозилки прямо перед варкой. <strong>Не размораживай!</strong> Закрути ложкой воронку в кипящей воде и кидай пельмени <strong>по одному или небольшими партиями</strong>. Аккуратно перемешай <strong>один раз</strong>, чтобы не прилипли ко дну.
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerFloatVeal" style="font-size: 48px;">2:30</span>
+            <button id="startFloatVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (2:30 до всплытия)</button>
+            <button id="resetFloatVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 3 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 3. Финишная варка (самое важное)</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Как только пельмени всплыли, <strong>убавь огонь до среднего</strong>. Телятина очень нежная — переваривать нельзя! Запускай таймер. Крышкой <strong>не накрывай</strong>.
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerBoilVeal" style="font-size: 48px;">6:00</span>
+            <button id="startBoilVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (6 мин)</button>
+            <button id="resetBoilVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 4 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 4. Достаём и подаём</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Выключи огонь. Доставай пельмени шумовкой, дай воде стечь. Сразу добавь кусочек сливочного масла — оно не даст слипнуться и подчеркнёт нежный вкус телятины. Подавай со сметаной, соевым соусом или растопленным маслом с зеленью.
+        </div>
+    </div>
+
+    <!-- СУПЕР-ТАЙМЕР -->
+    <div class="global-timer" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
+        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (кипячение → всплытие → варка)</div>
+        <div class="timer" id="fullTimerVeal" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">12:30</div>
+        <button id="startFullVealBtn" style="background: white; color: #e67e22; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
+        <button id="resetFullVealBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
+    </div>
+</div>
+
+<!-- Правая колонка с меню -->
+<div class="menu-area">
+    <h3 style="font-size: 22px;">📖 Рецепты</h3>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
+        <a href="#" style="font-size: 16px;">Классические</a>
+        <a href="#" style="font-size: 16px;">Куриные</a>
+        <a href="#" style="font-size: 16px;">Говяжьи</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
+        <a href="#" style="font-size: 16px;">С творогом</a>
+        <a href="#" style="font-size: 16px;">С картошкой</a>
+        <a href="#" style="font-size: 16px;">С вишней</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🍳 Другое</div>
+        <a href="#" style="font-size: 16px;">Яйца всмятку</a>
+        <a href="#" style="font-size: 16px;">Макароны</a>
+        <a href="#" style="font-size: 16px;">Рис</a>
+    </div>
+</div>
+
+<script>
+    // === ТАЙМЕР ВОДЫ (телятина) ===
+    let waterSecondsVeal = 240, waterIntervalVeal = null;
+    const waterDisplayVeal = document.getElementById('timerWaterVeal');
+    function updateWaterVeal() { let m=Math.floor(waterSecondsVeal/60), s=waterSecondsVeal%60; waterDisplayVeal.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startWaterVeal() { if(waterIntervalVeal) clearInterval(waterIntervalVeal); waterIntervalVeal=setInterval(()=>{ if(waterSecondsVeal<=1){ clearInterval(waterIntervalVeal); waterDisplayVeal.innerText="✅ Вода закипела!"; } else { waterSecondsVeal--; updateWaterVeal(); } },1000); }
+    function resetWaterVeal() { if(waterIntervalVeal) clearInterval(waterIntervalVeal); waterSecondsVeal=240; updateWaterVeal(); }
+    document.getElementById('startWaterVealBtn').onclick=startWaterVeal;
+    document.getElementById('resetWaterVealBtn').onclick=resetWaterVeal;
+    updateWaterVeal();
+
+    // === ТАЙМЕР ВСПЛЫТИЯ (телятина) ===
+    let floatSecondsVeal = 150, floatIntervalVeal = null;
+    const floatDisplayVeal = document.getElementById('timerFloatVeal');
+    function updateFloatVeal() { let m=Math.floor(floatSecondsVeal/60), s=floatSecondsVeal%60; floatDisplayVeal.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startFloatVeal() { if(floatIntervalVeal) clearInterval(floatIntervalVeal); floatIntervalVeal=setInterval(()=>{ if(floatSecondsVeal<=1){ clearInterval(floatIntervalVeal); floatDisplayVeal.innerText="🥟 Пельмени всплыли!"; } else { floatSecondsVeal--; updateFloatVeal(); } },1000); }
+    function resetFloatVeal() { if(floatIntervalVeal) clearInterval(floatIntervalVeal); floatSecondsVeal=150; updateFloatVeal(); }
+    document.getElementById('startFloatVealBtn').onclick=startFloatVeal;
+    document.getElementById('resetFloatVealBtn').onclick=resetFloatVeal;
+    updateFloatVeal();
+
+    // === ТАЙМЕР ВАРКИ (телятина) ===
+    let boilSecondsVeal = 360, boilIntervalVeal = null;
+    const boilDisplayVeal = document.getElementById('timerBoilVeal');
+    function updateBoilVeal() { let m=Math.floor(boilSecondsVeal/60), s=boilSecondsVeal%60; boilDisplayVeal.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startBoilVeal() { if(boilIntervalVeal) clearInterval(boilIntervalVeal); boilIntervalVeal=setInterval(()=>{ if(boilSecondsVeal<=1){ clearInterval(boilIntervalVeal); boilDisplayVeal.innerText="🎉 Пельмени готовы!"; } else { boilSecondsVeal--; updateBoilVeal(); } },1000); }
+    function resetBoilVeal() { if(boilIntervalVeal) clearInterval(boilIntervalVeal); boilSecondsVeal=360; updateBoilVeal(); }
+    document.getElementById('startBoilVealBtn').onclick=startBoilVeal;
+    document.getElementById('resetBoilVealBtn').onclick=resetBoilVeal;
+    updateBoilVeal();
+
+    // === СУПЕР-ТАЙМЕР (телятина) ===
+    let fullSecondsVeal = 750, fullIntervalVeal = null; // 4:00 + 2:30 + 6:00 = 12:30
+    const fullDisplayVeal = document.getElementById('fullTimerVeal');
+    function updateFullVeal() { let m=Math.floor(fullSecondsVeal/60), s=fullSecondsVeal%60; fullDisplayVeal.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startFullVeal() { if(fullIntervalVeal) clearInterval(fullIntervalVeal); fullSecondsVeal=750; updateFullVeal(); fullIntervalVeal=setInterval(()=>{ if(fullSecondsVeal<=1){ clearInterval(fullIntervalVeal); fullDisplayVeal.innerText="🎉 ГОТОВО!"; } else { fullSecondsVeal--; updateFullVeal(); } },1000); }
+    function resetFullVeal() { if(fullIntervalVeal) clearInterval(fullIntervalVeal); fullSecondsVeal=750; updateFullVeal(); resetWaterVeal(); resetFloatVeal(); resetBoilVeal(); }
+    document.getElementById('startFullVealBtn').onclick=startFullVeal;
+    document.getElementById('resetFullVealBtn').onclick=resetFullVeal;
+</script>
+{% endblock %}

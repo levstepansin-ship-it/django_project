@@ -1,0 +1,48 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Поиск: {{ query }}{% endblock %}
+
+{% block content %}
+<div class="recipe-area">
+    <h1 style="font-size: 36px;">🔍 Результаты поиска: «{{ query }}»</h1>
+    
+    {% if results %}
+        <ul style="margin-top: 24px; list-style: none;">
+        {% for recipe in results %}
+            <li style="margin-bottom: 16px; padding: 16px; background: #fef9f4; border-radius: 24px;">
+                <a href="{% url 'recipe_detail' recipe_id=recipe.id %}" style="font-size: 20px; font-weight: 600; color: #e67e22; text-decoration: none;">{{ recipe.title }}</a>
+                <p style="color: #666; margin-top: 8px;">{{ recipe.subcategory.category.name }} → {{ recipe.subcategory.name }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="margin-top: 24px; font-size: 18px;">😕 Ничего не найдено. Попробуйте изменить запрос.</p>
+    {% endif %}
+    
+    <a href="{% url 'index' %}" style="display: inline-block; margin-top: 32px; background: #e67e22; color: white; padding: 10px 24px; border-radius: 40px; text-decoration: none;">← На главную</a>
+</div>
+
+<!-- Правая колонка с меню -->
+<div class="menu-area">
+    <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
+        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ query }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid #ddd;">
+        <button type="submit" style="width: 100%; margin-top: 8px; background: #e67e22; color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
+    </form>
+    
+    <h3>📖 Рецепты</h3>
+    <!-- Дальше идёт твоё обычное меню, можешь скопировать его из index.html -->
+    <div class="menu-category">
+        <div class="cat-title">🥟 Пельмени</div>
+        <a href="{% url 'recipe_detail' recipe_id=1 %}">Классические</a>
+        <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title">🥟 Вареники</div>
+        <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a>
+        <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
+        <a href="#">С вишней</a>
+    </div>
+</div>
+{% endblock %}

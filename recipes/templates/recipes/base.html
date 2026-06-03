@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Простая кухня{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='80'%3E🥟%3C/text%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #EAEDED;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 24px;
+            color: #1f1f1f;
+        }
+
+        .wrapper {
+            display: flex;
+            gap: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .recipe-area {
+            flex: 3;
+            min-width: 280px;
+            background: white;
+            border-radius: 36px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-area {
+            flex: 1;
+            min-width: 240px;
+            background: white;
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            align-self: start;
+        }
+
+        .menu-area h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #e67e22;
+            border-bottom: 2px solid #e67e22;
+            display: inline-block;
+        }
+
+        .menu-category {
+            margin-bottom: 24px;
+        }
+
+        .menu-category .cat-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #2d2d2d;
+        }
+
+        .menu-category a {
+            display: block;
+            padding: 6px 0 6px 12px;
+            color: #0066C0;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 12px;
+            transition: background 0.1s;
+        }
+
+        .menu-category a:hover {
+            background: #fef2e6;
+            color: #e67e22;
+        }
+
+        .step-card {
+            background: #fef9f4;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #ffe6d5;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #e67e22;
+        }
+
+        .step-desc {
+            margin-bottom: 16px;
+            line-height: 1.5;
+            color: #2d2d2d;
+        }
+
+        .timer-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #ffe0cc;
+        }
+
+        .timer-display {
+            font-size: 32px;
+            font-family: monospace;
+            font-weight: 600;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            letter-spacing: 2px;
+        }
+
+        button {
+            background: #e67e22;
+            color: white;
+            border: none;
+            font-size: 14px;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .global-timer {
+            background: #e67e22;
+            color: white;
+            border-radius: 28px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .global-timer .timer {
+            font-size: 56px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 800px) {
+            .wrapper { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<!-- Приветственная плашка -->
+<div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: white; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid #ffe0cc; text-align: center;">
+    <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
+    <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">Простая кухня — для тех, кто не умеет готовить</h4>
+    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Пошаговые инструкции и таймеры. Все рецепты проверены лично на кухне. Никакой воды.</p>
+    <button id="closeBannerBtn" style="background: #e67e22; color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно, закрыть</button>
+</div>
+
+<script>
+    if (localStorage.getItem('welcomeBannerClosed') === 'true') {
+        document.getElementById('welcomeBanner').style.display = 'none';
+    }
+    document.getElementById('closeBannerBtn').addEventListener('click', function() {
+        document.getElementById('welcomeBanner').style.display = 'none';
+        localStorage.setItem('welcomeBannerClosed', 'true');
+    });
+</script>
+
+<div class="wrapper">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Подвал -->
+<div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: #666;">
+    <a href="{% url 'terms' %}" style="color: #e67e22; text-decoration: none;">Условия использования</a>
+    <span style="margin: 0 12px;">|</span>
+    <a href="{% url 'privacy' %}" style="color: #e67e22; text-decoration: none;">Политика конфиденциальности</a>
+</div>
+
+<!-- Модальное окно для отзывов -->
+<div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
+    <div style="background: white; border-radius: 32px; padding: 28px; max-width: 420px; width: 90%; text-align: center;">
+        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px;">🎉 Пельмени готовы?</h3>
+        <p id="modalMessage" style="margin-bottom: 20px;">Как прошло приготовление?</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;">
+            <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 10px 24px; border-radius: 40px;">✅ Да, готово!</button>
+            <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 10px 24px; border-radius: 40px;">❌ Нет, не получилось</button>
+        </div>
+        <div id="feedbackForm" style="display: none;">
+            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так? Напишите, чтобы я улучшил рецепт..." style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #ddd; font-family: inherit;"></textarea>
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">🔒 Ваш отзыв анонимен. Не указывайте личные данные.</p>
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px;">
+                <input type="checkbox" id="privacyCheckbox"> Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: #e67e22;">политикой конфиденциальности</a> и подтверждаю, что мне больше 14 лет
+            </label>
+            <button id="submitFeedbackBtn" style="background: #e67e22; color: white; border: none; padding: 10px 24px; border-radius: 40px; width: 100%;">📤 Отправить отзыв</button>
+            <p id="feedbackThanks" style="font-size: 12px; color: #666; margin-top: 12px; display: none;">Спасибо!</p>
+        </div>
+        <button id="closeModalBtn" style="background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 40px; margin-top: 16px;">Закрыть</button>
+    </div>
+</div>
+
+<!-- AI-блок "в разработке" -->
+<div class="menu-area" style="margin-top: 16px;">
+    <div style="padding: 20px; background: linear-gradient(135deg, #fef9f4, #fff5eb); border-radius: 24px; border: 1px solid #ffe0cc; text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
+        <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">AI-помощник скоро</h4>
+        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Отвечает на кулинарные вопросы. Запуск в ближайшее время.</p>
+        <div style="display: inline-block; background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">⚙️ В разработке</div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('feedbackModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const successBtn = document.getElementById('feedbackSuccessBtn');
+    const failBtn = document.getElementById('feedbackFailBtn');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackText = document.getElementById('feedbackText');
+    const privacyCheckbox = document.getElementById('privacyCheckbox');
+    const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+    const feedbackThanks = document.getElementById('feedbackThanks');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    
+    let currentTimerName = '';
+    let currentSuccess = true;
+    
+    window.showFeedbackModal = function(timerName, success, isAfterCooking = true) {
+        currentTimerName = timerName;
+        currentSuccess = success;
+        feedbackForm.style.display = 'none';
+        feedbackThanks.style.display = 'none';
+        feedbackText.value = '';
+        privacyCheckbox.checked = false;
+        
+        if (isAfterCooking) {
+            if (success) {
+                modalTitle.innerText = '🎉 Отлично!';
+                modalMessage.innerText = 'Пельмени готовы? Расскажите, всё ли получилось.';
+            } else {
+                modalTitle.innerText = '😕 Что-то пошло не так';
+                modalMessage.innerText = 'Расскажите, что случилось, и я исправлю рецепт.';
+            }
+            successBtn.style.display = 'inline-block';
+            failBtn.style.display = 'inline-block';
+        } else {
+            modalTitle.innerText = '💬 Отзыв о сайте';
+            modalMessage.innerText = 'Напишите, что вы думаете о сайте. Предложения, замечания, идеи — всё пригодится.';
+            successBtn.style.display = 'none';
+            failBtn.style.display = 'none';
+            feedbackForm.style.display = 'block';
+        }
+        modal.style.display = 'flex';
+    };
+    
+    function sendToTelegram(timerName, success, comment) {
+        fetch('/send-feedback/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                timer_name: timerName,
+                success: success,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                console.log('Отзыв отправлен');
+            } else {
+                console.error('Ошибка:', data.error);
+            }
+        })
+        .catch(error => console.error('Ошибка отправки:', error));
+    }
+    
+    successBtn.onclick = () => { feedbackForm.style.display = 'block'; };
+    failBtn.onclick = () => { feedbackForm.style.display = 'block'; };
+    
+    submitFeedbackBtn.onclick = () => {
+        if (!privacyCheckbox.checked) {
+            alert('Подтвердите согласие с политикой конфиденциальности');
+            return;
+        }
+        const comment = feedbackText.value.trim();
+        if (!comment && !currentSuccess) {
+            alert('Напишите, что пошло не так');
+            return;
+        }
+        if (comment.match(/@|\+7|8\d{10}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)) {
+            alert('Не указывайте личные данные');
+            return;
+        }
+        sendToTelegram(currentTimerName, currentSuccess, comment);
+        feedbackForm.style.display = 'none';
+        feedbackThanks.style.display = 'block';
+        setTimeout(() => { modal.style.display = 'none'; }, 2000);
+    };
+    
+    closeModalBtn.onclick = () => { modal.style.display = 'none'; };
+</script>
+</body>
+</html>

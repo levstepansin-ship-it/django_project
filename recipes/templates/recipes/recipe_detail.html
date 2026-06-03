@@ -1,0 +1,316 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block content %}
+<div class="recipe-area">
+    <div style="margin-bottom: 24px;">
+        <a href="{% url 'index' %}" style="background: #e67e22; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
+    </div>
+
+    <!-- БЛОКИ «ПОЧЕМУ РАЗОЧАРОВЫВАЮТ» И «ЧТО ДЕЛАТЬ» (ЗАВИСИТ ОТ РЕЦЕПТА) -->
+    {% if recipe.id == 2 %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему пельмени из телятины часто не получаются</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Телятина очень нежная — легко переварить, мясо станет сухим и жёстким</li>
+            <li>Тесто может разорваться, если вода слишком бурно кипит</li>
+            <li>Слипаются, если мало воды или пельменей слишком много</li>
+            <li>Бульон получается пресным без достаточного количества соли и специй</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Секреты идеальной телятины</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Варить <strong>строго 4–5 минут после всплытия</strong> (не больше!)</li>
+            <li>Воды брать <strong>3–4 части на 1 часть пельменей</strong> — чем больше, тем лучше</li>
+            <li>После всплытия <strong>убавить огонь до среднего</strong>, чтобы вода не бурлила</li>
+            <li>Добавить <strong>1 ст. ложку растительного масла</strong> в воду — против слипания</li>
+            <li>В бульон положить луковицу, морковь и корень петрушки — для аромата</li>
+        </ul>
+    </div>
+    {% elif recipe.id == 3 %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему свиные пельмени разваливаются</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Слишком сильное кипение разрывает тесто</li>
+            <li>Мало воды — пельмени слипаются и рвутся при перемешивании</li>
+            <li>Их кладут в холодную воду — тесто размокает</li>
+            <li>Свинина жирная, но при переваривании становится сухой</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Как сварить свиные пельмени идеально</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li><strong>Много воды:</strong> 3 литра на 500 г пельменей</li>
+            <li><strong>В кипяток</strong> — иначе тесто размякнет</li>
+            <li><strong>1 ст. ложка масла</strong> в воду — против слипания</li>
+            <li><strong>Варить 4–5 минут после всплытия</strong> на среднем огне</li>
+            <li><strong>Не накрывать крышкой</strong> — иначе разварятся</li>
+        </ul>
+    </div>
+    {% elif recipe.id == 5 %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему вареники разочаровывают</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Тесто рвётся, начинка вытекает — потому что вода слишком бурно кипит или вареники переварили</li>
+            <li>Вареники слипаются — мало воды или кинули слишком много за раз</li>
+            <li>Творог внутри остаётся холодным — тесто толстое, а варили мало</li>
+            <li>Тесто резиновое, жёсткое — не дали постоять после варки или переварили</li>
+            <li>Вареники лопаются при варке — в начинке много влаги (плохо отжали творог)</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Как сварить идеальные вареники с творогом</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
+            <li><strong>В кипяток</strong> — иначе тесто размякнет и развалится</li>
+            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра) — даже для сладких, соль усиливает вкус</li>
+            <li><strong>После всплытия убавить огонь до среднего</strong></li>
+            <li><strong>Варить ровно 2–3 минуты</strong> — не больше</li>
+            <li><strong>Не накрывать крышкой</strong></li>
+            <li><strong>После варки смазать сливочным маслом</strong></li>
+        </ul>
+    </div>
+    {% elif recipe.id == 6 %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему вареники с картошкой разочаровывают</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Тесто рвётся, начинка вываливается — вода слишком бурно кипит или варили слишком долго</li>
+            <li>Вареники слипаются — мало воды или кинули слишком много за раз</li>
+            <li>Картошка внутри остаётся сырой — тесто толстое, а варили мало</li>
+            <li>Тесто резиновое, жёсткое — не дали постоять после варки или переварили</li>
+            <li>Вареники лопаются — в начинке много влаги (картошка водянистая)</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Как сварить идеальные вареники с картошкой</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
+            <li><strong>В кипяток</strong> — иначе тесто размякнет</li>
+            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра)</li>
+            <li><strong>Добавить 1 ст. ложку растительного масла</strong> в воду — против слипания</li>
+            <li><strong>После всплытия убавить огонь до среднего</strong></li>
+            <li><strong>Варить 2–3 минуты</strong> (замороженные — 3–4 минуты)</li>
+            <li><strong>Не накрывать крышкой</strong></li>
+            <li><strong>После варки смазать сливочным маслом или жареным луком</strong></li>
+        </ul>
+    </div>
+    {% elif recipe.id == 7 %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему вареники с вишней разочаровывают</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Тесто рвётся, начинка вытекает — вода слишком бурно кипит или переварили</li>
+            <li>Вареники слипаются — мало воды или кинули слишком много за раз</li>
+            <li>Вишнёвый сок вытекает, вареники становятся пустыми — плохо защипнули края или переварили</li>
+            <li>Тесто сырое внутри — варили мало или вода не кипела достаточно сильно</li>
+            <li>Тесто разваливается — замороженные вареники кидали в холодную воду, а не в кипяток</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Как сварить идеальные вареники с вишней</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
+            <li><strong>Только в кипяток</strong> — иначе тесто размякнет</li>
+            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра)</li>
+            <li><strong>Добавить 1 ст. ложку растительного масла</strong> в воду</li>
+            <li><strong>Кидать по 2–3 штуки</strong>, а не всю пачку сразу</li>
+            <li><strong>После всплытия убавить огонь до среднего</strong></li>
+            <li><strong>Варить ровно 2 минуты</strong> (замороженные — 2–3 минуты)</li>
+            <li><strong>Не накрывать крышкой</strong></li>
+            <li><strong>После варки смазать сливочным маслом</strong></li>
+            <li><strong>Подавать сразу</strong> — вишня быстро остывает</li>
+        </ul>
+    </div>
+    {% else %}
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему пельмени разочаровывают</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Тесто слипается и рвётся — потому что вода не кипела достаточно сильно</li>
+            <li>Вкусный бульон остаётся в кастрюле — из‑за недостатка соли или специй</li>
+            <li>Мясо становится сухим и жёстким — из‑за переваривания или слишком высокой температуры</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Что делать</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Бери кастрюлю не меньше 3 литров — пельменям нужно пространство</li>
+            <li>Соотношение воды и пельменей — <strong>3:1</strong> (1 кг пельменей → 3 литра воды)</li>
+            <li>Соли — 1 чайная ложка на литр воды, можно добавить лавровый лист и перец горошком</li>
+            <li>Опускай пельмени в <strong>крутой кипяток</strong> по одному, чтобы не охлаждать воду</li>
+            <li>После всплытия вари <strong>ровно столько, сколько на таймере</strong> — не меньше и не больше</li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <h1 style="font-size: 36px;">{{ recipe.title }}</h1>
+    <div class="subhead" style="color: #666; margin-bottom: 20px; font-size: 18px;">Пошаговая инструкция с таймерами</div>
+
+    {% for step in recipe.steps %}
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг {{ forloop.counter }}. {{ step.text }}</div>
+        {% if step.desc %}
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">{{ step.desc }}</div>
+        {% endif %}
+        <div class="timer-row">
+            <span class="timer-display" id="timer{{ forloop.counter }}" style="font-size: 48px;">{{ step.duration }}:00</span>
+            <button class="start-timer" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт ({{ step.duration }} мин)</button>
+            <button class="reset-timer" data-timer-id="timer{{ forloop.counter }}" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="global-timer" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
+        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (все шаги подряд)</div>
+        <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">--:--</div>
+        <button id="startFullBtn" style="background: white; color: #e67e22; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
+        <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
+    </div>
+</div>
+
+<!-- ПРАВАЯ КОЛОНКА — МЕНЮ -->
+<div class="menu-area">
+    <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
+        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid #ddd; font-size: 14px;">
+        <button type="submit" style="width: 100%; margin-top: 8px; background: #e67e22; color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
+    </form>
+    <h3 style="font-size: 22px;">📖 Рецепты</h3>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
+        <a href="{% url 'recipe_detail' recipe_id=4 %}" style="font-size: 16px;">Говяжьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=2 %}" style="font-size: 16px;">Телячьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=3 %}" style="font-size: 16px;">Свиные</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
+        <a href="{% url 'recipe_detail' recipe_id=5 %}" style="font-size: 16px;">С творогом</a>
+        <a href="{% url 'recipe_detail' recipe_id=6 %}" style="font-size: 16px;">С картошкой</a>
+        <a href="{% url 'recipe_detail' recipe_id=7 %}" style="font-size: 16px;">С вишней</a>
+    </div>
+    <div style="margin-top: 24px; text-align: center;">
+        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 20px; border-radius: 40px; width: 100%;">📝 Оставить отзыв о сайте</button>
+    </div>
+</div>
+
+<script>
+    let activeTimers = {};
+    let steps = {{ recipe.steps|safe }};
+    let fullInterval = null;
+    const fullDisplay = document.getElementById('fullTimer');
+    const recipeId = {{ recipe.id }};
+
+    // === ФУНКЦИИ РАБОТЫ С LOCALSTORAGE ===
+    function saveTimerState(timerId, secondsRemaining, isRunning) {
+        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
+        timers[timerId] = { seconds: secondsRemaining, running: isRunning };
+        localStorage.setItem(`timers_${recipeId}`, JSON.stringify(timers));
+    }
+
+    function loadTimerState(timerId) {
+        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
+        return timers[timerId] || null;
+    }
+
+    function clearTimerState(timerId) {
+        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
+        delete timers[timerId];
+        localStorage.setItem(`timers_${recipeId}`, JSON.stringify(timers));
+    }
+
+    // === ОСНОВНАЯ ФУНКЦИЯ ТАЙМЕРА С СОХРАНЕНИЕМ ===
+    function startTimer(displayId, duration, startBtn, resetBtn) {
+        if (activeTimers[displayId]) {
+            clearInterval(activeTimers[displayId]);
+        }
+        let seconds = duration * 60;
+        const saved = loadTimerState(displayId);
+        if (saved && saved.seconds > 0 && saved.seconds < seconds) {
+            seconds = saved.seconds;
+        }
+        const display = document.getElementById(displayId);
+        const interval = setInterval(() => {
+            if (seconds <= 1) {
+                clearInterval(interval);
+                delete activeTimers[displayId];
+                display.innerText = "✅ Готово!";
+                if (startBtn) startBtn.disabled = false;
+                if (resetBtn) resetBtn.disabled = false;
+                clearTimerState(displayId);
+            } else {
+                seconds--;
+                let mins = Math.floor(seconds / 60);
+                let secs = seconds % 60;
+                display.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                saveTimerState(displayId, seconds, true);
+            }
+        }, 1000);
+        activeTimers[displayId] = interval;
+        if (startBtn) startBtn.disabled = true;
+        if (resetBtn) resetBtn.disabled = false;
+        saveTimerState(displayId, seconds, true);
+    }
+
+    function resetTimer(displayId, duration, startBtn, resetBtn) {
+        if (activeTimers[displayId]) {
+            clearInterval(activeTimers[displayId]);
+            delete activeTimers[displayId];
+        }
+        clearTimerState(displayId);
+        document.getElementById(displayId).innerText = `${duration}:00`;
+        if (startBtn) startBtn.disabled = false;
+        if (resetBtn) resetBtn.disabled = false;
+    }
+
+    // === ИНИЦИАЛИЗАЦИЯ ТАЙМЕРОВ ===
+    document.querySelectorAll('.start-timer').forEach(btn => {
+        const duration = parseInt(btn.dataset.duration);
+        const timerId = btn.dataset.timerId;
+        const resetBtn = btn.closest('.timer-row').querySelector('.reset-timer');
+        const display = document.getElementById(timerId);
+        
+        // Восстанавливаем состояние
+        const saved = loadTimerState(timerId);
+        if (saved && saved.running && saved.seconds > 0) {
+            let mins = Math.floor(saved.seconds / 60);
+            let secs = saved.seconds % 60;
+            display.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+            startTimer(timerId, duration, btn, resetBtn);
+        }
+        
+        btn.addEventListener('click', function() {
+            startTimer(timerId, duration, btn, resetBtn);
+        });
+        resetBtn.addEventListener('click', function() {
+            resetTimer(timerId, duration, btn, resetBtn);
+        });
+    });
+
+    // === СУПЕР-ТАЙМЕР С СОХРАНЕНИЕМ ===
+    function startFullTimer() {
+        if (fullInterval) clearInterval(fullInterval);
+        let totalSeconds = steps.reduce((sum, step) => sum + step.duration * 60, 0);
+        let remaining = totalSeconds;
+        
+        const savedFull = localStorage.getItem(`fullTimer_${recipeId}`);
+        if (savedFull && parseInt(savedFull) > 0 && parseInt(savedFull) < totalSeconds) {
+            remaining = parseInt(savedFull);
+        }
+        
+        fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
+        fullInterval = setInterval(() => {
+            if (remaining <= 1) {
+                clearInterval(fullInterval);
+                fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
+                document.getElementById('startFullBtn').disabled = false;
+                localStorage.removeItem(`fullTimer_${recipeId}`);
+                if (typeof showFeedbackModal === 'function') {
+                    showFeedbackModal('Весь рецепт', true);
+                }
+            } else {
+                remaining--;
+                fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
+                localStorage.setItem(`fullTimer_${recipeId}`, remaining);
+            }
+        }, 1000);
+        document.getElementById('startFullBtn').disabled = true;
+    }
+
+    function resetFullTimer() {
+        if (fullInterval) clearInterval(fullInterval);
+        fullDisplay.innerText = "--:--";
+        document.getElementById('startFullBtn').disabled = false;
+        localStorage.removeItem(`fullTimer_${recipeId}`);
+    }
+
+    document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
+    document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
+</script>
+{% endblock %}

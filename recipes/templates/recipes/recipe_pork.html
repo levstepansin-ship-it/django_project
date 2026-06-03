@@ -1,0 +1,144 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Пельмени из свинины — сочные и сытные{% endblock %}
+
+{% block content %}
+<div class="recipe-area">
+    <div style="margin-bottom: 24px;">
+        <a href="{% url 'index' %}" style="background: #e67e22; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
+    </div>
+    
+    <h1 style="font-size: 36px;">🐷 Пельмени из свинины</h1>
+    <div class="subhead" style="color: #666; margin-bottom: 20px; font-size: 18px;">Сочные, сытные — варим так, чтобы не развалились и не пересушились</div>
+
+    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
+        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему свиные пельмени разваливаются</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li>Слишком сильное кипение разрывает тесто</li>
+            <li>Мало воды — пельмени слипаются и рвутся при перемешивании</li>
+            <li>Их кладут в холодную воду — тесто размокает</li>
+            <li>Свинина жирная, но при переваривании становится сухой</li>
+        </ul>
+        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Как сварить идеально</h2>
+        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+            <li><strong>Много воды:</strong> 3 литра на 500 г пельменей</li>
+            <li><strong>В кипяток</strong> — иначе тесто размякнет</li>
+            <li><strong>1 ст. ложка масла</strong> в воду — против слипания</li>
+            <li><strong>Варить 5–7 минут после всплытия</strong> на среднем огне</li>
+        </ul>
+    </div>
+
+    <!-- ШАГ 1 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 1. Кипятим воду</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Налей в кастрюлю <strong>2–2,5 литра холодной воды</strong>. Добавь <strong>1,5 ст. ложки соли</strong>, лавровый лист, перец горошком и <strong>1 ст. ложку растительного масла</strong>. Доведи до сильного кипения на максимальном огне, накрой крышкой.
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerWaterPork" style="font-size: 48px;">4:00</span>
+            <button id="startWaterPorkBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (4 мин)</button>
+            <button id="resetWaterPorkBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 2 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 2. Бросаем пельмени</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Замороженные пельмени <strong>не размораживай</strong>. Закрути воронку в кипящей воде, кидай пельмени <strong>по одному или по 5–6 штук</strong>. Перемешай сразу, чтобы не прилипли ко дну.
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerFloatPork" style="font-size: 48px;">2:30</span>
+            <button id="startFloatPorkBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (2:30 до всплытия)</button>
+            <button id="resetFloatPorkBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 3 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 3. Финишная варка</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Всплыли? <strong>Убавь огонь до среднего</strong>. Если вода бурлит слишком сильно — тесто разорвётся. Запускай таймер. <strong>Крышку не закрывай!</strong>
+        </div>
+        <div class="timer-row">
+            <span class="timer-display" id="timerBoilPork" style="font-size: 48px;">6:00</span>
+            <button id="startBoilPorkBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (6 мин)</button>
+            <button id="resetBoilPorkBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+        </div>
+    </div>
+
+    <!-- ШАГ 4 -->
+    <div class="step-card">
+        <div class="step-title" style="font-size: 24px;">📌 Шаг 4. Достаём и подаём</div>
+        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+            Выключи огонь, вылови шумовкой. Добавь сливочное масло — оно сделает начинку ещё сочнее. Подавай со сметаной, горчицей, кетчупом или майонезом.
+        </div>
+    </div>
+
+    <div class="global-timer" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
+        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (кипячение → всплытие → варка)</div>
+        <div class="timer" id="fullTimerPork" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">12:30</div>
+        <button id="startFullPorkBtn" style="background: white; color: #e67e22; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
+        <button id="resetFullPorkBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
+    </div>
+</div>
+
+<div class="menu-area">
+    <h3 style="font-size: 22px;">📖 Рецепты</h3>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
+        <a href="#">Классические</a>
+        <a href="#">Куриные</a>
+        <a href="#">Говяжьи</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
+        <a href="#">С творогом</a>
+        <a href="#">С картошкой</a>
+        <a href="#">С вишней</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title" style="font-size: 18px;">🍳 Другое</div>
+        <a href="#">Яйца всмятку</a>
+        <a href="#">Макароны</a>
+        <a href="#">Рис</a>
+    </div>
+</div>
+
+<script>
+    let waterSecondsPork = 240, waterIntervalPork = null;
+    const waterDisplayPork = document.getElementById('timerWaterPork');
+    function updateWaterPork() { let m=Math.floor(waterSecondsPork/60), s=waterSecondsPork%60; waterDisplayPork.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startWaterPork() { if(waterIntervalPork) clearInterval(waterIntervalPork); waterIntervalPork=setInterval(()=>{ if(waterSecondsPork<=1){ clearInterval(waterIntervalPork); waterDisplayPork.innerText="✅ Вода закипела!"; } else { waterSecondsPork--; updateWaterPork(); } },1000); }
+    function resetWaterPork() { if(waterIntervalPork) clearInterval(waterIntervalPork); waterSecondsPork=240; updateWaterPork(); }
+    document.getElementById('startWaterPorkBtn').onclick=startWaterPork;
+    document.getElementById('resetWaterPorkBtn').onclick=resetWaterPork;
+    updateWaterPork();
+
+    let floatSecondsPork = 150, floatIntervalPork = null;
+    const floatDisplayPork = document.getElementById('timerFloatPork');
+    function updateFloatPork() { let m=Math.floor(floatSecondsPork/60), s=floatSecondsPork%60; floatDisplayPork.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startFloatPork() { if(floatIntervalPork) clearInterval(floatIntervalPork); floatIntervalPork=setInterval(()=>{ if(floatSecondsPork<=1){ clearInterval(floatIntervalPork); floatDisplayPork.innerText="🥟 Пельмени всплыли!"; } else { floatSecondsPork--; updateFloatPork(); } },1000); }
+    function resetFloatPork() { if(floatIntervalPork) clearInterval(floatIntervalPork); floatSecondsPork=150; updateFloatPork(); }
+    document.getElementById('startFloatPorkBtn').onclick=startFloatPork;
+    document.getElementById('resetFloatPorkBtn').onclick=resetFloatPork;
+    updateFloatPork();
+
+    let boilSecondsPork = 360, boilIntervalPork = null;
+    const boilDisplayPork = document.getElementById('timerBoilPork');
+    function updateBoilPork() { let m=Math.floor(boilSecondsPork/60), s=boilSecondsPork%60; boilDisplayPork.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startBoilPork() { if(boilIntervalPork) clearInterval(boilIntervalPork); boilIntervalPork=setInterval(()=>{ if(boilSecondsPork<=1){ clearInterval(boilIntervalPork); boilDisplayPork.innerText="🎉 Пельмени готовы!"; } else { boilSecondsPork--; updateBoilPork(); } },1000); }
+    function resetBoilPork() { if(boilIntervalPork) clearInterval(boilIntervalPork); boilSecondsPork=360; updateBoilPork(); }
+    document.getElementById('startBoilPorkBtn').onclick=startBoilPork;
+    document.getElementById('resetBoilPorkBtn').onclick=resetBoilPork;
+    updateBoilPork();
+
+    let fullSecondsPork = 750, fullIntervalPork = null;
+    const fullDisplayPork = document.getElementById('fullTimerPork');
+    function updateFullPork() { let m=Math.floor(fullSecondsPork/60), s=fullSecondsPork%60; fullDisplayPork.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
+    function startFullPork() { if(fullIntervalPork) clearInterval(fullIntervalPork); fullSecondsPork=750; updateFullPork(); fullIntervalPork=setInterval(()=>{ if(fullSecondsPork<=1){ clearInterval(fullIntervalPork); fullDisplayPork.innerText="🎉 ГОТОВО!"; } else { fullSecondsPork--; updateFullPork(); } },1000); }
+    function resetFullPork() { if(fullIntervalPork) clearInterval(fullIntervalPork); fullSecondsPork=750; updateFullPork(); resetWaterPork(); resetFloatPork(); resetBoilPork(); }
+    document.getElementById('startFullPorkBtn').onclick=startFullPork;
+    document.getElementById('resetFullPorkBtn').onclick=resetFullPork;
+</script>
+{% endblock %}
