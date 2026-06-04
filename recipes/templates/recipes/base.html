@@ -285,7 +285,7 @@
     {% block content %}{% endblock %}
 </div>
 
-<!-- Подвал (здесь кнопка отзыва для компьютера) -->
+<!-- Подвал (кнопка отзыва — одна для всех устройств) -->
 <div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: #666;">
     <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: #e67e22; color: white; border: none; font-size: 14px; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-bottom: 16px;">📝 Оставить отзыв о сайте</button>
     <br>
@@ -326,7 +326,7 @@
     </div>
 </div>
 
-<!-- БЛОК «О чём этот сайт» -->
+<!-- БЛОК «О чём этот сайт» (текст по-твоему) -->
 <div class="info-block">
     <h4>👋 О чём этот сайт</h4>
     <p>Пошаговые инструкции с таймерами на каждый шаг для тех, кто не умеет готовить простые, но почему‑то сложные блюда.</p>
@@ -348,7 +348,6 @@
         <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
         <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
     </div>
-    <!-- Кнопка отзыва внутри меню только для телефона (на компьютере она всё равно не видна, потому что .menu-area на компьютере видна, но кнопка здесь не дублируется, она в подвале) -->
 </div>
 
 <script>
@@ -391,10 +390,10 @@
         if (isAfterCooking) {
             if (success) {
                 modalTitle.innerText = '🎉 Отлично!';
-                modalMessage.innerText = 'Все готово? Расскажите, всё ли получилось.';
+                modalMessage.innerText = 'Пельмени готовы? Расскажите, всё ли получилось.';
             } else {
                 modalTitle.innerText = '😕 Что-то пошло не так';
-                modalMessage.innerText = 'Расскажите, что случилось, и мы исправим рецепт.';
+                modalMessage.innerText = 'Расскажите, что случилось, и я исправлю рецепт.';
             }
             successBtn.style.display = 'inline-block';
             failBtn.style.display = 'inline-block';
