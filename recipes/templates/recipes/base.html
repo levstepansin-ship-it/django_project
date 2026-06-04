@@ -27,6 +27,10 @@
             --accent: #e67e22;
             --accent-hover: #d35400;
             --link-color: #0066C0;
+            --tip-bg: #e8f5e9;
+            --tip-border: #a5d6a7;
+            --warning-bg: #ffebee;
+            --warning-border: #ef9a9a;
             
             background: var(--bg-body);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -50,6 +54,53 @@
             --accent: #e67e22;
             --accent-hover: #f39c12;
             --link-color: #6ab0ff;
+            --tip-bg: #1b5e20;
+            --tip-border: #4caf50;
+            --warning-bg: #b71c1c;
+            --warning-border: #ef5350;
+        }
+
+        /* Стили для блоков "Почему разочаровывают" */
+        .tips-block {
+            background: var(--tip-bg);
+            border-left: 4px solid #4caf50;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .tips-block h4 {
+            color: #4caf50;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .tips-block ul {
+            margin-left: 20px;
+            color: var(--text-primary);
+        }
+        .tips-block li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .warnings-block {
+            background: var(--warning-bg);
+            border-left: 4px solid #f44336;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .warnings-block h4 {
+            color: #ef5350;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .warnings-block ul {
+            margin-left: 20px;
+            color: var(--text-primary);
+        }
+        .warnings-block li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
         /* Принудительные стили для телефона */
@@ -92,6 +143,14 @@
             }
             body.dark .info-block p {
                 color: #aaa !important;
+            }
+            body.dark .tips-block,
+            body.dark .warnings-block {
+                background: #0d2b1a !important;
+            }
+            body.dark .tips-block li,
+            body.dark .warnings-block li {
+                color: #dddddd !important;
             }
         }
 
@@ -137,6 +196,15 @@
             font-size: 14px;
             background: var(--bg-card);
             color: var(--text-primary);
+        }
+        .mobile-theme-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 12px;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
         }
 
         .wrapper {
@@ -295,14 +363,13 @@
             margin: 8px 0;
         }
 
-        /* Кнопка переключения темы */
-        .theme-btn {
+        /* Кнопка переключения темы для компьютера */
+        .desktop-theme-btn {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 20px;
             z-index: 9999;
-            background: #e67e22;
+            background: var(--accent);
             color: white;
             border: none;
             border-radius: 50px;
@@ -313,8 +380,8 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: transform 0.2s;
         }
-        .theme-btn:hover {
-            transform: translateX(-50%) scale(1.05);
+        .desktop-theme-btn:hover {
+            transform: scale(1.05);
         }
 
         /* Телефон */
@@ -341,10 +408,8 @@
             .wrapper {
                 flex-direction: column;
             }
-            .theme-btn {
-                padding: 10px 20px;
-                font-size: 14px;
-                bottom: 15px;
+            .desktop-theme-btn {
+                display: none;
             }
         }
 
@@ -357,6 +422,9 @@
                 display: block !important;
             }
             .desktop-hide-feedback {
+                display: none;
+            }
+            .mobile-theme-btn {
                 display: none;
             }
         }
@@ -381,6 +449,7 @@
     <form method="GET" action="{% url 'search' %}" class="search-form">
         <input type="text" name="q" placeholder="🔍 Поиск рецептов..." value="{{ request.GET.q }}">
     </form>
+    <button id="mobileThemeBtn" class="mobile-theme-btn">🌙</button>
 </div>
 
 <div class="wrapper">
@@ -454,8 +523,8 @@
     </div>
 </div>
 
-<!-- Кнопка переключения тёмной темы (по центру внизу) -->
-<button id="themeToggleBtn" class="theme-btn">🌙 Тёмная тема</button>
+<!-- Кнопка переключения тёмной темы для компьютера (справа внизу) -->
+<button id="desktopThemeBtn" class="desktop-theme-btn">🌙 Тёмная тема</button>
 
 <script>
     // Приветственная плашка
@@ -468,16 +537,19 @@
     });
 
     // ========== ТЁМНАЯ ТЕМА ==========
-    const themeBtn = document.getElementById('themeToggleBtn');
+    const desktopBtn = document.getElementById('desktopThemeBtn');
+    const mobileBtn = document.getElementById('mobileThemeBtn');
     
     function setTheme(isDark) {
         if (isDark) {
             document.body.classList.add('dark');
-            themeBtn.innerHTML = '☀️ Светлая тема';
+            if (desktopBtn) desktopBtn.innerHTML = '☀️ Светлая тема';
+            if (mobileBtn) mobileBtn.innerHTML = '☀️';
             localStorage.setItem('darkTheme', 'true');
         } else {
             document.body.classList.remove('dark');
-            themeBtn.innerHTML = '🌙 Тёмная тема';
+            if (desktopBtn) desktopBtn.innerHTML = '🌙 Тёмная тема';
+            if (mobileBtn) mobileBtn.innerHTML = '🌙';
             localStorage.setItem('darkTheme', 'false');
         }
     }
@@ -488,11 +560,19 @@
         setTheme(true);
     }
     
-    // Обработчик кнопки
-    themeBtn.addEventListener('click', function() {
-        const isDark = !document.body.classList.contains('dark');
-        setTheme(isDark);
-    });
+    // Обработчики кнопок
+    if (desktopBtn) {
+        desktopBtn.addEventListener('click', function() {
+            const isDark = !document.body.classList.contains('dark');
+            setTheme(isDark);
+        });
+    }
+    if (mobileBtn) {
+        mobileBtn.addEventListener('click', function() {
+            const isDark = !document.body.classList.contains('dark');
+            setTheme(isDark);
+        });
+    }
 
     // Меню для телефона
     function toggleMenu() {
