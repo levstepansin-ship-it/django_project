@@ -103,6 +103,36 @@
             color: var(--text-primary);
         }
 
+        /* ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ ТЁМНОЙ ТЕМЫ НА ТЕЛЕФОНЕ */
+        body.dark .tips-block {
+            background: #1a2d1a !important;
+            border-left-color: #66bb6a !important;
+        }
+        body.dark .tips-block h4 {
+            color: #66bb6a !important;
+        }
+        body.dark .tips-block li,
+        body.dark .tips-block ul {
+            color: #dddddd !important;
+        }
+        
+        body.dark .warnings-block {
+            background: #2d1a1a !important;
+            border-left-color: #ef5350 !important;
+        }
+        body.dark .warnings-block h4 {
+            color: #ef5350 !important;
+        }
+        body.dark .warnings-block li,
+        body.dark .warnings-block ul {
+            color: #dddddd !important;
+        }
+        
+        body.dark .tips-block strong,
+        body.dark .warnings-block strong {
+            color: #ffffff !important;
+        }
+
         /* Принудительные стили для телефона */
         @media (max-width: 800px) {
             body.dark {
@@ -144,9 +174,11 @@
             body.dark .info-block p {
                 color: #aaa !important;
             }
-            body.dark .tips-block,
+            body.dark .tips-block {
+                background: #1a2d1a !important;
+            }
             body.dark .warnings-block {
-                background: #0d2b1a !important;
+                background: #2d1a1a !important;
             }
             body.dark .tips-block li,
             body.dark .warnings-block li {
