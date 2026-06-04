@@ -19,13 +19,12 @@
             color: #1f1f1f;
         }
 
-        /* Верхняя панель с поиском и гамбургером */
+        /* Верхняя панель (только для телефона) */
         .top-bar {
-            display: flex;
+            display: none;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            flex-wrap: wrap;
             gap: 12px;
         }
         .burger-area {
@@ -34,7 +33,7 @@
             gap: 8px;
         }
         .mobile-menu-btn {
-            display: none;
+            display: flex;
             font-size: 28px;
             cursor: pointer;
             background: #e67e22;
@@ -46,7 +45,6 @@
             justify-content: center;
         }
         .menu-label {
-            display: none;
             font-size: 14px;
             color: #e67e22;
             font-weight: 500;
@@ -125,7 +123,6 @@
             color: #e67e22;
         }
 
-        /* Блок "О чём этот сайт" */
         .info-block {
             background: #fef2e6;
             border-radius: 24px;
@@ -216,12 +213,10 @@
             margin: 8px 0;
         }
 
+        /* Телефон */
         @media (max-width: 800px) {
-            .mobile-menu-btn {
+            .top-bar {
                 display: flex;
-            }
-            .menu-label {
-                display: inline-block;
             }
             .menu-area {
                 display: none;
@@ -241,6 +236,16 @@
             }
             .wrapper {
                 flex-direction: column;
+            }
+        }
+
+        /* Компьютер — ничего не меняем, меню справа, поиска в top-bar нет */
+        @media (min-width: 801px) {
+            .top-bar {
+                display: none;
+            }
+            .menu-area {
+                display: block !important;
             }
         }
     </style>
@@ -265,7 +270,7 @@
     });
 </script>
 
-<!-- Верхняя панель: гамбургер + поиск -->
+<!-- Верхняя панель (только для телефона) -->
 <div class="top-bar">
     <div class="burger-area">
         <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
@@ -309,7 +314,7 @@
     </div>
 </div>
 
-<!-- AI-блок "в разработке" (ПЕРЕД меню, виден всегда) -->
+<!-- AI-блок "в разработке" -->
 <div style="margin-bottom: 24px;">
     <div style="padding: 20px; background: linear-gradient(135deg, #fef9f4, #fff5eb); border-radius: 24px; border: 1px solid #ffe0cc; text-align: center;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
@@ -319,14 +324,14 @@
     </div>
 </div>
 
-<!-- БЛОК «О чём этот сайт» (виден всегда, не прячется в гамбургер) -->
+<!-- БЛОК «О чём этот сайт» -->
 <div class="info-block">
     <h4>👋 О чём этот сайт</h4>
     <p>Пошаговые инструкции и таймеры для тех, кто не умеет готовить. Сейчас здесь пельмени и вареники, скоро супы, макароны, яйца и всё, что можно испортить.</p>
     <p style="margin-bottom: 0; color: #e67e22;">👇 Выберите рецепт в меню ниже</p>
 </div>
 
-<!-- Основное меню (то, что будет скрываться на телефоне) -->
+<!-- Основное меню (на компьютере видно всегда, на телефоне — через гамбургер) -->
 <div class="menu-area">
     <h3>📖 Рецепты</h3>
     <div class="menu-category">
@@ -347,13 +352,11 @@
 </div>
 
 <script>
-    // Гамбургер: открыть/закрыть меню
     function toggleMenu() {
         const menu = document.querySelector('.menu-area');
         if (menu) menu.classList.toggle('active');
     }
 
-    // Закрываем меню при клике вне его
     document.addEventListener('click', function(event) {
         const menu = document.querySelector('.menu-area');
         const btn = document.querySelector('.mobile-menu-btn');
