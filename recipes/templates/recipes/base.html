@@ -13,7 +13,7 @@
         }
 
         /* Светлая тема (по умолчанию) */
-        :root {
+        body {
             --bg-body: #EAEDED;
             --bg-card: white;
             --text-primary: #1f1f1f;
@@ -27,6 +27,12 @@
             --accent: #e67e22;
             --accent-hover: #d35400;
             --link-color: #0066C0;
+            
+            background: var(--bg-body);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 24px;
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
         }
 
         /* Тёмная тема */
@@ -46,69 +52,47 @@
             --link-color: #6ab0ff;
         }
 
-        body {
-            background: var(--bg-body);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 24px;
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* Переключатель темы */
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-bottom: 16px;
-            gap: 10px;
-        }
-        .theme-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 26px;
-        }
-        .theme-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "☀️";
-            height: 22px;
-            width: 22px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        input:checked + .slider {
-            background-color: var(--accent);
-        }
-        input:checked + .slider:before {
-            content: "🌙";
-            transform: translateX(26px);
-        }
-        .theme-label {
-            font-size: 13px;
-            opacity: 0.7;
+        /* Принудительные стили для телефона */
+        @media (max-width: 800px) {
+            body.dark {
+                background: #1a1a2e !important;
+            }
+            body.dark .menu-area,
+            body.dark .recipe-area,
+            body.dark .step-card,
+            body.dark .info-block {
+                background: #16213e !important;
+            }
+            body.dark .step-card {
+                border-color: #0f3460 !important;
+            }
+            body.dark p,
+            body.dark h1,
+            body.dark h2,
+            body.dark h3,
+            body.dark h4,
+            body.dark li,
+            body.dark .step-desc {
+                color: #eeeeee !important;
+            }
+            body.dark .step-title {
+                color: #e67e22 !important;
+            }
+            body.dark .timer-display {
+                background: #0f3460 !important;
+                color: #e67e22 !important;
+            }
+            body.dark .menu-category a {
+                color: #6ab0ff !important;
+            }
+            body.dark input,
+            body.dark textarea {
+                background: #0f3460 !important;
+                color: white !important;
+            }
+            body.dark .info-block p {
+                color: #aaa !important;
+            }
         }
 
         /* Верхняя панель (только для телефона) */
@@ -311,6 +295,28 @@
             margin: 8px 0;
         }
 
+        /* Кнопка переключения темы */
+        .theme-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .theme-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
         /* Телефон */
         @media (max-width: 800px) {
             .top-bar {
@@ -335,6 +341,11 @@
             .wrapper {
                 flex-direction: column;
             }
+            .theme-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                bottom: 15px;
+            }
         }
 
         /* Компьютер */
@@ -353,15 +364,6 @@
 </head>
 <body>
 
-<!-- Переключатель тёмной темы -->
-<div class="theme-switch-wrapper" style="max-width: 1400px; margin: 0 auto 8px auto;">
-    <span class="theme-label">🌙 Тёмная тема</span>
-    <label class="theme-switch">
-        <input type="checkbox" id="themeToggle">
-        <span class="slider"></span>
-    </label>
-</div>
-
 <!-- Приветственная плашка -->
 <div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: var(--bg-card); border-radius: 24px; box-shadow: 0 8px 24px var(--shadow-heavy); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid var(--border-light); text-align: center;">
     <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
@@ -369,35 +371,6 @@
     <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Пошаговые инструкции и таймеры. Все рецепты проверены лично на кухне. Никакой воды.</p>
     <button id="closeBannerBtn" style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно, закрыть</button>
 </div>
-
-<script>
-    // Приветственная плашка
-    if (localStorage.getItem('welcomeBannerClosed') === 'true') {
-        document.getElementById('welcomeBanner').style.display = 'none';
-    }
-    document.getElementById('closeBannerBtn').addEventListener('click', function() {
-        document.getElementById('welcomeBanner').style.display = 'none';
-        localStorage.setItem('welcomeBannerClosed', 'true');
-    });
-
-    // ========== ТЁМНАЯ ТЕМА ==========
-    const themeToggle = document.getElementById('themeToggle');
-    // Проверяем сохранённую тему
-    if (localStorage.getItem('darkTheme') === 'true') {
-        document.body.classList.add('dark');
-        themeToggle.checked = true;
-    }
-    // Слушаем переключение
-    themeToggle.addEventListener('change', function() {
-        if (this.checked) {
-            document.body.classList.add('dark');
-            localStorage.setItem('darkTheme', 'true');
-        } else {
-            document.body.classList.remove('dark');
-            localStorage.setItem('darkTheme', 'false');
-        }
-    });
-</script>
 
 <!-- Верхняя панель (только для телефона) -->
 <div class="top-bar">
@@ -481,7 +454,47 @@
     </div>
 </div>
 
+<!-- Кнопка переключения тёмной темы (по центру внизу) -->
+<button id="themeToggleBtn" class="theme-btn">🌙 Тёмная тема</button>
+
 <script>
+    // Приветственная плашка
+    if (localStorage.getItem('welcomeBannerClosed') === 'true') {
+        document.getElementById('welcomeBanner').style.display = 'none';
+    }
+    document.getElementById('closeBannerBtn').addEventListener('click', function() {
+        document.getElementById('welcomeBanner').style.display = 'none';
+        localStorage.setItem('welcomeBannerClosed', 'true');
+    });
+
+    // ========== ТЁМНАЯ ТЕМА ==========
+    const themeBtn = document.getElementById('themeToggleBtn');
+    
+    function setTheme(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark');
+            themeBtn.innerHTML = '☀️ Светлая тема';
+            localStorage.setItem('darkTheme', 'true');
+        } else {
+            document.body.classList.remove('dark');
+            themeBtn.innerHTML = '🌙 Тёмная тема';
+            localStorage.setItem('darkTheme', 'false');
+        }
+    }
+    
+    // Проверяем сохранённую тему
+    const savedTheme = localStorage.getItem('darkTheme');
+    if (savedTheme === 'true') {
+        setTheme(true);
+    }
+    
+    // Обработчик кнопки
+    themeBtn.addEventListener('click', function() {
+        const isDark = !document.body.classList.contains('dark');
+        setTheme(isDark);
+    });
+
+    // Меню для телефона
     function toggleMenu() {
         const menu = document.querySelector('.menu-area');
         if (menu) menu.classList.toggle('active');
@@ -495,6 +508,7 @@
         }
     });
 
+    // Модалка отзывов
     const modal = document.getElementById('feedbackModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalMessage = document.getElementById('modalMessage');
@@ -521,7 +535,7 @@
         if (isAfterCooking) {
             if (success) {
                 modalTitle.innerText = '🎉 Отлично!';
-                modalMessage.innerText = 'Пельмени готовы? Расскажите, всё ли получилось.';
+                modalMessage.innerText = 'Блюдо готово? Расскажите, всё ли получилось.';
             } else {
                 modalTitle.innerText = '😕 Что-то пошло не так';
                 modalMessage.innerText = 'Расскажите, что случилось, и я исправлю рецепт.';
