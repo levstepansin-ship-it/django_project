@@ -19,7 +19,6 @@
             color: #1f1f1f;
         }
 
-        /* Верхняя панель (только для телефона) */
         .top-bar {
             display: none;
             justify-content: space-between;
@@ -140,11 +139,9 @@
             margin-bottom: 8px;
         }
 
-        /* Только на компьютере */
         .desktop-only {
             display: block;
         }
-        /* Только на телефоне */
         .mobile-only {
             display: none;
         }
@@ -222,7 +219,6 @@
             margin: 8px 0;
         }
 
-        /* Телефон */
         @media (max-width: 800px) {
             .top-bar {
                 display: flex;
@@ -254,7 +250,6 @@
             }
         }
 
-        /* Компьютер */
         @media (min-width: 801px) {
             .top-bar {
                 display: none;
@@ -267,11 +262,10 @@
 </head>
 <body>
 
-<!-- Приветственная плашка -->
 <div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: white; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid #ffe0cc; text-align: center;">
     <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
     <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">Простая кухня</h4>
-    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Пошаговые инструкции и таймеры для тех, кто не умеет готовить. Все рецепты проверены на кухне.</p>
+    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Пошаговые инструкции и таймеры для тех, кто не умеет готовить.</p>
     <button id="closeBannerBtn" style="background: #e67e22; color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно</button>
 </div>
 
@@ -285,14 +279,13 @@
     });
 </script>
 
-<!-- Верхняя панель (только для телефона) -->
 <div class="top-bar">
     <div class="burger-area">
         <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
         <span class="menu-label">Рецепты</span>
     </div>
     <form method="GET" action="{% url 'search' %}" class="search-form">
-        <input type="text" name="q" placeholder="Поиск рецептов..." value="{{ request.GET.q }}">
+        <input type="text" name="q" placeholder="Поиск" value="{{ request.GET.q }}">
     </form>
 </div>
 
@@ -300,64 +293,58 @@
     {% block content %}{% endblock %}
 </div>
 
-<!-- Подвал -->
 <div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: #666;">
     <a href="{% url 'terms' %}" style="color: #e67e22; text-decoration: none;">Условия использования</a>
     <span style="margin: 0 12px;">|</span>
     <a href="{% url 'privacy' %}" style="color: #e67e22; text-decoration: none;">Политика конфиденциальности</a>
 </div>
 
-<!-- Модальное окно для отзывов -->
 <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
     <div style="background: white; border-radius: 32px; padding: 28px; max-width: 420px; width: 90%; text-align: center;">
-        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px;">🎉 Пельмени готовы?</h3>
+        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px;">Пельмени готовы?</h3>
         <p id="modalMessage" style="margin-bottom: 20px;">Как прошло приготовление?</p>
         <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;">
-            <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 10px 24px; border-radius: 40px;">✅ Да</button>
-            <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 10px 24px; border-radius: 40px;">❌ Нет</button>
+            <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 10px 24px; border-radius: 40px;">Да</button>
+            <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 10px 24px; border-radius: 40px;">Нет</button>
         </div>
         <div id="feedbackForm" style="display: none;">
-            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так? Напишите, я учту." style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #ddd; font-family: inherit;"></textarea>
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">🔒 Анонимно. Не указывайте личные данные.</p>
+            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так?" style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #ddd; font-family: inherit;"></textarea>
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Анонимно. Не указывайте личные данные.</p>
             <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px;">
                 <input type="checkbox" id="privacyCheckbox"> Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: #e67e22;">политикой конфиденциальности</a>
             </label>
             <button id="submitFeedbackBtn" style="background: #e67e22; color: white; border: none; padding: 10px 24px; border-radius: 40px; width: 100%;">Отправить</button>
-            <p id="feedbackThanks" style="font-size: 12px; color: #666; margin-top: 12px; display: none;">Спасибо!</p>
+            <p id="feedbackThanks" style="font-size: 12px; color: #666; margin-top: 12px; display: none;">Спасибо</p>
         </div>
         <button id="closeModalBtn" style="background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 40px; margin-top: 16px;">Закрыть</button>
     </div>
 </div>
 
-<!-- AI-блок "в разработке" -->
 <div style="margin-bottom: 24px;">
     <div style="padding: 20px; background: linear-gradient(135deg, #fef9f4, #fff5eb); border-radius: 24px; border: 1px solid #ffe0cc; text-align: center;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
         <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">AI-помощник скоро</h4>
-        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Отвечает на кулинарные вопросы. Запуск в ближайшее время.</p>
-        <div style="display: inline-block; background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">⚙️ В разработке</div>
+        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Отвечает на кулинарные вопросы</p>
+        <div style="display: inline-block; background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">В разработке</div>
     </div>
 </div>
 
-<!-- БЛОК «О чём этот сайт» -->
 <div class="info-block">
-    <h4>О чём этот сайт</h4>
-    <p>Пошаговые инструкции и таймеры для тех, кто не умеет готовить. Сейчас здесь пельмени и вареники, скоро супы, макароны, яйца.</p>
-    <!-- На компьютере видно, на телефоне скрыто -->
+    <h4>О сайте</h4>
+    <p>Пошаговые инструкции и таймеры. Рецепты проверены на кухне.</p>
     <p class="desktop-only" style="margin-bottom: 0; color: #e67e22;">Выберите рецепт в меню справа</p>
 </div>
 
-<!-- Основное меню (на компьютере видно всегда, на телефоне — через гамбургер) -->
 <div class="menu-area">
-    <h3>📖 Рецепты</h3>
+    <h3>Рецепты</h3>
     <div class="menu-category">
-        <div class="cat-title">🥟 Пельмени</div>
+        <div class="cat-title">Пельмени</div>
         <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a>
         <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a>
         <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
     </div>
     <div class="menu-category">
-        <div class="cat-title">🥟 Вареники</div>
+        <div class="cat-title">Вареники</div>
         <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a>
         <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
         <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
@@ -407,16 +394,16 @@
         if (isAfterCooking) {
             if (success) {
                 modalTitle.innerText = 'Готово!';
-                modalMessage.innerText = 'Расскажите, как прошло приготовление.';
+                modalMessage.innerText = 'Расскажите, как прошло.';
             } else {
-                modalTitle.innerText = 'Что-то пошло не так';
-                modalMessage.innerText = 'Напишите, что случилось, я исправлю.';
+                modalTitle.innerText = 'Ошибка';
+                modalMessage.innerText = 'Напишите, что случилось.';
             }
             successBtn.style.display = 'inline-block';
             failBtn.style.display = 'inline-block';
         } else {
             modalTitle.innerText = 'Отзыв о сайте';
-            modalMessage.innerText = 'Напишите, что думаете. Предложения, замечания, идеи.';
+            modalMessage.innerText = 'Напишите, что думаете.';
             successBtn.style.display = 'none';
             failBtn.style.display = 'none';
             feedbackForm.style.display = 'block';
@@ -471,7 +458,6 @@
     closeModalBtn.onclick = () => { modal.style.display = 'none'; };
 </script>
 
-<!-- Яндекс.Метрика -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
