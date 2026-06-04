@@ -5,19 +5,21 @@
 {% block content %}
 <!-- Левая колонка с рецептом -->
 <div class="recipe-area">
-    <h1 style="font-size: 36px;">🥟 Классические пельмени</h1>
-    <div class="subhead" style="color: #666; margin-bottom: 20px; font-size: 18px;">Из свинины и говядины. Следуй таймерам — и они не развалятся, не слипнутся и будут сочными</div>
+    <h1 style="font-size: 36px; color: var(--text-primary);">🥟 Классические пельмени</h1>
+    <div class="subhead" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 18px;">Из свинины и говядины. Следуй таймерам — и они не развалятся, не слипнутся и будут сочными</div>
 
-    <!-- ПРОБЛЕМЫ И РЕШЕНИЯ -->
-    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
-        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему пельмени разочаровывают</h2>
-        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+    <!-- ПРОБЛЕМЫ И РЕШЕНИЯ — теперь с правильными классами -->
+    <div class="warnings-block">
+        <h4>❌ Почему пельмени разочаровывают</h4>
+        <ul>
             <li>Тесто слипается и рвётся — потому что вода не кипела достаточно сильно</li>
             <li>Вкусный бульон остаётся в кастрюле — из‑за недостатка соли или специй</li>
             <li>Мясо становится сухим и жёстким — из‑за переваривания или слишком высокой температуры</li>
         </ul>
-        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Что делать</h2>
-        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+    </div>
+    <div class="tips-block">
+        <h4>✅ Что делать</h4>
+        <ul>
             <li>Бери кастрюлю не меньше 3 литров — пельменям нужно пространство</li>
             <li>Соотношение воды и пельменей — <strong>3:1</strong> (1 кг пельменей → 3 литра воды)</li>
             <li>Соли — 1 чайная ложка на литр воды, можно добавить лавровый лист и перец горошком</li>
@@ -34,7 +36,7 @@
         </div>
         <div class="timer-row">
             <span class="timer-display" id="timerWater" style="font-size: 48px;">12:00</span>
-            <button id="startWaterBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (12 мин)</button>
+            <button id="startWaterBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (12 мин)</button>
             <button id="resetWaterBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
         </div>
     </div>
@@ -47,7 +49,7 @@
         </div>
         <div class="timer-row">
             <span class="timer-display" id="timerFloat" style="font-size: 48px;">5:00</span>
-            <button id="startFloatBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (5 мин)</button>
+            <button id="startFloatBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (5 мин)</button>
             <button id="resetFloatBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
         </div>
     </div>
@@ -60,7 +62,7 @@
         </div>
         <div class="timer-row">
             <span class="timer-display" id="timerBoil" style="font-size: 48px;">4:00</span>
-            <button id="startBoilBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (4 мин)</button>
+            <button id="startBoilBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (4 мин)</button>
             <button id="resetBoilBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
         </div>
     </div>
@@ -74,26 +76,26 @@
     </div>
 
     <!-- СУПЕР-ТАЙМЕР -->
-    <div class="global-timer" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
+    <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
         <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (все шаги подряд)</div>
         <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">21:00</div>
-        <button id="startFullBtn" style="background: white; color: #e67e22; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
+        <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
         <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
     </div>
 
     <!-- КНОПКА ДЛЯ ОТЗЫВА НА ГЛАВНОЙ СТРАНИЦЕ -->
     <div style="text-align: center; margin-top: 20px;">
-        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">📝 Оставить отзыв о сайте</button>
+        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">📝 Оставить отзыв о сайте</button>
     </div>
 </div>
 
-<!-- ПРАВАЯ КОЛОНКА — МЕНЮ (без дублирования "Классические") -->
+<!-- ПРАВАЯ КОЛОНКА — МЕНЮ -->
 <div class="menu-area">
     <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
-        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid #ddd; font-size: 14px;">
-        <button type="submit" style="width: 100%; margin-top: 8px; background: #e67e22; color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
+        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 14px; background: var(--bg-card); color: var(--text-primary);">
+        <button type="submit" style="width: 100%; margin-top: 8px; background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
     </form>
-    <h3 style="font-size: 22px;">📖 Рецепты</h3>
+    <h3 style="font-size: 22px; color: var(--accent);">📖 Рецепты</h3>
     <div class="menu-category">
         <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
         <a href="{% url 'recipe_detail' recipe_id=4 %}" style="font-size: 16px;">Говяжьи</a>
@@ -109,7 +111,7 @@
 </div>
 
 <script>
-    // === ТАЙМЕРЫ (те же, что были) ===
+    // === ТАЙМЕРЫ ===
     let waterSeconds = 720, waterInterval = null;
     const waterDisplay = document.getElementById('timerWater');
     function updateWater() { let m=Math.floor(waterSeconds/60), s=waterSeconds%60; waterDisplay.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
