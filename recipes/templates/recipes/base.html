@@ -12,11 +12,103 @@
             box-sizing: border-box;
         }
 
+        /* Светлая тема (по умолчанию) */
+        :root {
+            --bg-body: #EAEDED;
+            --bg-card: white;
+            --text-primary: #1f1f1f;
+            --text-secondary: #555;
+            --border-light: #ffe0cc;
+            --step-bg: #fef9f4;
+            --hover-bg: #fef2e6;
+            --shadow: rgba(0, 0, 0, 0.05);
+            --shadow-heavy: rgba(0, 0, 0, 0.15);
+            --input-border: #ddd;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --link-color: #0066C0;
+        }
+
+        /* Тёмная тема */
+        body.dark {
+            --bg-body: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #eeeeee;
+            --text-secondary: #aaa;
+            --border-light: #0f3460;
+            --step-bg: #0f3460;
+            --hover-bg: #1a1a4e;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-heavy: rgba(0, 0, 0, 0.5);
+            --input-border: #0f3460;
+            --accent: #e67e22;
+            --accent-hover: #f39c12;
+            --link-color: #6ab0ff;
+        }
+
         body {
-            background: #EAEDED;
+            background: var(--bg-body);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 24px;
-            color: #1f1f1f;
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Переключатель темы */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "☀️";
+            height: 22px;
+            width: 22px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+        input:checked + .slider:before {
+            content: "🌙";
+            transform: translateX(26px);
+        }
+        .theme-label {
+            font-size: 13px;
+            opacity: 0.7;
         }
 
         /* Верхняя панель (только для телефона) */
@@ -36,7 +128,7 @@
             display: flex;
             font-size: 28px;
             cursor: pointer;
-            background: #e67e22;
+            background: var(--accent);
             color: white;
             width: 44px;
             height: 44px;
@@ -46,7 +138,7 @@
         }
         .menu-label {
             font-size: 14px;
-            color: #e67e22;
+            color: var(--accent);
             font-weight: 500;
         }
         .search-form {
@@ -57,9 +149,10 @@
             width: 100%;
             padding: 10px 16px;
             border-radius: 40px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--input-border);
             font-size: 14px;
-            background: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
 
         .wrapper {
@@ -73,27 +166,27 @@
         .recipe-area {
             flex: 3;
             min-width: 280px;
-            background: white;
+            background: var(--bg-card);
             border-radius: 36px;
             padding: 32px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 24px var(--shadow);
         }
 
         .menu-area {
             flex: 1;
             min-width: 240px;
-            background: white;
+            background: var(--bg-card);
             border-radius: 32px;
             padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px var(--shadow);
             align-self: start;
         }
 
         .menu-area h3 {
             font-size: 20px;
             margin-bottom: 20px;
-            color: #e67e22;
-            border-bottom: 2px solid #e67e22;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
             display: inline-block;
         }
 
@@ -105,13 +198,13 @@
             font-weight: 700;
             font-size: 18px;
             margin-bottom: 8px;
-            color: #2d2d2d;
+            color: var(--text-primary);
         }
 
         .menu-category a {
             display: block;
             padding: 6px 0 6px 12px;
-            color: #0066C0;
+            color: var(--link-color);
             text-decoration: none;
             font-size: 15px;
             border-radius: 12px;
@@ -119,12 +212,12 @@
         }
 
         .menu-category a:hover {
-            background: #fef2e6;
-            color: #e67e22;
+            background: var(--hover-bg);
+            color: var(--accent);
         }
 
         .info-block {
-            background: #fef2e6;
+            background: var(--step-bg);
             border-radius: 24px;
             padding: 16px;
             margin-bottom: 20px;
@@ -132,33 +225,33 @@
         .info-block h4 {
             margin-bottom: 8px;
             font-size: 16px;
-            color: #e67e22;
+            color: var(--accent);
         }
         .info-block p {
             font-size: 13px;
-            color: #555;
+            color: var(--text-secondary);
             margin-bottom: 8px;
         }
 
         .step-card {
-            background: #fef9f4;
+            background: var(--step-bg);
             border-radius: 24px;
             padding: 24px;
             margin-bottom: 24px;
-            border: 1px solid #ffe6d5;
+            border: 1px solid var(--border-light);
         }
 
         .step-title {
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 16px;
-            color: #e67e22;
+            color: var(--accent);
         }
 
         .step-desc {
             margin-bottom: 16px;
             line-height: 1.5;
-            color: #2d2d2d;
+            color: var(--text-primary);
         }
 
         .timer-row {
@@ -168,21 +261,22 @@
             flex-wrap: wrap;
             margin-top: 16px;
             padding-top: 12px;
-            border-top: 1px solid #ffe0cc;
+            border-top: 1px solid var(--border-light);
         }
 
         .timer-display {
             font-size: 32px;
             font-family: monospace;
             font-weight: 600;
-            background: white;
+            background: var(--bg-card);
             padding: 8px 16px;
             border-radius: 40px;
             letter-spacing: 2px;
+            color: var(--text-primary);
         }
 
         button {
-            background: #e67e22;
+            background: var(--accent);
             color: white;
             border: none;
             font-size: 14px;
@@ -190,6 +284,10 @@
             border-radius: 40px;
             font-weight: 500;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: var(--accent-hover);
         }
 
         button:disabled {
@@ -198,7 +296,7 @@
         }
 
         .global-timer {
-            background: #e67e22;
+            background: var(--accent);
             color: white;
             border-radius: 28px;
             padding: 20px;
@@ -224,12 +322,12 @@
                 top: 80px;
                 left: 0;
                 right: 0;
-                background: white;
+                background: var(--bg-card);
                 border-radius: 0 0 24px 24px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 12px var(--shadow);
                 padding: 20px;
                 z-index: 1000;
-                border-top: 1px solid #eee;
+                border-top: 1px solid var(--border-light);
             }
             .menu-area.active {
                 display: block;
@@ -247,7 +345,6 @@
             .menu-area {
                 display: block !important;
             }
-            /* Скрываем дублирующуюся кнопку отзыва в подвале на компьютере */
             .desktop-hide-feedback {
                 display: none;
             }
@@ -256,21 +353,49 @@
 </head>
 <body>
 
+<!-- Переключатель тёмной темы -->
+<div class="theme-switch-wrapper" style="max-width: 1400px; margin: 0 auto 8px auto;">
+    <span class="theme-label">🌙 Тёмная тема</span>
+    <label class="theme-switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+    </label>
+</div>
+
 <!-- Приветственная плашка -->
-<div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: white; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid #ffe0cc; text-align: center;">
+<div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: var(--bg-card); border-radius: 24px; box-shadow: 0 8px 24px var(--shadow-heavy); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid var(--border-light); text-align: center;">
     <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
-    <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">Простая кухня — для тех, кто не умеет готовить</h4>
-    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Пошаговые инструкции и таймеры. Все рецепты проверены лично на кухне. Никакой воды.</p>
-    <button id="closeBannerBtn" style="background: #e67e22; color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно, закрыть</button>
+    <h4 style="margin-bottom: 8px; font-size: 18px; color: var(--accent);">Простая кухня — для тех, кто не умеет готовить</h4>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Пошаговые инструкции и таймеры. Все рецепты проверены лично на кухне. Никакой воды.</p>
+    <button id="closeBannerBtn" style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно, закрыть</button>
 </div>
 
 <script>
+    // Приветственная плашка
     if (localStorage.getItem('welcomeBannerClosed') === 'true') {
         document.getElementById('welcomeBanner').style.display = 'none';
     }
     document.getElementById('closeBannerBtn').addEventListener('click', function() {
         document.getElementById('welcomeBanner').style.display = 'none';
         localStorage.setItem('welcomeBannerClosed', 'true');
+    });
+
+    // ========== ТЁМНАЯ ТЕМА ==========
+    const themeToggle = document.getElementById('themeToggle');
+    // Проверяем сохранённую тему
+    if (localStorage.getItem('darkTheme') === 'true') {
+        document.body.classList.add('dark');
+        themeToggle.checked = true;
+    }
+    // Слушаем переключение
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark');
+            localStorage.setItem('darkTheme', 'true');
+        } else {
+            document.body.classList.remove('dark');
+            localStorage.setItem('darkTheme', 'false');
+        }
     });
 </script>
 
@@ -289,34 +414,34 @@
     {% block content %}{% endblock %}
 </div>
 
-<!-- Подвал (кнопка отзыва — одна для всех устройств, но на компьютере скрываем дубль) -->
-<div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: #666;">
+<!-- Подвал -->
+<div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: var(--text-secondary);">
     <div class="desktop-hide-feedback">
-        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: #e67e22; color: white; border: none; font-size: 14px; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-bottom: 16px;">📝 Оставить отзыв о сайте</button>
+        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 14px; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-bottom: 16px;">📝 Оставить отзыв о сайте</button>
     </div>
     <br>
-    <a href="{% url 'terms' %}" style="color: #e67e22; text-decoration: none;">Условия использования</a>
+    <a href="{% url 'terms' %}" style="color: var(--accent); text-decoration: none;">Условия использования</a>
     <span style="margin: 0 12px;">|</span>
-    <a href="{% url 'privacy' %}" style="color: #e67e22; text-decoration: none;">Политика конфиденциальности</a>
+    <a href="{% url 'privacy' %}" style="color: var(--accent); text-decoration: none;">Политика конфиденциальности</a>
 </div>
 
 <!-- Модальное окно для отзывов -->
 <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
-    <div style="background: white; border-radius: 32px; padding: 28px; max-width: 420px; width: 90%; text-align: center;">
-        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px;">🎉 Все готово?</h3>
-        <p id="modalMessage" style="margin-bottom: 20px;">Как прошло приготовление?</p>
+    <div style="background: var(--bg-card); border-radius: 32px; padding: 28px; max-width: 420px; width: 90%; text-align: center;">
+        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px; color: var(--text-primary);">🎉 Пельмени готовы?</h3>
+        <p id="modalMessage" style="margin-bottom: 20px; color: var(--text-secondary);">Как прошло приготовление?</p>
         <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;">
             <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 10px 24px; border-radius: 40px;">✅ Да, готово!</button>
             <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 10px 24px; border-radius: 40px;">❌ Нет, не получилось</button>
         </div>
         <div id="feedbackForm" style="display: none;">
-            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так? Напишите, чтобы мы улучшили рецепт..." style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid #ddd; font-family: inherit;"></textarea>
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">🔒 Ваш отзыв анонимен. Не указывайте личные данные.</p>
-            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px;">
-                <input type="checkbox" id="privacyCheckbox"> Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: #e67e22;">политикой конфиденциальности</a> и подтверждаю, что мне больше 14 лет
+            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так? Напишите, чтобы я улучшил рецепт..." style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid var(--input-border); font-family: inherit; background: var(--bg-body); color: var(--text-primary);"></textarea>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">🔒 Ваш отзыв анонимен. Не указывайте личные данные.</p>
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px; color: var(--text-secondary);">
+                <input type="checkbox" id="privacyCheckbox"> Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: var(--accent);">политикой конфиденциальности</a> и подтверждаю, что мне больше 14 лет
             </label>
-            <button id="submitFeedbackBtn" style="background: #e67e22; color: white; border: none; padding: 10px 24px; border-radius: 40px; width: 100%;">📤 Отправить отзыв</button>
-            <p id="feedbackThanks" style="font-size: 12px; color: #666; margin-top: 12px; display: none;">Спасибо!</p>
+            <button id="submitFeedbackBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; width: 100%;">📤 Отправить отзыв</button>
+            <p id="feedbackThanks" style="font-size: 12px; color: var(--accent); margin-top: 12px; display: none;">Спасибо!</p>
         </div>
         <button id="closeModalBtn" style="background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 40px; margin-top: 16px;">Закрыть</button>
     </div>
@@ -324,22 +449,22 @@
 
 <!-- AI-блок "в разработке" -->
 <div style="margin-bottom: 24px;">
-    <div style="padding: 20px; background: linear-gradient(135deg, #fef9f4, #fff5eb); border-radius: 24px; border: 1px solid #ffe0cc; text-align: center;">
+    <div style="padding: 20px; background: linear-gradient(135deg, var(--step-bg), var(--hover-bg)); border-radius: 24px; border: 1px solid var(--border-light); text-align: center;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
-        <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">AI-помощник скоро</h4>
-        <p style="font-size: 13px; color: #888; margin-bottom: 12px;">Отвечает на кулинарные вопросы. Запуск в ближайшее время.</p>
-        <div style="display: inline-block; background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">⚙️ В разработке</div>
+        <h4 style="margin-bottom: 8px; font-size: 18px; color: var(--accent);">AI-помощник скоро</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Отвечает на кулинарные вопросы. Запуск в ближайшее время.</p>
+        <div style="display: inline-block; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">⚙️ В разработке</div>
     </div>
 </div>
 
-<!-- БЛОК «О чём этот сайт» (текст по-твоему) -->
+<!-- БЛОК «О чём этот сайт» -->
 <div class="info-block">
     <h4>👋 О чём этот сайт</h4>
     <p>Пошаговые инструкции с таймерами на каждый шаг для тех, кто не умеет готовить простые, но почему‑то сложные блюда.</p>
-    <p style="margin-bottom: 0; color: #e67e22;">👇 Выберите рецепт в меню ниже</p>
+    <p style="margin-bottom: 0; color: var(--accent);">👇 Выберите рецепт в меню ниже</p>
 </div>
 
-<!-- Основное меню (на компьютере видно всегда, на телефоне — через гамбургер) -->
+<!-- Основное меню -->
 <div class="menu-area">
     <h3>📖 Рецепты</h3>
     <div class="menu-category">
@@ -396,10 +521,10 @@
         if (isAfterCooking) {
             if (success) {
                 modalTitle.innerText = '🎉 Отлично!';
-                modalMessage.innerText = 'Все готово? Расскажите, всё ли получилось.';
+                modalMessage.innerText = 'Пельмени готовы? Расскажите, всё ли получилось.';
             } else {
                 modalTitle.innerText = '😕 Что-то пошло не так';
-                modalMessage.innerText = 'Расскажите, что случилось, и мы исправим рецепт.';
+                modalMessage.innerText = 'Расскажите, что случилось, и я исправлю рецепт.';
             }
             successBtn.style.display = 'inline-block';
             failBtn.style.display = 'inline-block';
