@@ -19,6 +19,51 @@
             color: #1f1f1f;
         }
 
+        /* Верхняя панель с поиском и гамбургером */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .burger-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mobile-menu-btn {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            background: #e67e22;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-label {
+            display: none;
+            font-size: 14px;
+            color: #e67e22;
+            font-weight: 500;
+        }
+        .search-form {
+            flex: 1;
+            min-width: 180px;
+        }
+        .search-form input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background: white;
+        }
+
         .wrapper {
             display: flex;
             gap: 32px;
@@ -78,6 +123,24 @@
         .menu-category a:hover {
             background: #fef2e6;
             color: #e67e22;
+        }
+
+        /* Блок "О чём этот сайт" */
+        .info-block {
+            background: #fef2e6;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .info-block h4 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #e67e22;
+        }
+        .info-block p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
         }
 
         .step-card {
@@ -154,11 +217,36 @@
         }
 
         @media (max-width: 800px) {
-            .wrapper { flex-direction: column; }
+            .mobile-menu-btn {
+                display: flex;
+            }
+            .menu-label {
+                display: inline-block;
+            }
+            .menu-area {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: white;
+                border-radius: 0 0 24px 24px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                padding: 20px;
+                z-index: 1000;
+                border-top: 1px solid #eee;
+            }
+            .menu-area.active {
+                display: block;
+            }
+            .wrapper {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
+
 <!-- Приветственная плашка -->
 <div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: white; border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid #ffe0cc; text-align: center;">
     <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
@@ -176,6 +264,17 @@
         localStorage.setItem('welcomeBannerClosed', 'true');
     });
 </script>
+
+<!-- Верхняя панель: гамбургер + поиск -->
+<div class="top-bar">
+    <div class="burger-area">
+        <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+        <span class="menu-label">Рецепты</span>
+    </div>
+    <form method="GET" action="{% url 'search' %}" class="search-form">
+        <input type="text" name="q" placeholder="🔍 Поиск рецептов..." value="{{ request.GET.q }}">
+    </form>
+</div>
 
 <div class="wrapper">
     {% block content %}{% endblock %}
@@ -210,8 +309,8 @@
     </div>
 </div>
 
-<!-- AI-блок "в разработке" -->
-<div class="menu-area" style="margin-top: 16px;">
+<!-- AI-блок "в разработке" (ПЕРЕД меню, виден всегда) -->
+<div style="margin-bottom: 24px;">
     <div style="padding: 20px; background: linear-gradient(135deg, #fef9f4, #fff5eb); border-radius: 24px; border: 1px solid #ffe0cc; text-align: center;">
         <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
         <h4 style="margin-bottom: 8px; font-size: 18px; color: #e67e22;">AI-помощник скоро</h4>
@@ -220,7 +319,49 @@
     </div>
 </div>
 
+<!-- БЛОК «О чём этот сайт» (виден всегда, не прячется в гамбургер) -->
+<div class="info-block">
+    <h4>👋 О чём этот сайт</h4>
+    <p>Пошаговые инструкции и таймеры для тех, кто не умеет готовить. Сейчас здесь пельмени и вареники, скоро супы, макароны, яйца и всё, что можно испортить.</p>
+    <p style="margin-bottom: 0; color: #e67e22;">👇 Выберите рецепт в меню ниже</p>
+</div>
+
+<!-- Основное меню (то, что будет скрываться на телефоне) -->
+<div class="menu-area">
+    <h3>📖 Рецепты</h3>
+    <div class="menu-category">
+        <div class="cat-title">🥟 Пельмени</div>
+        <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a>
+        <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
+    </div>
+    <div class="menu-category">
+        <div class="cat-title">🥟 Вареники</div>
+        <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a>
+        <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
+        <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
+    </div>
+    <div style="margin-top: 24px; text-align: center;">
+        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 20px; border-radius: 40px; width: 100%;">📝 Оставить отзыв о сайте</button>
+    </div>
+</div>
+
 <script>
+    // Гамбургер: открыть/закрыть меню
+    function toggleMenu() {
+        const menu = document.querySelector('.menu-area');
+        if (menu) menu.classList.toggle('active');
+    }
+
+    // Закрываем меню при клике вне его
+    document.addEventListener('click', function(event) {
+        const menu = document.querySelector('.menu-area');
+        const btn = document.querySelector('.mobile-menu-btn');
+        if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+            menu.classList.remove('active');
+        }
+    });
+
     const modal = document.getElementById('feedbackModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalMessage = document.getElementById('modalMessage');
@@ -310,7 +451,8 @@
     
     closeModalBtn.onclick = () => { modal.style.display = 'none'; };
 </script>
-<!-- Yandex.Metrika counter -->
+
+<!-- Яндекс.Метрика -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -322,6 +464,5 @@
     ym(109617143, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/109617143" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 </body>
 </html>
