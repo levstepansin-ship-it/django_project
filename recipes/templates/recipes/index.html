@@ -1,150 +1,158 @@
 ﻿{% extends "recipes/base.html" %}
+{% load static %}
 
-{% block title %}Классические пельмени — рецепт с таймерами{% endblock %}
+{% block title %}Wajos — готовьте без страха с пошаговыми таймерами{% endblock %}
 
 {% block content %}
-<!-- Левая колонка с рецептом -->
-<div class="recipe-area">
-    <h1 style="font-size: 36px; color: var(--text-primary);">🥟 Классические пельмени</h1>
-    <div class="subhead" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 18px;">Из свинины и говядины. Следуй таймерам — и они не развалятся, не слипнутся и будут сочными</div>
 
-    <!-- ПРОБЛЕМЫ И РЕШЕНИЯ — теперь с правильными классами -->
-    <div class="warnings-block">
-        <h4>❌ Почему пельмени разочаровывают</h4>
-        <ul>
-            <li>Тесто слипается и рвётся — потому что вода не кипела достаточно сильно</li>
-            <li>Вкусный бульон остаётся в кастрюле — из‑за недостатка соли или специй</li>
-            <li>Мясо становится сухим и жёстким — из‑за переваривания или слишком высокой температуры</li>
-        </ul>
-    </div>
-    <div class="tips-block">
-        <h4>✅ Что делать</h4>
-        <ul>
-            <li>Бери кастрюлю не меньше 3 литров — пельменям нужно пространство</li>
-            <li>Соотношение воды и пельменей — <strong>3:1</strong> (1 кг пельменей → 3 литра воды)</li>
-            <li>Соли — 1 чайная ложка на литр воды, можно добавить лавровый лист и перец горошком</li>
-            <li>Опускай пельмени в <strong>крутой кипяток</strong> по одному, чтобы не охлаждать воду</li>
-            <li>После всплытия вари <strong>ровно столько, сколько на таймере</strong> — не меньше и не больше</li>
-        </ul>
-    </div>
-
-    <!-- ШАГ 1 -->
-    <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 1. Кипятим воду</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
-            Налей <strong>2–3 литра холодной воды</strong> в кастрюлю. Добавь <strong>1 столовую ложку соли (без горки)</strong>. Накрой крышкой. Поставь на сильный огонь.
+<!-- ПРИВЕТСТВЕННОЕ ОКНО -->
+<div class="welcome-hero">
+    <div class="welcome-hero-inner">
+        
+        <!-- ЛОГОТИП -->
+        <div class="welcome-logo">
+            <span class="welcome-logo-icon">🍳</span>
+            <span class="welcome-logo-text">Wajos</span>
         </div>
-        <div class="timer-row">
-            <span class="timer-display" id="timerWater" style="font-size: 48px;">12:00</span>
-            <button id="startWaterBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (12 мин)</button>
-            <button id="resetWaterBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
-        </div>
-    </div>
+        <p class="welcome-tagline">Пошаговые рецепты с таймерами. Никакой воды.</p>
 
-    <!-- ШАГ 2 -->
-    <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 2. Бросаем пельмени</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
-            Достань пельмени из морозилки прямо перед варкой. Не размораживай! Кидай по одному в кипящую воду, аккуратно перемешай. Жди, пока все всплывут.
-        </div>
-        <div class="timer-row">
-            <span class="timer-display" id="timerFloat" style="font-size: 48px;">5:00</span>
-            <button id="startFloatBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (5 мин)</button>
-            <button id="resetFloatBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
-        </div>
-    </div>
+        <!-- ПОИСК -->
+        <form method="GET" action="{% url 'search' %}" class="welcome-search">
+            <input type="text" name="q" placeholder="🔍 Поиск рецептов, например: пельмени, вареники..." value="{{ request.GET.q }}">
+            <button type="submit">Найти</button>
+        </form>
 
-    <!-- ШАГ 3 -->
-    <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 3. Финишная варка</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
-            Как только пельмени всплыли, <strong>убавь огонь до среднего</strong>. Запускай таймер! Крышкой не накрывай.
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с жирным шрифтом) -->
+        <div class="welcome-section">
+            <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
+            <div class="welcome-carousel-wrapper">
+                <div class="welcome-carousel">
+                    <!-- Говяжьи (ID 4) -->
+                    <div class="welcome-card" data-recipe-id="4">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/govyazhi.jpg' %}" 
+                                 alt="Пельмени говяжьи"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Говяжьи'">
+                        </div>
+                        <span class="welcome-card-title">Говяжьи</span>
+                    </div>
+                    <!-- Телячьи (ID 2) -->
+                    <div class="welcome-card" data-recipe-id="2">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/telyachi.jpg' %}" 
+                                 alt="Пельмени телячьи"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Телячьи'">
+                        </div>
+                        <span class="welcome-card-title">Телячьи</span>
+                    </div>
+                    <!-- Свиные (ID 3) -->
+                    <div class="welcome-card" data-recipe-id="3">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/svinye.jpg' %}" 
+                                 alt="Пельмени свиные"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Свиные'">
+                        </div>
+                        <span class="welcome-card-title">Свиные</span>
+                    </div>
+                    <!-- С творогом (ID 5) -->
+                    <div class="welcome-card" data-recipe-id="5">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/tvorog.jpg' %}" 
+                                 alt="Вареники с творогом"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Творог'">
+                        </div>
+                        <span class="welcome-card-title">С творогом</span>
+                    </div>
+                    <!-- С картошкой (ID 6) -->
+                    <div class="welcome-card" data-recipe-id="6">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/kartoshka.jpg' %}" 
+                                 alt="Вареники с картошкой"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Картошка'">
+                        </div>
+                        <span class="welcome-card-title">С картошкой</span>
+                    </div>
+                    <!-- С вишней (ID 7) -->
+                    <div class="welcome-card" data-recipe-id="7">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="{% static 'recipes/images/vishnya.jpg' %}" 
+                                 alt="Вареники с вишней"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Вишня'">
+                        </div>
+                        <span class="welcome-card-title">С вишней</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="timer-row">
-            <span class="timer-display" id="timerBoil" style="font-size: 48px;">4:00</span>
-            <button id="startBoilBtn" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (4 мин)</button>
-            <button id="resetBoilBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+
+        <!-- ВСЕ РЕЦЕПТЫ (текстовое меню) -->
+        <div class="welcome-section">
+            <h2 class="welcome-section-title">📖 Все рецепты</h2>
+            <div class="welcome-categories">
+                <div class="welcome-cat">
+                    <div class="welcome-cat-title">🥟 Пельмени</div>
+                    <div class="welcome-cat-links">
+                        <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a> |
+                        <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a> |
+                        <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
+                    </div>
+                </div>
+                <div class="welcome-cat">
+                    <div class="welcome-cat-title">🥟 Вареники</div>
+                    <div class="welcome-cat-links">
+                        <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a> |
+                        <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a> |
+                        <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- ШАГ 4 -->
-    <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 4. Достаём и подаём</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
-            Выключи огонь. Доставай пельмени шумовкой, дай воде стечь. Добавь сливочное масло — не слипнутся. Подавай со сметаной, уксусом, соевым соусом или горчицей.
+        <!-- ОТЗЫВ -->
+        <div class="welcome-feedback">
+            <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" class="welcome-feedback-btn">📝 Оставить отзыв о сайте</button>
         </div>
-    </div>
 
-    <!-- СУПЕР-ТАЙМЕР -->
-    <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
-        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (все шаги подряд)</div>
-        <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">21:00</div>
-        <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
-        <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
-    </div>
-
-    <!-- КНОПКА ДЛЯ ОТЗЫВА НА ГЛАВНОЙ СТРАНИЦЕ -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">📝 Оставить отзыв о сайте</button>
-    </div>
-</div>
-
-<!-- ПРАВАЯ КОЛОНКА — МЕНЮ -->
-<div class="menu-area">
-    <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
-        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 14px; background: var(--bg-card); color: var(--text-primary);">
-        <button type="submit" style="width: 100%; margin-top: 8px; background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
-    </form>
-    <h3 style="font-size: 22px; color: var(--accent);">📖 Рецепты</h3>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
-        <a href="{% url 'recipe_detail' recipe_id=4 %}" style="font-size: 16px;">Говяжьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=2 %}" style="font-size: 16px;">Телячьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=3 %}" style="font-size: 16px;">Свиные</a>
-    </div>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
-        <a href="{% url 'recipe_detail' recipe_id=5 %}" style="font-size: 16px;">С творогом</a>
-        <a href="{% url 'recipe_detail' recipe_id=6 %}" style="font-size: 16px;">С картошкой</a>
-        <a href="{% url 'recipe_detail' recipe_id=7 %}" style="font-size: 16px;">С вишней</a>
+        <!-- СТАТИСТИКА -->
+        <div class="welcome-stats">
+            <div class="welcome-stat">
+                <span class="welcome-stat-value">~8 мин</span>
+                <span class="welcome-stat-label">среднее время</span>
+            </div>
+            <div class="welcome-stat">
+                <span class="welcome-stat-value">16%</span>
+                <span class="welcome-stat-label">отказов</span>
+            </div>
+            <div class="welcome-stat">
+                <span class="welcome-stat-value">4.6</span>
+                <span class="welcome-stat-label">страниц за визит</span>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    // === ТАЙМЕРЫ ===
-    let waterSeconds = 720, waterInterval = null;
-    const waterDisplay = document.getElementById('timerWater');
-    function updateWater() { let m=Math.floor(waterSeconds/60), s=waterSeconds%60; waterDisplay.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
-    function startWater() { if(waterInterval) clearInterval(waterInterval); waterInterval=setInterval(()=>{ if(waterSeconds<=1){ clearInterval(waterInterval); waterDisplay.innerText="✅ Вода закипела!"; } else { waterSeconds--; updateWater(); } },1000); }
-    function resetWater() { if(waterInterval) clearInterval(waterInterval); waterSeconds=720; updateWater(); }
-    document.getElementById('startWaterBtn').onclick=startWater;
-    document.getElementById('resetWaterBtn').onclick=resetWater;
-    updateWater();
-
-    let floatSeconds = 300, floatInterval = null;
-    const floatDisplay = document.getElementById('timerFloat');
-    function updateFloat() { let m=Math.floor(floatSeconds/60), s=floatSeconds%60; floatDisplay.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
-    function startFloat() { if(floatInterval) clearInterval(floatInterval); floatInterval=setInterval(()=>{ if(floatSeconds<=1){ clearInterval(floatInterval); floatDisplay.innerText="🥟 Пельмени всплыли!"; } else { floatSeconds--; updateFloat(); } },1000); }
-    function resetFloat() { if(floatInterval) clearInterval(floatInterval); floatSeconds=300; updateFloat(); }
-    document.getElementById('startFloatBtn').onclick=startFloat;
-    document.getElementById('resetFloatBtn').onclick=resetFloat;
-    updateFloat();
-
-    let boilSeconds = 240, boilInterval = null;
-    const boilDisplay = document.getElementById('timerBoil');
-    function updateBoil() { let m=Math.floor(boilSeconds/60), s=boilSeconds%60; boilDisplay.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
-    function startBoil() { if(boilInterval) clearInterval(boilInterval); boilInterval=setInterval(()=>{ if(boilSeconds<=1){ clearInterval(boilInterval); boilDisplay.innerText="🎉 Пельмени готовы!"; } else { boilSeconds--; updateBoil(); } },1000); }
-    function resetBoil() { if(boilInterval) clearInterval(boilInterval); boilSeconds=240; updateBoil(); }
-    document.getElementById('startBoilBtn').onclick=startBoil;
-    document.getElementById('resetBoilBtn').onclick=resetBoil;
-    updateBoil();
-
-    let fullSeconds = 1260, fullInterval = null;
-    const fullDisplay = document.getElementById('fullTimer');
-    function updateFull() { let m=Math.floor(fullSeconds/60), s=fullSeconds%60; fullDisplay.innerText=`${m}:${s.toString().padStart(2,'0')}`; }
-    function startFull() { if(fullInterval) clearInterval(fullInterval); fullSeconds=1260; updateFull(); fullInterval=setInterval(()=>{ if(fullSeconds<=1){ clearInterval(fullInterval); fullDisplay.innerText="🎉 ГОТОВО!"; } else { fullSeconds--; updateFull(); } },1000); }
-    function resetFull() { if(fullInterval) clearInterval(fullInterval); fullSeconds=1260; updateFull(); resetWater(); resetFloat(); resetBoil(); }
-    document.getElementById('startFullBtn').onclick=startFull;
-    document.getElementById('resetFullBtn').onclick=resetFull;
+    // Клики по карточкам карусели
+    document.querySelectorAll('.welcome-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const recipeId = this.dataset.recipeId;
+            if (recipeId) {
+                window.location.href = `/recipe/${recipeId}/`;
+            }
+        });
+    });
 </script>
+
 {% endblock %}
