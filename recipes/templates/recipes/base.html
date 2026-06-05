@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Простая кухня{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>{% block title %}Wajos — готовьте с таймерами{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='80'%3E🥟%3C/text%3E%3C/svg%3E">
     <style>
         * {
@@ -60,6 +60,361 @@
             --warning-border: #ef5350;
         }
 
+        /* ===== ПРИВЕТСТВЕННОЕ ОКНО ===== */
+        .welcome-hero {
+            background: var(--bg-card);
+            border-radius: 36px;
+            padding: 48px 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .welcome-hero-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .welcome-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-logo-icon {
+            font-size: 48px;
+        }
+
+        .welcome-logo-text {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -1px;
+        }
+
+        .welcome-tagline {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .welcome-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .welcome-search input {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--input-border);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .welcome-search button {
+            padding: 14px 32px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .welcome-section {
+            margin-bottom: 40px;
+        }
+
+        .welcome-section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* КАРУСЕЛЬ */
+        .welcome-carousel-wrapper {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            border-radius: 32px;
+        }
+
+        .welcome-carousel {
+            display: flex;
+            gap: 20px;
+            padding: 8px 4px 16px 4px;
+            min-width: min-content;
+        }
+
+        .welcome-card {
+            flex: 0 0 auto;
+            width: 130px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .welcome-card-image-wrapper {
+            background: var(--step-bg);
+            border-radius: 28px;
+            padding: 6px;
+            box-shadow: 0 6px 14px var(--shadow);
+        }
+
+        .welcome-card-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 22px;
+            display: block;
+        }
+
+        .welcome-card-title {
+            display: block;
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: var(--text-primary);
+        }
+
+        .welcome-carousel-wrapper::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .welcome-carousel-wrapper::-webkit-scrollbar-track {
+            background: var(--border-light);
+            border-radius: 10px;
+        }
+
+        .welcome-carousel-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        /* Текстовое меню на главной */
+        .welcome-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            text-align: center;
+        }
+
+        .welcome-cat-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .welcome-cat-links {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .welcome-cat-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .welcome-cat-links a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* ===== МЕНЮ НА СТРАНИЦАХ РЕЦЕПТОВ (ПРАВАЯ КОЛОНКА) ===== */
+        .menu-area {
+            background: var(--bg-card);
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 0 4px 12px var(--shadow);
+            align-self: start;
+        }
+
+        .menu-area h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+            text-align: center;
+            width: auto;
+        }
+
+        .menu-category {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .menu-category .cat-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .menu-category a {
+            display: inline-block;
+            padding: 0 6px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .menu-category a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .menu-area .search-form input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--input-border);
+            font-size: 14px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .menu-area .search-form button {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* ===== СТРАНИЦЫ ПОЛИТИКИ И УСЛОВИЙ ===== */
+        .legal-content {
+            background: var(--bg-card);
+            border-radius: 36px;
+            padding: 48px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 24px var(--shadow);
+            color: var(--text-primary);
+        }
+
+        .legal-content h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .legal-content .legal-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .legal-content h2 {
+            font-size: 24px;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .legal-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .legal-content ul, .legal-content ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .legal-content li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .legal-content strong {
+            color: var(--accent);
+        }
+
+        .legal-back-btn {
+            display: inline-block;
+            margin-top: 32px;
+            background: var(--accent);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .legal-back-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .welcome-feedback {
+            margin: 32px 0 24px;
+        }
+
+        .welcome-feedback-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .welcome-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+            flex-wrap: wrap;
+        }
+
+        .welcome-stat {
+            text-align: center;
+        }
+
+        .welcome-stat-value {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .welcome-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
         /* Стили для блоков "Почему разочаровывают" */
         .tips-block {
             background: var(--tip-bg);
@@ -103,7 +458,7 @@
             color: var(--text-primary);
         }
 
-        /* ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ ТЁМНОЙ ТЕМЫ НА ТЕЛЕФОНЕ */
+        /* ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ ТЁМНОЙ ТЕМЫ */
         body.dark .tips-block {
             background: #1a2d1a !important;
             border-left-color: #66bb6a !important;
@@ -127,196 +482,8 @@
         body.dark .warnings-block ul {
             color: #dddddd !important;
         }
-        
-        body.dark .tips-block strong,
-        body.dark .warnings-block strong {
-            color: #ffffff !important;
-        }
 
-        /* Принудительные стили для телефона */
-        @media (max-width: 800px) {
-            body.dark {
-                background: #1a1a2e !important;
-            }
-            body.dark .menu-area,
-            body.dark .recipe-area,
-            body.dark .step-card,
-            body.dark .info-block {
-                background: #16213e !important;
-            }
-            body.dark .step-card {
-                border-color: #0f3460 !important;
-            }
-            body.dark p,
-            body.dark h1,
-            body.dark h2,
-            body.dark h3,
-            body.dark h4,
-            body.dark li,
-            body.dark .step-desc {
-                color: #eeeeee !important;
-            }
-            body.dark .step-title {
-                color: #e67e22 !important;
-            }
-            body.dark .timer-display {
-                background: #0f3460 !important;
-                color: #e67e22 !important;
-            }
-            body.dark .menu-category a {
-                color: #6ab0ff !important;
-            }
-            body.dark input,
-            body.dark textarea {
-                background: #0f3460 !important;
-                color: white !important;
-            }
-            body.dark .info-block p {
-                color: #aaa !important;
-            }
-            body.dark .tips-block {
-                background: #1a2d1a !important;
-            }
-            body.dark .warnings-block {
-                background: #2d1a1a !important;
-            }
-            body.dark .tips-block li,
-            body.dark .warnings-block li {
-                color: #dddddd !important;
-            }
-        }
-
-        /* Верхняя панель (только для телефона) */
-        .top-bar {
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            gap: 12px;
-        }
-        .burger-area {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mobile-menu-btn {
-            display: flex;
-            font-size: 28px;
-            cursor: pointer;
-            background: var(--accent);
-            color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-        }
-        .menu-label {
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 500;
-        }
-        .search-form {
-            flex: 1;
-            min-width: 180px;
-        }
-        .search-form input {
-            width: 100%;
-            padding: 10px 16px;
-            border-radius: 40px;
-            border: 1px solid var(--input-border);
-            font-size: 14px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-        .mobile-theme-btn {
-            background: var(--accent);
-            border: none;
-            border-radius: 40px;
-            padding: 8px 12px;
-            font-size: 18px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .wrapper {
-            display: flex;
-            gap: 32px;
-            max-width: 1400px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-        }
-
-        .recipe-area {
-            flex: 3;
-            min-width: 280px;
-            background: var(--bg-card);
-            border-radius: 36px;
-            padding: 32px;
-            box-shadow: 0 8px 24px var(--shadow);
-        }
-
-        .menu-area {
-            flex: 1;
-            min-width: 240px;
-            background: var(--bg-card);
-            border-radius: 32px;
-            padding: 24px;
-            box-shadow: 0 4px 12px var(--shadow);
-            align-self: start;
-        }
-
-        .menu-area h3 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: var(--accent);
-            border-bottom: 2px solid var(--accent);
-            display: inline-block;
-        }
-
-        .menu-category {
-            margin-bottom: 24px;
-        }
-
-        .menu-category .cat-title {
-            font-weight: 700;
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .menu-category a {
-            display: block;
-            padding: 6px 0 6px 12px;
-            color: var(--link-color);
-            text-decoration: none;
-            font-size: 15px;
-            border-radius: 12px;
-            transition: background 0.1s;
-        }
-
-        .menu-category a:hover {
-            background: var(--hover-bg);
-            color: var(--accent);
-        }
-
-        .info-block {
-            background: var(--step-bg);
-            border-radius: 24px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-        .info-block h4 {
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: var(--accent);
-        }
-        .info-block p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
+        /* Шаги рецепта */
         .step-card {
             background: var(--step-bg);
             border-radius: 24px;
@@ -374,13 +541,8 @@
             background: var(--accent-hover);
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .global-timer {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #f39c12);
             color: white;
             border-radius: 28px;
             padding: 20px;
@@ -410,53 +572,69 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-        .desktop-theme-btn:hover {
-            transform: scale(1.05);
         }
 
-        /* Телефон */
+        /* Адаптив для телефона */
         @media (max-width: 800px) {
-            .top-bar {
-                display: flex;
+            body {
+                padding: 16px;
             }
-            .menu-area {
-                display: none;
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: var(--bg-card);
-                border-radius: 0 0 24px 24px;
-                box-shadow: 0 4px 12px var(--shadow);
-                padding: 20px;
-                z-index: 1000;
-                border-top: 1px solid var(--border-light);
+            .welcome-hero {
+                padding: 32px 20px;
             }
-            .menu-area.active {
-                display: block;
+            .welcome-logo-text {
+                font-size: 32px;
             }
-            .wrapper {
-                flex-direction: column;
+            .welcome-tagline {
+                font-size: 14px;
+            }
+            .welcome-card {
+                width: 100px;
+            }
+            .welcome-card-title {
+                font-size: 13px;
+            }
+            .welcome-stats {
+                gap: 20px;
+            }
+            .welcome-stat-value {
+                font-size: 16px;
             }
             .desktop-theme-btn {
                 display: none;
+            }
+            .welcome-cat-title {
+                font-size: 16px;
+            }
+            .welcome-cat-links {
+                font-size: 16px;
+            }
+            .menu-category .cat-title {
+                font-size: 16px;
+            }
+            .menu-category a {
+                font-size: 16px;
+            }
+            .menu-area h3 {
+                font-size: 18px;
+            }
+            .legal-content {
+                padding: 28px 20px;
+            }
+            .legal-content h1 {
+                font-size: 26px;
+            }
+            .legal-content h2 {
+                font-size: 20px;
+            }
+            .legal-content p {
+                font-size: 14px;
             }
         }
 
         /* Компьютер */
         @media (min-width: 801px) {
-            .top-bar {
-                display: none;
-            }
-            .menu-area {
-                display: block !important;
-            }
             .desktop-hide-feedback {
-                display: none;
-            }
-            .mobile-theme-btn {
                 display: none;
             }
         }
@@ -464,163 +642,72 @@
 </head>
 <body>
 
-<!-- Приветственная плашка -->
+<!-- Приветственная плашка (маленькая, фиксированная) -->
 <div id="welcomeBanner" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; background: var(--bg-card); border-radius: 24px; box-shadow: 0 8px 24px var(--shadow-heavy); padding: 16px 24px; max-width: 400px; width: 90%; border: 1px solid var(--border-light); text-align: center;">
     <div style="font-size: 32px; margin-bottom: 8px;">🍳</div>
-    <h4 style="margin-bottom: 8px; font-size: 18px; color: var(--accent);">Простая кухня — для тех, кто не умеет готовить</h4>
-    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Пошаговые инструкции и таймеры. Все рецепты проверены лично на кухне. Никакой воды.</p>
+    <h4 style="margin-bottom: 8px; font-size: 18px; color: var(--accent);">Wajos — готовьте без страха</h4>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Пошаговые инструкции с таймерами. Никакой воды.</p>
     <button id="closeBannerBtn" style="background: var(--accent); color: white; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-size: 13px;">Понятно, закрыть</button>
 </div>
 
-<!-- Верхняя панель (только для телефона) -->
-<div class="top-bar">
-    <div class="burger-area">
-        <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
-        <span class="menu-label">Рецепты</span>
-    </div>
-    <form method="GET" action="{% url 'search' %}" class="search-form">
-        <input type="text" name="q" placeholder="🔍 Поиск рецептов..." value="{{ request.GET.q }}">
-    </form>
-    <button id="mobileThemeBtn" class="mobile-theme-btn">🌙</button>
-</div>
+<script>
+    if (localStorage.getItem('welcomeBannerClosed') === 'true') {
+        document.getElementById('welcomeBanner').style.display = 'none';
+    }
+    document.getElementById('closeBannerBtn')?.addEventListener('click', function() {
+        document.getElementById('welcomeBanner').style.display = 'none';
+        localStorage.setItem('welcomeBannerClosed', 'true');
+    });
+</script>
 
-<div class="wrapper">
+<div class="wrapper" style="max-width: 1400px; margin: 0 auto;">
     {% block content %}{% endblock %}
 </div>
 
 <!-- Подвал -->
 <div style="text-align: center; margin-top: 32px; padding: 16px; font-size: 13px; color: var(--text-secondary);">
-    <div class="desktop-hide-feedback">
-        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 14px; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-bottom: 16px;">📝 Оставить отзыв о сайте</button>
-    </div>
-    <br>
     <a href="{% url 'terms' %}" style="color: var(--accent); text-decoration: none;">Условия использования</a>
     <span style="margin: 0 12px;">|</span>
     <a href="{% url 'privacy' %}" style="color: var(--accent); text-decoration: none;">Политика конфиденциальности</a>
 </div>
 
-<!-- Модальное окно для отзывов -->
-<div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
-    <div style="background: var(--bg-card); border-radius: 32px; padding: 28px; max-width: 420px; width: 90%; text-align: center;">
-        <h3 id="modalTitle" style="font-size: 24px; margin-bottom: 12px; color: var(--text-primary);">🎉 Пельмени готовы?</h3>
-        <p id="modalMessage" style="margin-bottom: 20px; color: var(--text-secondary);">Как прошло приготовление?</p>
-        <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;">
-            <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 10px 24px; border-radius: 40px;">✅ Да, готово!</button>
-            <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 10px 24px; border-radius: 40px;">❌ Нет, не получилось</button>
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ОТЗЫВОВ -->
+<div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <div style="background: var(--bg-card); border-radius: 32px; padding: 32px; max-width: 500px; width: 90%; text-align: center;">
+        
+        <h3 id="modalTitle" style="font-size: 28px; margin-bottom: 16px; color: var(--text-primary);">🍳 Как вам блюдо?</h3>
+        
+        <p id="modalMessage" style="margin-bottom: 24px; font-size: 16px; color: var(--text-secondary);">Расскажите, что получилось, а что нет.</p>
+        
+        <div style="display: flex; gap: 16px; justify-content: center; margin-bottom: 28px;">
+            <button id="feedbackSuccessBtn" style="background: #4CAF50; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer;">✅ Да, готово!</button>
+            <button id="feedbackFailBtn" style="background: #f44336; color: white; border: none; padding: 12px 28px; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer;">❌ Нет, не получилось</button>
         </div>
+        
         <div id="feedbackForm" style="display: none;">
-            <textarea id="feedbackText" rows="3" placeholder="Что пошло не так? Напишите, чтобы я улучшил рецепт..." style="width: 100%; padding: 12px; border-radius: 16px; border: 1px solid var(--input-border); font-family: inherit; background: var(--bg-body); color: var(--text-primary);"></textarea>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">🔒 Ваш отзыв анонимен. Не указывайте личные данные.</p>
-            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 13px; color: var(--text-secondary);">
-                <input type="checkbox" id="privacyCheckbox"> Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: var(--accent);">политикой конфиденциальности</a> и подтверждаю, что мне больше 14 лет
+            <textarea id="feedbackText" rows="4" placeholder="Что пошло не так? Напишите, чтобы мы улучшили рецепт..." style="width: 100%; padding: 16px; border-radius: 20px; border: 1px solid var(--input-border); font-family: inherit; font-size: 15px; background: var(--bg-body); color: var(--text-primary); resize: vertical;"></textarea>
+            
+            <p style="font-size: 12px; color: var(--text-secondary); margin: 12px 0; text-align: left;">🔒 Ваш отзыв анонимен. Пожалуйста, НЕ указывайте имя, телефон, адрес, email и другие личные данные.</p>
+            
+            <label style="display: flex; align-items: center; gap: 10px; margin: 16px 0; justify-content: center; cursor: pointer;">
+                <input type="checkbox" id="privacyCheckbox" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="font-size: 13px; color: var(--text-secondary);">Я ознакомлен с <a href="{% url 'privacy' %}" target="_blank" style="color: var(--accent);">политикой конфиденциальности</a> и подтверждаю, что мне больше 14 лет</span>
             </label>
-            <button id="submitFeedbackBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; width: 100%;">📤 Отправить отзыв</button>
-            <p id="feedbackThanks" style="font-size: 12px; color: var(--accent); margin-top: 12px; display: none;">Спасибо!</p>
+            
+            <button id="submitFeedbackBtn" style="background: var(--accent); color: white; border: none; padding: 14px 24px; border-radius: 50px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer;">📤 Отправить отзыв</button>
+            
+            <p id="feedbackThanks" style="font-size: 14px; color: var(--accent); margin-top: 16px; display: none;">Спасибо! Отзыв отправлен 🙌</p>
         </div>
-        <button id="closeModalBtn" style="background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 40px; margin-top: 16px;">Закрыть</button>
+        
+        <button id="closeModalBtn" style="background: #ccc; color: #333; border: none; padding: 10px 24px; border-radius: 50px; font-size: 14px; margin-top: 24px; cursor: pointer;">Закрыть</button>
     </div>
 </div>
 
-<!-- AI-блок "в разработке" -->
-<div style="margin-bottom: 24px;">
-    <div style="padding: 20px; background: linear-gradient(135deg, var(--step-bg), var(--hover-bg)); border-radius: 24px; border: 1px solid var(--border-light); text-align: center;">
-        <div style="font-size: 32px; margin-bottom: 8px;">🤖</div>
-        <h4 style="margin-bottom: 8px; font-size: 18px; color: var(--accent);">AI-помощник скоро</h4>
-        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Отвечает на кулинарные вопросы. Запуск в ближайшее время.</p>
-        <div style="display: inline-block; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">⚙️ В разработке</div>
-    </div>
-</div>
-
-<!-- БЛОК «О чём этот сайт» -->
-<div class="info-block">
-    <h4>👋 О чём этот сайт</h4>
-    <p>Пошаговые инструкции с таймерами на каждый шаг для тех, кто не умеет готовить простые, но почему‑то сложные блюда.</p>
-    <p style="margin-bottom: 0; color: var(--accent);">👇 Выберите рецепт в меню ниже</p>
-</div>
-
-<!-- Основное меню -->
-<div class="menu-area">
-    <h3>📖 Рецепты</h3>
-    <div class="menu-category">
-        <div class="cat-title">🥟 Пельмени</div>
-        <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
-    </div>
-    <div class="menu-category">
-        <div class="cat-title">🥟 Вареники</div>
-        <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a>
-        <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
-        <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
-    </div>
-</div>
-
-<!-- Кнопка переключения тёмной темы для компьютера (справа внизу) -->
+<!-- Кнопка переключения тёмной темы для компьютера -->
 <button id="desktopThemeBtn" class="desktop-theme-btn">🌙 Тёмная тема</button>
 
 <script>
-    // Приветственная плашка
-    if (localStorage.getItem('welcomeBannerClosed') === 'true') {
-        document.getElementById('welcomeBanner').style.display = 'none';
-    }
-    document.getElementById('closeBannerBtn').addEventListener('click', function() {
-        document.getElementById('welcomeBanner').style.display = 'none';
-        localStorage.setItem('welcomeBannerClosed', 'true');
-    });
-
-    // ========== ТЁМНАЯ ТЕМА ==========
-    const desktopBtn = document.getElementById('desktopThemeBtn');
-    const mobileBtn = document.getElementById('mobileThemeBtn');
-    
-    function setTheme(isDark) {
-        if (isDark) {
-            document.body.classList.add('dark');
-            if (desktopBtn) desktopBtn.innerHTML = '☀️ Светлая тема';
-            if (mobileBtn) mobileBtn.innerHTML = '☀️';
-            localStorage.setItem('darkTheme', 'true');
-        } else {
-            document.body.classList.remove('dark');
-            if (desktopBtn) desktopBtn.innerHTML = '🌙 Тёмная тема';
-            if (mobileBtn) mobileBtn.innerHTML = '🌙';
-            localStorage.setItem('darkTheme', 'false');
-        }
-    }
-    
-    // Проверяем сохранённую тему
-    const savedTheme = localStorage.getItem('darkTheme');
-    if (savedTheme === 'true') {
-        setTheme(true);
-    }
-    
-    // Обработчики кнопок
-    if (desktopBtn) {
-        desktopBtn.addEventListener('click', function() {
-            const isDark = !document.body.classList.contains('dark');
-            setTheme(isDark);
-        });
-    }
-    if (mobileBtn) {
-        mobileBtn.addEventListener('click', function() {
-            const isDark = !document.body.classList.contains('dark');
-            setTheme(isDark);
-        });
-    }
-
-    // Меню для телефона
-    function toggleMenu() {
-        const menu = document.querySelector('.menu-area');
-        if (menu) menu.classList.toggle('active');
-    }
-
-    document.addEventListener('click', function(event) {
-        const menu = document.querySelector('.menu-area');
-        const btn = document.querySelector('.mobile-menu-btn');
-        if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
-            menu.classList.remove('active');
-        }
-    });
-
-    // Модалка отзывов
+    // ========== МОДАЛЬНОЕ ОКНО ==========
     const modal = document.getElementById('feedbackModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalMessage = document.getElementById('modalMessage');
@@ -647,16 +734,16 @@
         if (isAfterCooking) {
             if (success) {
                 modalTitle.innerText = '🎉 Отлично!';
-                modalMessage.innerText = 'Блюдо готово? Расскажите, всё ли получилось.';
+                modalMessage.innerText = 'Расскажите, всё ли получилось.';
             } else {
                 modalTitle.innerText = '😕 Что-то пошло не так';
-                modalMessage.innerText = 'Расскажите, что случилось, и я исправлю рецепт.';
+                modalMessage.innerText = 'Расскажите, что случилось.';
             }
             successBtn.style.display = 'inline-block';
             failBtn.style.display = 'inline-block';
         } else {
             modalTitle.innerText = '💬 Отзыв о сайте';
-            modalMessage.innerText = 'Напишите, что вы думаете о сайте. Предложения, замечания, идеи — всё пригодится.';
+            modalMessage.innerText = 'Напишите, что думаете.';
             successBtn.style.display = 'none';
             failBtn.style.display = 'none';
             feedbackForm.style.display = 'block';
@@ -668,47 +755,68 @@
         fetch('/send-feedback/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                timer_name: timerName,
-                success: success,
-                comment: comment
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                console.log('Отзыв отправлен');
-            } else {
-                console.error('Ошибка:', data.error);
-            }
-        })
-        .catch(error => console.error('Ошибка отправки:', error));
+            body: JSON.stringify({ timer_name: timerName, success: success, comment: comment })
+        }).catch(e => console.error(e));
     }
     
-    successBtn.onclick = () => { feedbackForm.style.display = 'block'; };
-    failBtn.onclick = () => { feedbackForm.style.display = 'block'; };
+    successBtn.onclick = () => { 
+        feedbackForm.style.display = 'block';
+        modalTitle.innerText = currentSuccess ? '📝 Расскажите подробнее' : '📝 Опишите проблему';
+        modalMessage.innerText = 'Ваш отзыв поможет сделать рецепт лучше.';
+    };
+    
+    failBtn.onclick = () => { 
+        feedbackForm.style.display = 'block';
+        modalTitle.innerText = '❌ Что именно пошло не так?';
+        modalMessage.innerText = 'Напишите подробно — мы исправим рецепт.';
+    };
     
     submitFeedbackBtn.onclick = () => {
         if (!privacyCheckbox.checked) {
-            alert('Подтвердите согласие с политикой конфиденциальности');
+            alert('Подтвердите, что вы ознакомлены с политикой конфиденциальности');
             return;
         }
         const comment = feedbackText.value.trim();
-        if (!comment && !currentSuccess) {
-            alert('Напишите, что пошло не так');
+        if (!comment) {
+            alert('Напишите ваш отзыв');
             return;
         }
         if (comment.match(/@|\+7|8\d{10}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)) {
-            alert('Не указывайте личные данные');
+            alert('Не указывайте личные данные (телефон, email)');
             return;
         }
         sendToTelegram(currentTimerName, currentSuccess, comment);
         feedbackForm.style.display = 'none';
         feedbackThanks.style.display = 'block';
-        setTimeout(() => { modal.style.display = 'none'; }, 2000);
+        setTimeout(() => { modal.style.display = 'none'; }, 2500);
     };
     
     closeModalBtn.onclick = () => { modal.style.display = 'none'; };
+    
+    // ========== ТЁМНАЯ ТЕМА ==========
+    const themeBtn = document.getElementById('desktopThemeBtn');
+    
+    function setTheme(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark');
+            if (themeBtn) themeBtn.innerHTML = '☀️ Светлая тема';
+            localStorage.setItem('darkTheme', 'true');
+        } else {
+            document.body.classList.remove('dark');
+            if (themeBtn) themeBtn.innerHTML = '🌙 Тёмная тема';
+            localStorage.setItem('darkTheme', 'false');
+        }
+    }
+    
+    if (localStorage.getItem('darkTheme') === 'true') {
+        setTheme(true);
+    }
+    
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            setTheme(!document.body.classList.contains('dark'));
+        });
+    }
 </script>
 
 <!-- Яндекс.Метрика -->
@@ -719,8 +827,7 @@
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109617143', 'ym');
-
-    ym(109617143, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    ym(109617143, 'init', {clickmap:true, trackLinks:true, accurateTrackBounce:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/109617143" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 </body>
