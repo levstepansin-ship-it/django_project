@@ -147,8 +147,19 @@
             overflow-y: hidden;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             border-radius: 32px;
+            position: relative;
+            cursor: grab;
+        }
+        
+        .welcome-carousel-wrapper:active {
+            cursor: grabbing;
+        }
+        
+        .welcome-carousel-wrapper::-webkit-scrollbar {
+            display: none;
         }
 
         .welcome-carousel {
@@ -156,18 +167,59 @@
             gap: 20px;
             padding: 8px 4px 16px 4px;
             min-width: min-content;
+            scroll-snap-type: x mandatory;
         }
 
+        /* АНИМАЦИИ ДЛЯ КАРТОЧЕК */
         .welcome-card {
             flex: 0 0 auto;
             width: 130px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFadeIn 0.5s ease-out forwards;
+            scroll-snap-align: start;
+        }
+        
+        .welcome-card:nth-child(1) { animation-delay: 0.05s; }
+        .welcome-card:nth-child(2) { animation-delay: 0.10s; }
+        .welcome-card:nth-child(3) { animation-delay: 0.15s; }
+        .welcome-card:nth-child(4) { animation-delay: 0.20s; }
+        .welcome-card:nth-child(5) { animation-delay: 0.25s; }
+        .welcome-card:nth-child(6) { animation-delay: 0.30s; }
+        .welcome-card:nth-child(7) { animation-delay: 0.35s; }
+        
+        @keyframes cardFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .welcome-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .welcome-card:hover .welcome-card-image-wrapper {
+            box-shadow: 0 12px 24px var(--shadow-heavy);
+        }
+        
+        .welcome-card:hover .welcome-card-title {
+            color: var(--accent);
+        }
+        
+        .welcome-card-image {
+            transition: transform 0.3s ease;
+        }
+        
+        .welcome-card:hover .welcome-card-image {
+            transform: scale(1.02);
         }
 
         .welcome-card-image-wrapper {
@@ -175,6 +227,7 @@
             border-radius: 28px;
             padding: 6px;
             box-shadow: 0 6px 14px var(--shadow);
+            transition: box-shadow 0.3s ease;
         }
 
         .welcome-card-image {
@@ -192,20 +245,7 @@
             font-weight: 800;
             letter-spacing: -0.3px;
             color: var(--text-primary);
-        }
-
-        .welcome-carousel-wrapper::-webkit-scrollbar {
-            height: 5px;
-        }
-
-        .welcome-carousel-wrapper::-webkit-scrollbar-track {
-            background: var(--border-light);
-            border-radius: 10px;
-        }
-
-        .welcome-carousel-wrapper::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 10px;
+            transition: color 0.2s ease;
         }
 
         /* Текстовое меню на главной */
@@ -426,6 +466,12 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.2s ease;
+        }
+        
+        .no-results-form button:hover, .suggest-thanks-btn:hover {
+            transform: scale(1.02);
+            background: var(--accent-hover);
         }
 
         .no-results-back {
@@ -809,6 +855,43 @@
             topBar.style.display = window.innerWidth <= 800 ? 'flex' : 'none';
         }
     });
+
+    // ========== КАРУСЕЛЬ С ПРОКРУТКОЙ ЗА КУРСОРОМ ==========
+    (function initCarouselDragScroll() {
+        const wrapper = document.querySelector('.welcome-carousel-wrapper');
+        if (!wrapper) return;
+        
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        
+        wrapper.addEventListener('mousedown', (e) => {
+            isDown = true;
+            wrapper.style.cursor = 'grabbing';
+            startX = e.pageX - wrapper.offsetLeft;
+            scrollLeft = wrapper.scrollLeft;
+        });
+        
+        wrapper.addEventListener('mouseup', () => {
+            isDown = false;
+            wrapper.style.cursor = 'grab';
+        });
+        
+        wrapper.addEventListener('mouseleave', () => {
+            isDown = false;
+            wrapper.style.cursor = 'grab';
+        });
+        
+        wrapper.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - wrapper.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            wrapper.scrollLeft = scrollLeft - walk;
+        });
+        
+        wrapper.style.cursor = 'grab';
+    })();
 
     // ========== МОДАЛЬНОЕ ОКНО ==========
     const modal = document.getElementById('feedbackModal');
