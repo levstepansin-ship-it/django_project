@@ -1,0 +1,13 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Спасибо за предложение — Wajos{% endblock %}
+
+{% block content %}
+<div class="suggest-thanks">
+    <div class="suggest-thanks-icon">🙏</div>
+    <h1>Спасибо за идею!</h1>
+    <p>Мы получили ваше предложение на рецепт <strong>«{{ query }}»</strong>.</p>
+    <p>В ближайшее время добавим его на сайт. Следите за обновлениями!</p>
+    <a href="{% url 'index' %}" class="suggest-thanks-btn">← Вернуться на главную</a>
+</div>
+{% endblock %}
