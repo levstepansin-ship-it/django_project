@@ -170,7 +170,6 @@
             scroll-snap-type: x mandatory;
         }
 
-        /* АНИМАЦИИ ДЛЯ КАРТОЧЕК */
         .welcome-card {
             flex: 0 0 auto;
             width: 130px;
@@ -680,6 +679,25 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
+        /* Кнопка для телефона (внизу по центру) */
+        .mobile-theme-btn-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+        }
+
         /* Адаптив для телефона */
         @media (max-width: 800px) {
             body {
@@ -708,6 +726,9 @@
             }
             .desktop-theme-btn {
                 display: none;
+            }
+            .mobile-theme-btn-bottom {
+                display: block;
             }
             .welcome-cat-title {
                 font-size: 16px;
@@ -772,18 +793,6 @@
     });
 </script>
 
-<!-- Верхняя панель для телефона -->
-<div class="top-bar" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 12px;">
-    <div class="burger-area" style="display: flex; align-items: center; gap: 8px;">
-        <div class="mobile-menu-btn" onclick="toggleMenu()" style="display: flex; font-size: 28px; cursor: pointer; background: var(--accent); color: white; width: 44px; height: 44px; border-radius: 50%; align-items: center; justify-content: center;">☰</div>
-        <span class="menu-label" style="font-size: 14px; color: var(--accent); font-weight: 500;">Рецепты</span>
-    </div>
-    <form method="GET" action="{% url 'search' %}" class="search-form" style="flex: 1; min-width: 180px;">
-        <input type="text" name="q" placeholder="🔍 Поиск рецептов..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 16px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 14px; background: var(--bg-card); color: var(--text-primary);">
-    </form>
-    <button id="mobileThemeBtnTop" style="background: var(--accent); border: none; border-radius: 40px; padding: 8px 12px; font-size: 18px; cursor: pointer; color: white;">🌙</button>
-</div>
-
 <div class="wrapper" style="max-width: 1400px; margin: 0 auto;">
     {% block content %}{% endblock %}
 </div>
@@ -830,32 +839,10 @@
 <!-- Кнопка переключения тёмной темы для компьютера -->
 <button id="desktopThemeBtn" class="desktop-theme-btn">🌙 Тёмная тема</button>
 
+<!-- Кнопка переключения тёмной темы для телефона (внизу по центру) -->
+<button id="mobileThemeBtnBottom" class="mobile-theme-btn-bottom">🌙 Тёмная тема</button>
+
 <script>
-    // ========== МЕНЮ ДЛЯ ТЕЛЕФОНА ==========
-    function toggleMenu() {
-        const menu = document.querySelector('.menu-area');
-        if (menu) menu.classList.toggle('active');
-    }
-
-    document.addEventListener('click', function(event) {
-        const menu = document.querySelector('.menu-area');
-        const btn = document.querySelector('.mobile-menu-btn');
-        if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
-            menu.classList.remove('active');
-        }
-    });
-
-    // ========== ПОКАЗЫВАЕМ ВЕРХНЮЮ ПАНЕЛЬ ТОЛЬКО НА ТЕЛЕФОНЕ ==========
-    const topBar = document.querySelector('.top-bar');
-    if (topBar && window.innerWidth <= 800) {
-        topBar.style.display = 'flex';
-    }
-    window.addEventListener('resize', function() {
-        if (topBar) {
-            topBar.style.display = window.innerWidth <= 800 ? 'flex' : 'none';
-        }
-    });
-
     // ========== КАРУСЕЛЬ С ПРОКРУТКОЙ ЗА КУРСОРОМ ==========
     (function initCarouselDragScroll() {
         const wrapper = document.querySelector('.welcome-carousel-wrapper');
@@ -981,18 +968,18 @@
     
     // ========== ТЁМНАЯ ТЕМА ==========
     const desktopBtn = document.getElementById('desktopThemeBtn');
-    const mobileTopBtn = document.getElementById('mobileThemeBtnTop');
+    const mobileBottomBtn = document.getElementById('mobileThemeBtnBottom');
     
     function setTheme(isDark) {
         if (isDark) {
             document.body.classList.add('dark');
             if (desktopBtn) desktopBtn.innerHTML = '☀️ Светлая тема';
-            if (mobileTopBtn) mobileTopBtn.innerHTML = '☀️';
+            if (mobileBottomBtn) mobileBottomBtn.innerHTML = '☀️ Светлая тема';
             localStorage.setItem('darkTheme', 'true');
         } else {
             document.body.classList.remove('dark');
             if (desktopBtn) desktopBtn.innerHTML = '🌙 Тёмная тема';
-            if (mobileTopBtn) mobileTopBtn.innerHTML = '🌙';
+            if (mobileBottomBtn) mobileBottomBtn.innerHTML = '🌙 Тёмная тема';
             localStorage.setItem('darkTheme', 'false');
         }
     }
@@ -1006,8 +993,8 @@
             setTheme(!document.body.classList.contains('dark'));
         });
     }
-    if (mobileTopBtn) {
-        mobileTopBtn.addEventListener('click', function() {
+    if (mobileBottomBtn) {
+        mobileBottomBtn.addEventListener('click', function() {
             setTheme(!document.body.classList.contains('dark'));
         });
     }
