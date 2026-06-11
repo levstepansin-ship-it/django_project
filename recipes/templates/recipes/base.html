@@ -375,7 +375,7 @@
             background: var(--accent-hover);
         }
 
-        /* ===== СТРАНИЦЫ "НИЧЕГО НЕ НАЙДЕНО" И "СПАСИБО" ===== */
+        /* ===== СТРАНИЦЫ "НИЧЕГО НЕ НАЙДЕНО" ===== */
         .no-results, .suggest-thanks {
             background: var(--bg-card);
             border-radius: 36px;
@@ -634,6 +634,25 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
+        /* Кнопка смены темы для телефона (внизу по центру) */
+        .mobile-theme-btn-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+        }
+
         /* Адаптив для телефона */
         @media (max-width: 800px) {
             body {
@@ -662,6 +681,9 @@
             }
             .desktop-theme-btn {
                 display: none;
+            }
+            .mobile-theme-btn-bottom {
+                display: block;
             }
             .welcome-cat-title {
                 font-size: 16px;
@@ -772,6 +794,9 @@
 <!-- Кнопка переключения тёмной темы для компьютера -->
 <button id="desktopThemeBtn" class="desktop-theme-btn">🌙 Тёмная тема</button>
 
+<!-- Кнопка переключения тёмной темы для телефона (внизу по центру) -->
+<button id="mobileThemeBtnBottom" class="mobile-theme-btn-bottom">🌙 Тёмная тема</button>
+
 <script>
     // ========== МОДАЛЬНОЕ ОКНО ==========
     const modal = document.getElementById('feedbackModal');
@@ -859,17 +884,20 @@
     
     closeModalBtn.onclick = () => { modal.style.display = 'none'; };
     
-    // ========== ТЁМНАЯ ТЕМА ==========
-    const themeBtn = document.getElementById('desktopThemeBtn');
+    // ========== ТЁМНАЯ ТЕМА (для компьютера и телефона) ==========
+    const desktopBtn = document.getElementById('desktopThemeBtn');
+    const mobileBottomBtn = document.getElementById('mobileThemeBtnBottom');
     
     function setTheme(isDark) {
         if (isDark) {
             document.body.classList.add('dark');
-            if (themeBtn) themeBtn.innerHTML = '☀️ Светлая тема';
+            if (desktopBtn) desktopBtn.innerHTML = '☀️ Светлая тема';
+            if (mobileBottomBtn) mobileBottomBtn.innerHTML = '☀️ Светлая тема';
             localStorage.setItem('darkTheme', 'true');
         } else {
             document.body.classList.remove('dark');
-            if (themeBtn) themeBtn.innerHTML = '🌙 Тёмная тема';
+            if (desktopBtn) desktopBtn.innerHTML = '🌙 Тёмная тема';
+            if (mobileBottomBtn) mobileBottomBtn.innerHTML = '🌙 Тёмная тема';
             localStorage.setItem('darkTheme', 'false');
         }
     }
@@ -878,8 +906,13 @@
         setTheme(true);
     }
     
-    if (themeBtn) {
-        themeBtn.addEventListener('click', function() {
+    if (desktopBtn) {
+        desktopBtn.addEventListener('click', function() {
+            setTheme(!document.body.classList.contains('dark'));
+        });
+    }
+    if (mobileBottomBtn) {
+        mobileBottomBtn.addEventListener('click', function() {
             setTheme(!document.body.classList.contains('dark'));
         });
     }
