@@ -1,5 +1,4 @@
 ﻿{% extends "recipes/base.html" %}
-{% load static %}
 
 {% block title %}Wajos — готовьте без страха с пошаговыми таймерами{% endblock %}
 
@@ -22,7 +21,7 @@
             <button type="submit">Найти</button>
         </form>
 
-        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с жирным шрифтом) -->
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель) -->
         <div class="welcome-section">
             <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
             <div class="welcome-carousel-wrapper">
@@ -30,7 +29,7 @@
                     <!-- Говяжьи (ID 4) -->
                     <div class="welcome-card" data-recipe-id="4">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/govyazhi.jpg' %}" 
+                            <img src="/media/images/govyazhi.jpg" 
                                  alt="Пельмени говяжьи"
                                  class="welcome-card-image"
                                  loading="lazy"
@@ -41,7 +40,7 @@
                     <!-- Телячьи (ID 2) -->
                     <div class="welcome-card" data-recipe-id="2">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/telyachi.jpg' %}" 
+                            <img src="/media/images/telyachi.jpg" 
                                  alt="Пельмени телячьи"
                                  class="welcome-card-image"
                                  loading="lazy"
@@ -52,7 +51,7 @@
                     <!-- Свиные (ID 3) -->
                     <div class="welcome-card" data-recipe-id="3">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/svinye.jpg' %}" 
+                            <img src="/media/images/svinye.jpg" 
                                  alt="Пельмени свиные"
                                  class="welcome-card-image"
                                  loading="lazy"
@@ -63,7 +62,7 @@
                     <!-- С творогом (ID 5) -->
                     <div class="welcome-card" data-recipe-id="5">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/tvorog.jpg' %}" 
+                            <img src="/media/images/tvorog.jpg" 
                                  alt="Вареники с творогом"
                                  class="welcome-card-image"
                                  loading="lazy"
@@ -74,7 +73,7 @@
                     <!-- С картошкой (ID 6) -->
                     <div class="welcome-card" data-recipe-id="6">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/kartoshka.jpg' %}" 
+                            <img src="/media/images/kartoshka.jpg" 
                                  alt="Вареники с картошкой"
                                  class="welcome-card-image"
                                  loading="lazy"
@@ -85,7 +84,7 @@
                     <!-- С вишней (ID 7) -->
                     <div class="welcome-card" data-recipe-id="7">
                         <div class="welcome-card-image-wrapper">
-                            <img src="{% static 'recipes/images/vishnya.jpg' %}" 
+                            <img src="/media/images/vishnya.jpg" 
                                  alt="Вареники с вишней"
                                  class="welcome-card-image"
                                  loading="lazy"
