@@ -375,6 +375,66 @@
             background: var(--accent-hover);
         }
 
+        /* ===== СТРАНИЦЫ "НИЧЕГО НЕ НАЙДЕНО" И "СПАСИБО" ===== */
+        .no-results, .suggest-thanks {
+            background: var(--bg-card);
+            border-radius: 36px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .no-results-icon, .suggest-thanks-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .no-results h1, .suggest-thanks h1 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .no-results p, .suggest-thanks p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .no-results-form textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: 20px;
+            border: 1px solid var(--input-border);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
+        .no-results-form button, .suggest-thanks-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .no-results-back {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
         .welcome-feedback {
             margin: 32px 0 24px;
         }
@@ -629,6 +689,12 @@
             }
             .legal-content p {
                 font-size: 14px;
+            }
+            .no-results, .suggest-thanks {
+                padding: 40px 20px;
+            }
+            .no-results h1, .suggest-thanks h1 {
+                font-size: 26px;
             }
         }
 
