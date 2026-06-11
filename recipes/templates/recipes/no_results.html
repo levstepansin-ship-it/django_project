@@ -1,0 +1,21 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Ничего не найдено — Wajos{% endblock %}
+
+{% block content %}
+<div class="no-results">
+    <div class="no-results-icon">🔍</div>
+    <h1>Ничего не нашлось</h1>
+    <p>Мы не нашли рецепт <strong>«{{ query }}»</strong>.</p>
+    <p>Но мы можем его добавить! Напишите, что вы искали, и мы сделаем этот рецепт в ближайшее время.</p>
+    
+    <form method="POST" action="{% url 'suggest_recipe' %}" class="no-results-form">
+        {% csrf_token %}
+        <input type="hidden" name="query" value="{{ query }}">
+        <textarea name="message" rows="3" placeholder="Например: оливье, борщ, блины..." required></textarea>
+        <button type="submit">📤 Предложить рецепт</button>
+    </form>
+    
+    <a href="{% url 'index' %}" class="no-results-back">← На главную</a>
+</div>
+{% endblock %}
