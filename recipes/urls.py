@@ -7,5 +7,6 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('search/', views.search, name='search'),
     path('terms/', views.terms, name='terms'),
-    path('send-feedback/', views.send_feedback, name='send_feedback'),
+    path('send-feedback/', views.send_feedback, name='send-feedback'),
+    path('suggest/', views.suggest_recipe, name='suggest_recipe'),
 ]
