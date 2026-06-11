@@ -12,7 +12,7 @@
     <form method="POST" action="{% url 'suggest_recipe' %}" class="no-results-form">
         {% csrf_token %}
         <input type="hidden" name="query" value="{{ query }}">
-        <textarea name="message" rows="3" placeholder="Например: оливье, борщ, блины..." required></textarea>
+        <textarea name="message" rows="4" placeholder="Например: оливье, борщ, блины, плов..." required></textarea>
         <button type="submit">📤 Предложить рецепт</button>
     </form>
     
