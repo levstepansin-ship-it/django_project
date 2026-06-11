@@ -24,7 +24,7 @@ def privacy(request):
     return render(request, 'recipes/privacy.html')
 
 def search(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
     results = []
     if query:
         results = Recipe.objects.filter(
@@ -32,6 +32,11 @@ def search(request):
             Q(subcategory__name__icontains=query) |
             Q(subcategory__category__name__icontains=query)
         )
+    
+    # Если ничего не найдено, показываем страницу с предложением
+    if query and not results:
+        return render(request, 'recipes/no_results.html', {'query': query})
+    
     return render(request, 'recipes/search_results.html', {'query': query, 'results': results})
 
 def terms(request):
@@ -62,3 +67,22 @@ def send_feedback(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
+
+def suggest_recipe(request):
+    """Обработка предложений новых рецептов от пользователей"""
+    if request.method == 'POST':
+        query = request.POST.get('query', '')
+        message = request.POST.get('message', '')
+        
+        # Отправляем в Telegram
+        if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+            telegram_message = f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n📝 Предложение:\n{message}\n\n🔒 Анонимно"
+            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+            try:
+                requests.post(url, json={'chat_id': TELEGRAM_CHAT_ID, 'text': telegram_message}, timeout=10)
+            except Exception:
+                pass
+        
+        return render(request, 'recipes/suggest_thanks.html', {'query': query})
+    
+    return redirect('index')
