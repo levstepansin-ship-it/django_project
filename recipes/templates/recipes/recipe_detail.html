@@ -161,11 +161,11 @@
     {% endfor %}
 
     <!-- КНОПКИ ПОДЕЛИТЬСЯ И КОПИРОВАТЬ -->
-    <div style="display: flex; gap: 16px; justify-content: center; margin: 24px 0;">
-        <button onclick="shareRecipe()" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
+    <div id="shareButtons" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0;">
+        <button id="shareBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
             📤 Поделиться
         </button>
-        <button onclick="copyRecipeLink()" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
+        <button id="copyBtn" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
             🔗 Копировать ссылку
         </button>
     </div>
@@ -258,7 +258,7 @@
         const display = document.getElementById(displayId);
         const interval = setInterval(() => {
             if (seconds <= 1) {
-                playBeep();  // ← ЗВУК ПРИ ОКОНЧАНИИ ТАЙМЕРА
+                playBeep();
                 clearInterval(interval);
                 delete activeTimers[displayId];
                 display.innerText = "✅ Готово!";
@@ -313,7 +313,7 @@
         });
     });
 
-    // === СУПЕР-ТАЙМЕР С СОХРАНЕНИЕМ ===
+    // === СУПЕР-ТАЙМЕР С СОХРАНЕНИEM ===
     function startFullTimer() {
         if (fullInterval) clearInterval(fullInterval);
         let totalSeconds = steps.reduce((sum, step) => sum + step.duration * 60, 0);
@@ -327,7 +327,7 @@
         fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
         fullInterval = setInterval(() => {
             if (remaining <= 1) {
-                playBeep();  // ← ЗВУК ПРИ ОКОНЧАНИИ СУПЕР-ТАЙМЕРА
+                playBeep();
                 clearInterval(fullInterval);
                 fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
                 document.getElementById('startFullBtn').disabled = false;
@@ -354,23 +354,44 @@
     document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
     document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
 
-    // === КНОПКИ ПОДЕЛИТЬСЯ ===
-    function shareRecipe() {
+    // === КНОПКИ ПОДЕЛИТЬСЯ И КОПИРОВАТЬ ===
+    const shareBtn = document.getElementById('shareBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('🔗 Ссылка скопирована!');
+    }
+
+    function shareLink() {
         if (navigator.share) {
             navigator.share({
                 title: '{{ recipe.title }}',
                 text: 'Пошаговый рецепт с таймерами на Wajos',
                 url: window.location.href
+            }).catch(e => {
+                if (e.name !== 'AbortError') {
+                    alert('Не удалось поделиться. Скопируйте ссылку вручную.');
+                }
             });
         } else {
-            navigator.clipboard.writeText(window.location.href);
-            alert('Ссылка скопирована!');
+            copyLink();
         }
     }
 
-    function copyRecipeLink() {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Ссылка скопирована!');
+    // Проверяем, телефон или компьютер
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (shareBtn && copyBtn) {
+        if (isMobile) {
+            // На телефоне: обе кнопки работают
+            shareBtn.onclick = shareLink;
+            copyBtn.onclick = copyLink;
+        } else {
+            // На компьютере: скрываем кнопку «Поделиться», оставляем только «Копировать ссылку»
+            shareBtn.style.display = 'none';
+            copyBtn.onclick = copyLink;
+        }
     }
 </script>
 {% endblock %}
