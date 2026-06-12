@@ -1,8 +1,8 @@
-﻿from django.shortcuts import render, get_object_or_404
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Recipe
+from .models import Recipe, Comment
 import os
 import requests
 import json
@@ -33,7 +33,6 @@ def search(request):
             Q(subcategory__category__name__icontains=query)
         )
     
-    # Если ничего не найдено, показываем страницу с предложением
     if query and not results:
         return render(request, 'recipes/no_results.html', {'query': query})
     
@@ -69,12 +68,10 @@ def send_feedback(request):
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
 
 def suggest_recipe(request):
-    """Обработка предложений новых рецептов от пользователей"""
     if request.method == 'POST':
         query = request.POST.get('query', '')
         message = request.POST.get('message', '')
         
-        # Отправляем в Telegram
         if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
             telegram_message = f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n📝 Предложение:\n{message}\n\n🔒 Анонимно"
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -86,3 +83,14 @@ def suggest_recipe(request):
         return render(request, 'recipes/suggest_thanks.html', {'query': query})
     
     return redirect('index')
+
+def add_comment(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    if request.method == 'POST':
+        author = request.POST.get('author', '').strip()
+        text = request.POST.get('text', '').strip()
+        if text:
+            if not author:
+                author = 'Аноним'
+            Comment.objects.create(recipe=recipe, author=author, text=text)
+    return redirect('recipe_detail', recipe_id=recipe_id)
