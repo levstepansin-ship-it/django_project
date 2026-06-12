@@ -176,6 +176,49 @@
         <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
         <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
     </div>
+
+    <!-- ===== КОММЕНТАРИИ ===== -->
+    <div class="comments-section">
+        <div class="comments-title">
+            💬 Комментарии 
+            <span style="font-size: 14px; color: var(--text-secondary);">({{ recipe.comments.count }})</span>
+        </div>
+        
+        <div class="comment-list">
+            {% for comment in recipe.comments.all %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <div class="comment-avatar">
+                        {{ comment.author|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <div class="comment-author">{{ comment.author }}</div>
+                        <div class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</div>
+                    </div>
+                </div>
+                <div class="comment-text">
+                    {{ comment.text|linebreaksbr }}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-comments">
+                🍃 Пока нет комментариев. Будьте первым, кто поделится впечатлением!
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="comment-form">
+            <h4>✍️ Написать комментарий</h4>
+            <form method="POST" action="{% url 'add_comment' recipe.id %}">
+                {% csrf_token %}
+                <input type="text" name="author" placeholder="Ваше имя (необязательно, по умолчанию «Аноним»)" style="margin-bottom: 15px;">
+                <textarea name="text" rows="4" placeholder="Поделитесь впечатлением о рецепте... Ваш отзыв поможет другим!" required></textarea>
+                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                    <button type="submit">📤 Отправить комментарий</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- ПРАВАЯ КОЛОНКА — МЕНЮ -->
@@ -209,7 +252,6 @@
     const fullDisplay = document.getElementById('fullTimer');
     const recipeId = {{ recipe.id }};
 
-    // === ЗВУК ===
     function playBeep() {
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -227,7 +269,6 @@
         }
     }
 
-    // === ФУНКЦИИ РАБОТЫ С LOCALSTORAGE ===
     function saveTimerState(timerId, secondsRemaining, isRunning) {
         let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
         timers[timerId] = { seconds: secondsRemaining, running: isRunning };
@@ -245,7 +286,6 @@
         localStorage.setItem(`timers_${recipeId}`, JSON.stringify(timers));
     }
 
-    // === ОСНОВНАЯ ФУНКЦИЯ ТАЙМЕРА С СОХРАНЕНИЕМ ===
     function startTimer(displayId, duration, startBtn, resetBtn) {
         if (activeTimers[displayId]) {
             clearInterval(activeTimers[displayId]);
@@ -290,7 +330,6 @@
         if (resetBtn) resetBtn.disabled = false;
     }
 
-    // === ИНИЦИАЛИЗАЦИЯ ТАЙМЕРОВ ===
     document.querySelectorAll('.start-timer').forEach(btn => {
         const duration = parseInt(btn.dataset.duration);
         const timerId = btn.dataset.timerId;
@@ -313,7 +352,6 @@
         });
     });
 
-    // === СУПЕР-ТАЙМЕР С СОХРАНЕНИEM ===
     function startFullTimer() {
         if (fullInterval) clearInterval(fullInterval);
         let totalSeconds = steps.reduce((sum, step) => sum + step.duration * 60, 0);
@@ -354,7 +392,6 @@
     document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
     document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
 
-    // === КНОПКИ ПОДЕЛИТЬСЯ И КОПИРОВАТЬ ===
     const shareBtn = document.getElementById('shareBtn');
     const copyBtn = document.getElementById('copyBtn');
 
@@ -379,16 +416,13 @@
         }
     }
 
-    // Проверяем, телефон или компьютер
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (shareBtn && copyBtn) {
         if (isMobile) {
-            // На телефоне: обе кнопки работают
             shareBtn.onclick = shareLink;
             copyBtn.onclick = copyLink;
         } else {
-            // На компьютере: скрываем кнопку «Поделиться», оставляем только «Копировать ссылку»
             shareBtn.style.display = 'none';
             copyBtn.onclick = copyLink;
         }
