@@ -7,21 +7,38 @@ import os
 import requests
 import json
 from dotenv import load_dotenv
+from django.db import connection
+from django.db.utils import OperationalError
 
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
+
+# Функция для автоматического создания таблицы комментариев
+def ensure_comments_table():
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM recipes_comment LIMIT 1")
+    except OperationalError:
+        from django.core.management import call_command
+        call_command('migrate', verbosity=0)
+
+
 def index(request):
     return render(request, 'recipes/index.html')
 
+
 def recipe_detail(request, recipe_id):
+    ensure_comments_table()  # Проверяем и создаём таблицу если нужно
     recipe = get_object_or_404(Recipe, id=recipe_id)
     return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
 
+
 def privacy(request):
     return render(request, 'recipes/privacy.html')
+
 
 def search(request):
     query = request.GET.get('q', '').strip()
@@ -38,8 +55,10 @@ def search(request):
     
     return render(request, 'recipes/search_results.html', {'query': query, 'results': results})
 
+
 def terms(request):
     return render(request, 'recipes/terms.html')
+
 
 @csrf_exempt
 def send_feedback(request):
@@ -67,6 +86,7 @@ def send_feedback(request):
     
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
 
+
 def suggest_recipe(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
@@ -83,6 +103,7 @@ def suggest_recipe(request):
         return render(request, 'recipes/suggest_thanks.html', {'query': query})
     
     return redirect('index')
+
 
 def add_comment(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
