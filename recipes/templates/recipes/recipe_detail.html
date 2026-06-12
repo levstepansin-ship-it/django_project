@@ -8,7 +8,7 @@
         <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
     </div>
 
-    <!-- БЛОКИ «ПОЧЕМУ РАЗОЧАРОВЫВАЮТ» И «ЧТО ДЕЛАТЬ» — теперь с правильными классами -->
+    <!-- БЛОКИ «ПОЧЕМУ РАЗОЧАРОВЫВАЮТ» И «ЧТО ДЕЛАТЬ» -->
     {% if recipe.id == 2 %}
     <div class="warnings-block">
         <h4>❌ Почему пельмени из телятины часто не получаются</h4>
@@ -160,6 +160,16 @@
     </div>
     {% endfor %}
 
+    <!-- КНОПКИ ПОДЕЛИТЬСЯ И КОПИРОВАТЬ -->
+    <div style="display: flex; gap: 16px; justify-content: center; margin: 24px 0;">
+        <button onclick="shareRecipe()" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
+            📤 Поделиться
+        </button>
+        <button onclick="copyRecipeLink()" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
+            🔗 Копировать ссылку
+        </button>
+    </div>
+
     <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
         <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (все шаги подряд)</div>
         <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">--:--</div>
@@ -199,6 +209,24 @@
     const fullDisplay = document.getElementById('fullTimer');
     const recipeId = {{ recipe.id }};
 
+    // === ЗВУК ===
+    function playBeep() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 880;
+            gainNode.gain.value = 0.3;
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        } catch(e) {
+            console.log('Звук не поддерживается');
+        }
+    }
+
     // === ФУНКЦИИ РАБОТЫ С LOCALSTORAGE ===
     function saveTimerState(timerId, secondsRemaining, isRunning) {
         let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
@@ -230,6 +258,7 @@
         const display = document.getElementById(displayId);
         const interval = setInterval(() => {
             if (seconds <= 1) {
+                playBeep();  // ← ЗВУК ПРИ ОКОНЧАНИИ ТАЙМЕРА
                 clearInterval(interval);
                 delete activeTimers[displayId];
                 display.innerText = "✅ Готово!";
@@ -268,7 +297,6 @@
         const resetBtn = btn.closest('.timer-row').querySelector('.reset-timer');
         const display = document.getElementById(timerId);
         
-        // Восстанавливаем состояние
         const saved = loadTimerState(timerId);
         if (saved && saved.running && saved.seconds > 0) {
             let mins = Math.floor(saved.seconds / 60);
@@ -299,6 +327,7 @@
         fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
         fullInterval = setInterval(() => {
             if (remaining <= 1) {
+                playBeep();  // ← ЗВУК ПРИ ОКОНЧАНИИ СУПЕР-ТАЙМЕРА
                 clearInterval(fullInterval);
                 fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
                 document.getElementById('startFullBtn').disabled = false;
@@ -324,5 +353,24 @@
 
     document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
     document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
+
+    // === КНОПКИ ПОДЕЛИТЬСЯ ===
+    function shareRecipe() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ recipe.title }}',
+                text: 'Пошаговый рецепт с таймерами на Wajos',
+                url: window.location.href
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Ссылка скопирована!');
+        }
+    }
+
+    function copyRecipeLink() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Ссылка скопирована!');
+    }
 </script>
 {% endblock %}
