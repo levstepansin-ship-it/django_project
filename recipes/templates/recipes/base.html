@@ -706,6 +706,141 @@
             display: none;
         }
 
+        /* ===== КОММЕНТАРИИ ===== */
+        .comments-section {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border-light);
+        }
+        
+        .comments-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .comment-list {
+            margin-bottom: 32px;
+        }
+        
+        .comment-card {
+            background: var(--step-bg);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .comment-card:hover {
+            transform: translateX(4px);
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .comment-author {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .comment-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .comment-text {
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-left: 52px;
+        }
+        
+        .comment-form {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-top: 32px;
+        }
+        
+        .comment-form h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .comment-form input,
+        .comment-form textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--input-border);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            transition: border 0.2s;
+        }
+        
+        .comment-form textarea {
+            border-radius: 24px;
+            resize: vertical;
+        }
+        
+        .comment-form input:focus,
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .comment-form button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        
+        .comment-form button:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+        
+        .empty-comments {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            background: var(--step-bg);
+            border-radius: 28px;
+        }
+
         /* Адаптив для телефона */
         @media (max-width: 800px) {
             body {
@@ -770,6 +905,23 @@
             }
             .no-results h1, .suggest-thanks h1 {
                 font-size: 26px;
+            }
+            .comments-title {
+                font-size: 20px;
+            }
+            .comment-card {
+                padding: 16px;
+            }
+            .comment-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .comment-text {
+                margin-left: 44px;
+            }
+            .comment-form {
+                padding: 20px;
             }
         }
 
