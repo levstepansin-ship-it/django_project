@@ -23,3 +23,16 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+class Comment(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='comments')
+    author = models.CharField(max_length=100, blank=True, default='Аноним')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.author}: {self.text[:50]}'
