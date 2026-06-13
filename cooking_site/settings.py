@@ -4,7 +4,6 @@ Django settings for cooking_site project.
 
 from pathlib import Path
 import sys
-import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,13 +53,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# === БАЗА ДАННЫХ (PostgreSQL) ===
+# === БАЗА ДАННЫХ (SQLite — стабильная версия) ===
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600,
-        ssl_require=False
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -91,11 +89,3 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Автоматическое применение миграций при запуске на боевом сервере
-if 'runserver' not in sys.argv:
-    try:
-        from django.core.management import call_command
-        call_command('migrate', verbosity=0)
-    except Exception as e:
-        print(f"Ошибка миграции: {e}")
