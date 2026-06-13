@@ -54,11 +54,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# === БАЗА ДАННЫХ (PostgreSQL на Render, SQLite локально) ===
+# === БАЗА ДАННЫХ (PostgreSQL) ===
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///db.sqlite3',
-        conn_max_age=600
+        conn_max_age=600,
+        ssl_require=False
     )
 }
 
