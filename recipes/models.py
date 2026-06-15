@@ -64,3 +64,15 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'{self.recipe.title}: {self.score}⭐'
+
+
+class UserPreferences(models.Model):
+    fingerprint = models.CharField(max_length=64, unique=True)
+    timer_format = models.CharField(max_length=10, default='mm:ss')  # 'mm:ss' или 'seconds'
+
+    class Meta:
+        verbose_name = 'Настройки пользователя'
+        verbose_name_plural = 'Настройки пользователей'
+
+    def __str__(self):
+        return f'Настройки: {self.fingerprint[:12]}… ({self.timer_format})'
