@@ -3,7 +3,7 @@ Django settings for cooking_site project.
 """
 
 from pathlib import Path
-import sys
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -53,7 +53,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# === БАЗА ДАННЫХ (SQLite — стабильная версия) ===
+# === БАЗА ДАННЫХ (SQLite) ===
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -62,18 +62,10 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'ru-ru'
