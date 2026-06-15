@@ -193,17 +193,26 @@
     </div>
     {% endfor %}
 
-    <div id="shareButtons" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0; flex-wrap: wrap;">
-        <button id="shareBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">📤 Поделиться</button>
-        <button id="copyBtn" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">🔗 Копировать ссылку</button>
-        <button id="saveRecipeBtn" class="save-recipe-btn" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}">⭐ Сохранить рецепт</button>
+    <!-- КОМПАКТНЫЙ TOOLBAR -->
+    <div id="shareButtons" class="compact-toolbar">
+        <button id="shareBtn" class="toolbar-btn" title="Поделиться">📤</button>
+        <button id="copyBtn" class="toolbar-btn" title="Копировать ссылку">🔗</button>
+        <button id="saveRecipeBtn" class="toolbar-btn toolbar-save" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}" title="Сохранить">⭐</button>
     </div>
 
-    <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
-        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (все шаги подряд)</div>
-        <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">--:--</div>
-        <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
-        <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
+    <!-- СУПЕР-ТАЙМЕР (раскрываемый) -->
+    <div class="global-timer-collapsible">
+        <div class="global-timer-header" id="globalTimerToggle">
+            <span>⚡ Супер-таймер <small>(все шаги подряд)</small></span>
+            <span class="collapse-arrow" id="collapseArrow">▸</span>
+        </div>
+        <div class="global-timer-body" id="globalTimerBody">
+            <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center;">
+                <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">--:--</div>
+                <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px; cursor: pointer;">🚀 Запустить полный цикл</button>
+                <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px; cursor: pointer;">Сбросить всё</button>
+            </div>
+        </div>
     </div>
 
     <!-- ПОХОЖИЕ РЕЦЕПТЫ -->
@@ -282,12 +291,37 @@
     <div style="margin-top: 16px; text-align: center;">
         <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
     </div>
-    <div style="margin-top: 16px; text-align: center;">
-        <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 20px; border-radius: 40px; width: 100%;">📝 Оставить отзыв о сайте</button>
-    </div>
 </div>
 
 <script>
+    // ===== КОЛЛАПС СУПЕР-ТАЙМЕРА =====
+    const timerToggle = document.getElementById('globalTimerToggle');
+    const timerBody = document.getElementById('globalTimerBody');
+    const arrow = document.getElementById('collapseArrow');
+    if (timerToggle) {
+        timerToggle.addEventListener('click', () => {
+            timerBody.classList.toggle('open');
+            arrow.classList.toggle('open');
+        });
+    }
+
+    // ===== ЗАГРУЗКА НАСТРОЕК (формат таймера) =====
+    let timerFormat = 'mm:ss';  // по умолчанию
+    (async function loadPrefs() {
+        let fp = localStorage.getItem('wajos_fp');
+        if (!fp) { fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('wajos_fp', fp); }
+        try {
+            const res = await fetch('/api/settings/?fingerprint=' + encodeURIComponent(fp));
+            if (res.ok) { const data = await res.json(); timerFormat = data.timer_format || 'mm:ss'; }
+        } catch(e) {}
+    })();
+
+    function formatTime(sec) {
+        if (timerFormat === 'seconds') return sec + ' сек';
+        const m = Math.floor(sec / 60), s = sec % 60;
+        return m + ':' + s.toString().padStart(2, '0');
+    }
+
     // ===== ТАЙМЕРЫ =====
     let activeTimers = {};
     let steps = {{ recipe.steps|safe }};
@@ -318,7 +352,7 @@
         const disp = document.getElementById(id);
         activeTimers[id] = setInterval(() => {
             if (sec <= 1) { playBeep(); clearInterval(activeTimers[id]); delete activeTimers[id]; disp.innerText = "✅ Готово!"; if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false; clearTimerState(id); }
-            else { sec--; let m = Math.floor(sec/60), s = sec%60; disp.innerText = `${m}:${s.toString().padStart(2,'0')}`; saveTimerState(id, sec, true); }
+            else { sec--; disp.innerText = formatTime(sec); saveTimerState(id, sec, true); }
         }, 1000);
         if (sBtn) sBtn.disabled = true; if (rBtn) rBtn.disabled = false; saveTimerState(id, sec, true);
     }
@@ -332,7 +366,7 @@
     document.querySelectorAll('.start-timer').forEach(btn => {
         const dur = parseInt(btn.dataset.duration), tid = btn.dataset.timerId, rBtn = btn.closest('.timer-row').querySelector('.reset-timer'), disp = document.getElementById(tid);
         const sv = loadTimerState(tid);
-        if (sv && sv.running && sv.seconds > 0) { let m = Math.floor(sv.seconds/60), s = sv.seconds%60; disp.innerText = `${m}:${s.toString().padStart(2,'0')}`; startTimer(tid, dur, btn, rBtn); }
+        if (sv && sv.running && sv.seconds > 0) { disp.innerText = formatTime(sv.seconds); startTimer(tid, dur, btn, rBtn); }
         btn.addEventListener('click', () => startTimer(tid, dur, btn, rBtn));
         rBtn.addEventListener('click', () => resetTimer(tid, dur, btn, rBtn));
     });
@@ -342,10 +376,10 @@
         let total = steps.reduce((s, st) => s + st.duration * 60, 0), rem = total;
         const sf = localStorage.getItem(`fullTimer_${recipeId}`);
         if (sf && parseInt(sf) > 0 && parseInt(sf) < total) rem = parseInt(sf);
-        fullDisplay.innerText = `${Math.floor(rem/60)}:${(rem%60).toString().padStart(2,'0')}`;
+        fullDisplay.innerText = formatTime(rem);
         fullInterval = setInterval(() => {
             if (rem <= 1) { playBeep(); clearInterval(fullInterval); fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉"; document.getElementById('startFullBtn').disabled = false; localStorage.removeItem(`fullTimer_${recipeId}`); if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true); }
-            else { rem--; fullDisplay.innerText = `${Math.floor(rem/60)}:${(rem%60).toString().padStart(2,'0')}`; localStorage.setItem(`fullTimer_${recipeId}`, rem); }
+            else { rem--; fullDisplay.innerText = formatTime(rem); localStorage.setItem(`fullTimer_${recipeId}`, rem); }
         }, 1000);
         document.getElementById('startFullBtn').disabled = true;
     }
