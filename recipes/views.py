@@ -2,7 +2,7 @@
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Recipe, Comment
+from .models import Recipe, Comment, Rating
 import os
 import requests
 import json
@@ -32,7 +32,16 @@ def index(request):
 def recipe_detail(request, recipe_id):
     ensure_comments_table()
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
+
+    # Похожие рецепты — из той же категории
+    related = Recipe.objects.filter(
+        subcategory__category=recipe.subcategory.category
+    ).exclude(id=recipe.id)[:3]
+
+    return render(request, 'recipes/recipe_detail.html', {
+        'recipe': recipe,
+        'related': related,
+    })
 
 
 def random_recipe(request):
@@ -55,10 +64,8 @@ def search(request):
             Q(subcategory__name__icontains=query) |
             Q(subcategory__category__name__icontains=query)
         )
-
     if query and not results:
         return render(request, 'recipes/no_results.html', {'query': query})
-
     return render(request, 'recipes/search_results.html', {'query': query, 'results': results})
 
 
@@ -76,45 +83,58 @@ def send_feedback(request):
             comment = data.get('comment', '')
         except Exception:
             return JsonResponse({'error': 'Ошибка формата запроса'}, status=400)
-
         emoji = '✅' if success else '❌'
         result_text = 'ГОТОВО' if success else 'НЕ ГОТОВО'
         message = (
             f"{emoji} НОВЫЙ ОТЗЫВ\n\nРецепт: {timer_name}\n"
             f"Результат: {result_text}\n\n📝 Комментарий:\n{comment or '—'}\n\n"
-            f"🔒 Анонимный отзыв. Личные данные не указаны."
+            f"🔒 Анонимный отзыв."
         )
-
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
-
         try:
-            requests.post(url, json=payload, timeout=10)
+            requests.post(url, json={'chat_id': TELEGRAM_CHAT_ID, 'text': message}, timeout=10)
             return JsonResponse({'status': 'ok'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
+
+
+@csrf_exempt
+def rate_recipe(request, recipe_id):
+    """Сохраняет звёздочный рейтинг. Один голос с одного браузера."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
+    try:
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        data = json.loads(request.body)
+        score = int(data.get('score', 0))
+        fingerprint = data.get('fingerprint', '').strip()
+        if not (1 <= score <= 5) or not fingerprint:
+            return JsonResponse({'error': 'Неверные данные'}, status=400)
+        Rating.objects.update_or_create(
+            recipe=recipe, fingerprint=fingerprint,
+            defaults={'score': score}
+        )
+        return JsonResponse({
+            'avg': round(recipe.avg_rating, 1),
+            'count': recipe.rating_count,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def suggest_recipe(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
         message = request.POST.get('message', '')
-
         if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-            telegram_message = (
-                f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n"
-                f"📝 Предложение:\n{message}\n\n🔒 Анонимно"
-            )
+            telegram_message = f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n📝 Предложение:\n{message}\n\n🔒 Анонимно"
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
             try:
                 requests.post(url, json={'chat_id': TELEGRAM_CHAT_ID, 'text': telegram_message}, timeout=10)
             except Exception:
                 pass
-
         return render(request, 'recipes/suggest_thanks.html', {'query': query})
-
     return redirect('index')
 
 
