@@ -2,7 +2,7 @@
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Recipe, Comment, Rating
+from .models import Recipe, Comment, Rating, UserPreferences
 import os
 import requests
 import json
@@ -26,7 +26,11 @@ def ensure_comments_table():
 
 
 def index(request):
-    return render(request, 'recipes/index.html')
+    return render(request, 'recipes/index.html', {
+        'total_recipes': Recipe.objects.count(),
+        'total_comments': Comment.objects.count(),
+        'total_ratings': Rating.objects.count(),
+    })
 
 
 def recipe_detail(request, recipe_id):
@@ -152,3 +156,37 @@ def add_comment(request, recipe_id):
 
 def favorites(request):
     return render(request, 'recipes/favorites.html')
+
+
+def settings_page(request):
+    return render(request, 'recipes/settings.html')
+
+
+@csrf_exempt
+def api_settings(request):
+    """GET — читать настройки по fingerprint, POST — сохранить."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            fingerprint = data.get('fingerprint', '').strip()
+            timer_format = data.get('timer_format', 'mm:ss')
+            if not fingerprint:
+                return JsonResponse({'error': 'Нет fingerprint'}, status=400)
+            if timer_format not in ('mm:ss', 'seconds'):
+                timer_format = 'mm:ss'
+            UserPreferences.objects.update_or_create(
+                fingerprint=fingerprint,
+                defaults={'timer_format': timer_format},
+            )
+            return JsonResponse({'status': 'ok', 'timer_format': timer_format})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    elif request.method == 'GET':
+        fp = request.GET.get('fingerprint', '').strip()
+        if not fp:
+            return JsonResponse({'error': 'Нет fingerprint'}, status=400)
+        prefs = UserPreferences.objects.filter(fingerprint=fp).first()
+        if prefs:
+            return JsonResponse({'timer_format': prefs.timer_format})
+        return JsonResponse({'timer_format': 'mm:ss'})
+    return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
