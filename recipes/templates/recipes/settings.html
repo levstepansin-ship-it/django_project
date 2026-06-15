@@ -1,0 +1,169 @@
+{% extends "recipes/base.html" %}
+
+{% block title %}Настройки — Wajos{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px; display: inline-block; transition: background 0.2s; margin-bottom: 24px;">← На главную</a>
+
+    <div class="settings-card">
+        <h1 style="font-size: 32px; color: var(--accent); margin-bottom: 8px;">⚙️ Настройки</h1>
+        <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 32px;">Настройте Wajos под себя. Изменения сохраняются автоматически.</p>
+
+        <!-- Формат таймера -->
+        <div class="setting-item">
+            <div class="setting-label">
+                <span class="setting-icon">⏱️</span>
+                <div>
+                    <div class="setting-title">Формат таймера</div>
+                    <div class="setting-desc">Как отображать время в таймерах рецептов</div>
+                </div>
+            </div>
+            <div class="setting-control">
+                <label class="radio-card">
+                    <input type="radio" name="timer_format" value="mm:ss">
+                    <span class="radio-card-inner">
+                        <strong>4:32</strong>
+                        <small>Минуты и секунды</small>
+                    </span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="timer_format" value="seconds">
+                    <span class="radio-card-inner">
+                        <strong>272 сек</strong>
+                        <small>Только секунды</small>
+                    </span>
+                </label>
+            </div>
+            <div class="setting-status" id="timerFormatStatus"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-card {
+        background: var(--bg-card);
+        border-radius: 32px;
+        padding: 36px 32px;
+        box-shadow: 0 8px 24px var(--shadow);
+    }
+    .setting-item {
+        padding: 24px 0;
+        border-top: 1px solid var(--border-light);
+    }
+    .setting-item:first-of-type {
+        border-top: none;
+        padding-top: 0;
+    }
+    .setting-label {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .setting-icon {
+        font-size: 32px;
+    }
+    .setting-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    .setting-desc {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+    }
+    .setting-control {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .radio-card {
+        flex: 1;
+        min-width: 140px;
+        cursor: pointer;
+    }
+    .radio-card input {
+        display: none;
+    }
+    .radio-card-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 20px 16px;
+        border-radius: 20px;
+        border: 2px solid var(--border-light);
+        background: var(--bg-body);
+        transition: all 0.2s;
+        text-align: center;
+    }
+    .radio-card-inner strong {
+        font-size: 20px;
+        color: var(--text-primary);
+    }
+    .radio-card-inner small {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+    .radio-card input:checked + .radio-card-inner {
+        border-color: var(--accent);
+        background: var(--hover-bg);
+    }
+    .radio-card input:checked + .radio-card-inner strong {
+        color: var(--accent);
+    }
+    .radio-card-inner:hover {
+        border-color: var(--accent);
+        transform: scale(1.02);
+    }
+    .setting-status {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #4CAF50;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .setting-status.visible {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    (async function initSettings() {
+        let fp = localStorage.getItem('wajos_fp');
+        if (!fp) { fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('wajos_fp', fp); }
+
+        // Загрузить текущие настройки
+        try {
+            const res = await fetch('/api/settings/?fingerprint=' + encodeURIComponent(fp));
+            if (res.ok) {
+                const data = await res.json();
+                const radio = document.querySelector(`input[name="timer_format"][value="${data.timer_format}"]`);
+                if (radio) radio.checked = true;
+            }
+        } catch(e) {}
+
+        const radios = document.querySelectorAll('input[name="timer_format"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', async function() {
+                const val = this.value;
+                try {
+                    const res = await fetch('/api/settings/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fingerprint: fp, timer_format: val }),
+                    });
+                    if (res.ok) {
+                        const status = document.getElementById('timerFormatStatus');
+                        status.textContent = '✅ Сохранено!';
+                        status.classList.add('visible');
+                        setTimeout(() => status.classList.remove('visible'), 2000);
+                    }
+                } catch(e) {}
+            });
+        });
+    })();
+</script>
+{% endblock %}
