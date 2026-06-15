@@ -182,6 +182,22 @@
         .global-timer { background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 20px; text-align: center; margin-top: 16px; }
         .global-timer .timer { font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 8px 0; }
 
+        /* ===== КОЛЛАПС СУПЕР-ТАЙМЕРА ===== */
+        .global-timer-collapsible { margin-top: 32px; }
+        .global-timer-header { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border-radius: 20px; padding: 16px 24px; cursor: pointer; font-size: 18px; font-weight: 600; color: var(--accent); box-shadow: 0 4px 12px var(--shadow); transition: all 0.2s; }
+        .global-timer-header:hover { background: var(--hover-bg); }
+        .global-timer-header small { font-weight: 400; color: var(--text-secondary); font-size: 14px; }
+        .collapse-arrow { font-size: 20px; transition: transform 0.3s; }
+        .collapse-arrow.open { transform: rotate(90deg); }
+        .global-timer-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), opacity 0.3s; opacity: 0; }
+        .global-timer-body.open { max-height: 300px; opacity: 1; }
+
+        /* ===== КОМПАКТНЫЙ TOOLBAR ===== */
+        .compact-toolbar { display: flex; gap: 12px; justify-content: center; margin: 24px 0; }
+        .toolbar-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-light); color: var(--text-primary); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 2px 8px var(--shadow); }
+        .toolbar-btn:hover { border-color: var(--accent); transform: scale(1.08); box-shadow: 0 4px 16px var(--shadow-heavy); }
+        .toolbar-save.saved { background: var(--accent); color: white; border-color: var(--accent); }
+
         .desktop-theme-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: var(--accent); color: white; border: none; border-radius: 50px; padding: 12px 24px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .mobile-theme-btn-bottom { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: var(--accent); color: white; border: none; border-radius: 50px; padding: 10px 20px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; }
 
@@ -354,6 +370,7 @@
     <div class="site-footer-links">
         <a href="{% url 'index' %}">Главная</a>
         <a href="{% url 'favorites' %}">⭐ Избранное</a>
+        <a href="{% url 'settings' %}">⚙️ Настройки</a>
         <a href="{% url 'terms' %}">Условия</a>
         <a href="{% url 'privacy' %}">Конфиденциальность</a>
     </div>
