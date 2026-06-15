@@ -16,7 +16,6 @@ TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
-# Функция для автоматического создания таблицы комментариев
 def ensure_comments_table():
     try:
         with connection.cursor() as cursor:
@@ -31,9 +30,16 @@ def index(request):
 
 
 def recipe_detail(request, recipe_id):
-    ensure_comments_table()  # Проверяем и создаём таблицу если нужно
+    ensure_comments_table()
     recipe = get_object_or_404(Recipe, id=recipe_id)
     return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
+
+
+def random_recipe(request):
+    recipe = Recipe.objects.order_by('?').first()
+    if recipe:
+        return redirect('recipe_detail', recipe_id=recipe.id)
+    return redirect('index')
 
 
 def privacy(request):
@@ -49,10 +55,10 @@ def search(request):
             Q(subcategory__name__icontains=query) |
             Q(subcategory__category__name__icontains=query)
         )
-    
+
     if query and not results:
         return render(request, 'recipes/no_results.html', {'query': query})
-    
+
     return render(request, 'recipes/search_results.html', {'query': query, 'results': results})
 
 
@@ -68,22 +74,26 @@ def send_feedback(request):
             timer_name = data.get('timer_name', 'Неизвестно')
             success = data.get('success', True)
             comment = data.get('comment', '')
-        except:
+        except Exception:
             return JsonResponse({'error': 'Ошибка формата запроса'}, status=400)
-        
+
         emoji = '✅' if success else '❌'
         result_text = 'ГОТОВО' if success else 'НЕ ГОТОВО'
-        message = f"{emoji} НОВЫЙ ОТЗЫВ\n\nРецепт: {timer_name}\nРезультат: {result_text}\n\n📝 Комментарий:\n{comment or '—'}\n\n🔒 Анонимный отзыв. Личные данные не указаны."
-        
+        message = (
+            f"{emoji} НОВЫЙ ОТЗЫВ\n\nРецепт: {timer_name}\n"
+            f"Результат: {result_text}\n\n📝 Комментарий:\n{comment or '—'}\n\n"
+            f"🔒 Анонимный отзыв. Личные данные не указаны."
+        )
+
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
-        
+
         try:
             requests.post(url, json=payload, timeout=10)
             return JsonResponse({'status': 'ok'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    
+
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
 
 
@@ -91,17 +101,20 @@ def suggest_recipe(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
         message = request.POST.get('message', '')
-        
+
         if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-            telegram_message = f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n📝 Предложение:\n{message}\n\n🔒 Анонимно"
+            telegram_message = (
+                f"🔍 ПРЕДЛОЖЕНИЕ РЕЦЕПТА\n\nИскал(а): {query}\n\n"
+                f"📝 Предложение:\n{message}\n\n🔒 Анонимно"
+            )
             url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
             try:
                 requests.post(url, json={'chat_id': TELEGRAM_CHAT_ID, 'text': telegram_message}, timeout=10)
             except Exception:
                 pass
-        
+
         return render(request, 'recipes/suggest_thanks.html', {'query': query})
-    
+
     return redirect('index')
 
 
@@ -115,3 +128,7 @@ def add_comment(request, recipe_id):
                 author = 'Аноним'
             Comment.objects.create(recipe=recipe, author=author, text=text)
     return redirect('recipe_detail', recipe_id=recipe_id)
+
+
+def favorites(request):
+    return render(request, 'recipes/favorites.html')
