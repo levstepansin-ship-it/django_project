@@ -160,13 +160,16 @@
     </div>
     {% endfor %}
 
-    <!-- КНОПКИ ПОДЕЛИТЬСЯ И КОПИРОВАТЬ -->
-    <div id="shareButtons" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0;">
+    <!-- КНОПКИ ПОДЕЛИТЬСЯ, КОПИРОВАТЬ И СОХРАНИТЬ -->
+    <div id="shareButtons" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0; flex-wrap: wrap;">
         <button id="shareBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
             📤 Поделиться
         </button>
         <button id="copyBtn" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
             🔗 Копировать ссылку
+        </button>
+        <button id="saveRecipeBtn" class="save-recipe-btn" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}">
+            ⭐ Сохранить рецепт
         </button>
     </div>
 
@@ -177,7 +180,7 @@
         <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
     </div>
 
-    <!-- ===== КОММЕНТАРИИ ===== -->
+    <!-- ===== КОММЕНТАРИИ С АВАТАРКАМИ ===== -->
     <div class="comments-section">
         <div class="comments-title">
             💬 Комментарии 
@@ -240,7 +243,10 @@
         <a href="{% url 'recipe_detail' recipe_id=6 %}" style="font-size: 16px;">С картошкой</a>
         <a href="{% url 'recipe_detail' recipe_id=7 %}" style="font-size: 16px;">С вишней</a>
     </div>
-    <div style="margin-top: 24px; text-align: center;">
+    <div style="margin-top: 16px; text-align: center;">
+        <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
+    </div>
+    <div style="margin-top: 16px; text-align: center;">
         <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 20px; border-radius: 40px; width: 100%;">📝 Оставить отзыв о сайте</button>
     </div>
 </div>
@@ -426,6 +432,76 @@
             shareBtn.style.display = 'none';
             copyBtn.onclick = copyLink;
         }
+    }
+
+    // === СОХРАНЕНИЕ В ИЗБРАННОЕ (localStorage) ===
+    const saveBtn = document.getElementById('saveRecipeBtn');
+    
+    function getSavedRecipes() {
+        return JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
+    }
+    
+    function saveRecipe(recipeId, recipeTitle) {
+        const saved = getSavedRecipes();
+        if (!saved.some(r => r.id === recipeId)) {
+            saved.push({ id: recipeId, title: recipeTitle });
+            localStorage.setItem('wajos_favorites', JSON.stringify(saved));
+            saveBtn.classList.add('saved');
+            saveBtn.innerHTML = '⭐ Сохранено';
+            showMessage('✅ Рецепт сохранён в избранное!');
+        } else {
+            showMessage('⚠️ Рецепт уже в избранном', true);
+        }
+    }
+    
+    function removeRecipe(recipeId, recipeTitle) {
+        let saved = getSavedRecipes();
+        saved = saved.filter(r => r.id !== recipeId);
+        localStorage.setItem('wajos_favorites', JSON.stringify(saved));
+        saveBtn.classList.remove('saved');
+        saveBtn.innerHTML = '⭐ Сохранить рецепт';
+        showMessage(`🗑️ Рецепт удалён из избранного`);
+    }
+    
+    function checkIfSaved(recipeId) {
+        const saved = getSavedRecipes();
+        if (saved.some(r => r.id === recipeId)) {
+            saveBtn.classList.add('saved');
+            saveBtn.innerHTML = '⭐ Сохранено';
+        }
+    }
+    
+    function showMessage(text, isError = false) {
+        let msgDiv = document.getElementById('saveMessage');
+        if (!msgDiv) {
+            msgDiv = document.createElement('div');
+            msgDiv.id = 'saveMessage';
+            msgDiv.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 40px; z-index: 1000; font-size: 14px; display: none;';
+            document.body.appendChild(msgDiv);
+        }
+        msgDiv.textContent = text;
+        msgDiv.style.background = isError ? '#f44336' : '#4CAF50';
+        msgDiv.style.color = 'white';
+        msgDiv.style.display = 'block';
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 2000);
+    }
+    
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            const recipeId = parseInt(this.dataset.recipeId);
+            const recipeTitle = this.dataset.recipeTitle;
+            const saved = getSavedRecipes();
+            
+            if (saved.some(r => r.id === recipeId)) {
+                removeRecipe(recipeId, recipeTitle);
+            } else {
+                saveRecipe(recipeId, recipeTitle);
+            }
+        });
+        
+        checkIfSaved({{ recipe.id }});
     }
 </script>
 {% endblock %}
