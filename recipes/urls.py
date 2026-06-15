@@ -13,4 +13,6 @@ urlpatterns = [
     path('suggest/', views.suggest_recipe, name='suggest_recipe'),
     path('recipe/<int:recipe_id>/comment/', views.add_comment, name='add_comment'),
     path('favorites/', views.favorites, name='favorites'),
+    path('settings/', views.settings_page, name='settings'),
+    path('api/settings/', views.api_settings, name='api_settings'),
 ]
