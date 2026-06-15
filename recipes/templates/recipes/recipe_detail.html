@@ -1,12 +1,25 @@
 ﻿{% extends "recipes/base.html" %}
 
-{% block title %}{{ recipe.title }}{% endblock %}
+{% block title %}{{ recipe.title }} — рецепт с таймерами на Wajos{% endblock %}
+{% block description %}{{ recipe.title }} — пошаговый рецепт с таймерами на каждый шаг. Готовьте без страха вместе с Wajos.{% endblock %}
+{% block og_title %}{{ recipe.title }} — Wajos{% endblock %}
+{% block og_description %}Пошаговый рецепт с таймерами. Готовьте без страха!{% endblock %}
+{% block og_type %}article{% endblock %}
 
 {% block content %}
 <div class="recipe-area">
     <div style="margin-bottom: 24px;">
         <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px; display: inline-block; transition: background 0.2s;">← На главную</a>
     </div>
+
+    <!-- ХЛЕБНЫЕ КРОШКИ -->
+    <nav class="breadcrumbs">
+        <a href="{% url 'index' %}">🏠 Главная</a>
+        <span class="separator">›</span>
+        <span>{{ recipe.subcategory.category.name }}</span>
+        <span class="separator">›</span>
+        <span class="current">{{ recipe.title }}</span>
+    </nav>
 
     <!-- БЛОКИ СОВЕТОВ И ПРЕДУПРЕЖДЕНИЙ -->
     {% if recipe.id == 2 %}
@@ -65,7 +78,7 @@
         <ul>
             <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
             <li><strong>В кипяток</strong> — иначе тесто размякнет и развалится</li>
-            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра) — даже для сладких, соль усиливает вкус</li>
+            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра) — даже для сладких</li>
             <li><strong>После всплытия убавить огонь до среднего</strong></li>
             <li><strong>Варить ровно 2–3 минуты</strong> — не больше</li>
             <li><strong>Не накрывать крышкой</strong></li>
@@ -76,11 +89,11 @@
     <div class="warnings-block">
         <h4>❌ Почему вареники с картошкой разочаровывают</h4>
         <ul>
-            <li>Тесто рвётся, начинка вываливается — вода слишком бурно кипит или варили слишком долго</li>
+            <li>Тесто рвётся, начинка вываливается — вода слишком бурно кипит</li>
             <li>Вареники слипаются — мало воды или кинули слишком много за раз</li>
             <li>Картошка внутри остаётся сырой — тесто толстое, а варили мало</li>
-            <li>Тесто резиновое, жёсткое — не дали постоять после варки или переварили</li>
-            <li>Вареники лопаются — в начинке много влаги (картошка водянистая)</li>
+            <li>Тесто резиновое — не дали постоять или переварили</li>
+            <li>Вареники лопаются — картошка водянистая</li>
         </ul>
     </div>
     <div class="tips-block">
@@ -89,62 +102,82 @@
             <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
             <li><strong>В кипяток</strong> — иначе тесто размякнет</li>
             <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра)</li>
-            <li><strong>Добавить 1 ст. ложку растительного масла</strong> в воду — против слипания</li>
-            <li><strong>После всплытия убавить огонь до среднего</strong></li>
-            <li><strong>Варить 2–3 минуты</strong> (замороженные — 3–4 минуты)</li>
+            <li><strong>Добавить 1 ст. ложку растительного масла</strong></li>
+            <li><strong>После всплытия убавить огонь</strong></li>
+            <li><strong>Варить 2–3 минуты</strong> (замороженные — 3–4)</li>
             <li><strong>Не накрывать крышкой</strong></li>
-            <li><strong>После варки смазать сливочным маслом или жареным луком</strong></li>
+            <li><strong>После варки смазать маслом или жареным луком</strong></li>
         </ul>
     </div>
     {% elif recipe.id == 7 %}
     <div class="warnings-block">
         <h4>❌ Почему вареники с вишней разочаровывают</h4>
         <ul>
-            <li>Тесто рвётся, начинка вытекает — вода слишком бурно кипит или переварили</li>
-            <li>Вареники слипаются — мало воды или кинули слишком много за раз</li>
-            <li>Вишнёвый сок вытекает, вареники становятся пустыми — плохо защипнули края или переварили</li>
-            <li>Тесто сырое внутри — варили мало или вода не кипела достаточно сильно</li>
-            <li>Тесто разваливается — замороженные вареники кидали в холодную воду, а не в кипяток</li>
+            <li>Тесто рвётся, начинка вытекает — вода бурно кипит или переварили</li>
+            <li>Вареники слипаются — мало воды или слишком много за раз</li>
+            <li>Вишнёвый сок вытекает — плохо защипнули края или переварили</li>
+            <li>Тесто сырое внутри — варили мало</li>
+            <li>Тесто разваливается — кидали в холодную воду</li>
         </ul>
     </div>
     <div class="tips-block">
         <h4>✅ Как сварить идеальные вареники с вишней</h4>
         <ul>
             <li><strong>Много воды:</strong> 3 литра на 500 г вареников</li>
-            <li><strong>Только в кипяток</strong> — иначе тесто размякнет</li>
-            <li><strong>Солить обязательно</strong> (1 ст. ложка на 3 литра)</li>
-            <li><strong>Добавить 1 ст. ложку растительного масла</strong> в воду</li>
-            <li><strong>Кидать по 2–3 штуки</strong>, а не всю пачку сразу</li>
-            <li><strong>После всплытия убавить огонь до среднего</strong></li>
-            <li><strong>Варить ровно 2 минуты</strong> (замороженные — 2–3 минуты)</li>
+            <li><strong>Только в кипяток</strong></li>
+            <li><strong>Солить обязательно</strong></li>
+            <li><strong>Добавить 1 ст. ложку масла</strong></li>
+            <li><strong>Кидать по 2–3 штуки</strong></li>
+            <li><strong>После всплытия убавить огонь</strong></li>
+            <li><strong>Варить ровно 2 минуты</strong> (замороженные — 2–3)</li>
             <li><strong>Не накрывать крышкой</strong></li>
-            <li><strong>После варки смазать сливочным маслом</strong></li>
-            <li><strong>Подавать сразу</strong> — вишня быстро остывает</li>
+            <li><strong>После варки смазать маслом</strong></li>
+            <li><strong>Подавать сразу</strong></li>
         </ul>
     </div>
     {% else %}
     <div class="warnings-block">
         <h4>❌ Почему пельмени разочаровывают</h4>
         <ul>
-            <li>Тесто слипается и рвётся — потому что вода не кипела достаточно сильно</li>
-            <li>Вкусный бульон остаётся в кастрюле — из‑за недостатка соли или специй</li>
-            <li>Мясо становится сухим и жёстким — из‑за переваривания или слишком высокой температуры</li>
+            <li>Тесто слипается и рвётся — вода не кипела достаточно сильно</li>
+            <li>Вкусный бульон остаётся в кастрюле — мало соли или специй</li>
+            <li>Мясо становится сухим — переварили</li>
         </ul>
     </div>
     <div class="tips-block">
         <h4>✅ Что делать</h4>
         <ul>
-            <li>Бери кастрюлю не меньше 3 литров — пельменям нужно пространство</li>
-            <li>Соотношение воды и пельменей — <strong>3:1</strong> (1 кг пельменей → 3 литра воды)</li>
-            <li>Соли — 1 чайная ложка на литр воды, можно добавить лавровый лист и перец горошком</li>
-            <li>Опускай пельмени в <strong>крутой кипяток</strong> по одному, чтобы не охлаждать воду</li>
-            <li>После всплытия вари <strong>ровно столько, сколько на таймере</strong> — не меньше и не больше</li>
+            <li>Кастрюля не меньше 3 литров</li>
+            <li>Воды и пельменей — <strong>3:1</strong></li>
+            <li>Соли — 1 ч. ложка на литр воды</li>
+            <li>В <strong>крутой кипяток</strong> по одному</li>
+            <li>После всплытия — <strong>ровно по таймеру</strong></li>
         </ul>
     </div>
     {% endif %}
 
     <h1 style="font-size: 36px; color: var(--text-primary);">{{ recipe.title }}</h1>
     <div class="subhead" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 18px;">Пошаговая инструкция с таймерами</div>
+
+    <!-- ⭐ РЕЙТИНГ -->
+    <div class="rating-widget">
+        <div class="rating-widget-label">Оцените рецепт</div>
+        <div class="rating-stars" id="ratingStars">
+            <input type="radio" name="rating" id="star5" value="5"><label for="star5">★</label>
+            <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
+            <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
+            <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
+            <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+        </div>
+        <div class="rating-summary" id="ratingSummary">
+            {% if recipe.rating_count > 0 %}
+                <strong>{{ recipe.avg_rating|floatformat:1 }}</strong> ⭐ · {{ recipe.rating_count }} {{ recipe.rating_count|pluralize:"голос,голоса,голосов" }}
+            {% else %}
+                Будьте первым, кто оценит!
+            {% endif %}
+        </div>
+        <div class="rating-thanks" id="ratingThanks">Спасибо за оценку! 🙌</div>
+    </div>
 
     {% for step in recipe.steps %}
     <div class="step-card">
@@ -160,17 +193,10 @@
     </div>
     {% endfor %}
 
-    <!-- КНОПКИ ПОДЕЛИТЬСЯ, КОПИРОВАТЬ И СОХРАНИТЬ -->
     <div id="shareButtons" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0; flex-wrap: wrap;">
-        <button id="shareBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
-            📤 Поделиться
-        </button>
-        <button id="copyBtn" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">
-            🔗 Копировать ссылку
-        </button>
-        <button id="saveRecipeBtn" class="save-recipe-btn" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}">
-            ⭐ Сохранить рецепт
-        </button>
+        <button id="shareBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">📤 Поделиться</button>
+        <button id="copyBtn" style="background: #6c757d; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-size: 14px;">🔗 Копировать ссылку</button>
+        <button id="saveRecipeBtn" class="save-recipe-btn" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}">⭐ Сохранить рецепт</button>
     </div>
 
     <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
@@ -180,13 +206,30 @@
         <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
     </div>
 
-    <!-- ===== КОММЕНТАРИИ ===== -->
+    <!-- ПОХОЖИЕ РЕЦЕПТЫ -->
+    {% if related %}
+    <div class="related-recipes">
+        <div class="related-title">🍴 Похожие рецепты</div>
+        <div class="related-grid">
+            {% for r in related %}
+            <a href="{% url 'recipe_detail' r.id %}" class="related-card">
+                <div class="related-card-icon">🥟</div>
+                <div class="related-card-title">{{ r.title }}</div>
+                {% if r.rating_count > 0 %}
+                <div class="related-card-rating"><span class="star">★</span> {{ r.avg_rating|floatformat:1 }} ({{ r.rating_count }})</div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- КОММЕНТАРИИ -->
     <div class="comments-section">
         <div class="comments-title">
             💬 Комментарии
             <span style="font-size: 14px; color: var(--text-secondary); font-weight: 400;">({{ recipe.comments.count }})</span>
         </div>
-
         <div class="comment-list">
             {% for comment in recipe.comments.all %}
             <div class="comment-card">
@@ -203,7 +246,6 @@
             <div class="empty-comments">🍃 Пока нет комментариев. Будьте первым!</div>
             {% endfor %}
         </div>
-
         <div class="comment-form">
             <h4>✍️ Написать комментарий</h4>
             <form method="POST" action="{% url 'add_comment' recipe.id %}">
@@ -246,6 +288,7 @@
 </div>
 
 <script>
+    // ===== ТАЙМЕРЫ =====
     let activeTimers = {};
     let steps = {{ recipe.steps|safe }};
     let fullInterval = null;
@@ -254,216 +297,107 @@
 
     function playBeep() {
         try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 880;
-            gainNode.gain.value = 0.3;
-            oscillator.start();
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
-            oscillator.stop(audioContext.currentTime + 0.5);
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = 880; gain.gain.value = 0.3;
+            osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1);
+            osc.stop(ctx.currentTime + 0.5);
         } catch(e) {}
     }
 
-    function saveTimerState(timerId, secondsRemaining, isRunning) {
-        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
-        timers[timerId] = { seconds: secondsRemaining, running: isRunning };
-        localStorage.setItem(`timers_${recipeId}`, JSON.stringify(timers));
-    }
+    function saveTimerState(id, sec, run) { let t = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}'); t[id] = { seconds: sec, running: run }; localStorage.setItem(`timers_${recipeId}`, JSON.stringify(t)); }
+    function loadTimerState(id) { return (JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}'))[id] || null; }
+    function clearTimerState(id) { let t = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}'); delete t[id]; localStorage.setItem(`timers_${recipeId}`, JSON.stringify(t)); }
 
-    function loadTimerState(timerId) {
-        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
-        return timers[timerId] || null;
-    }
-
-    function clearTimerState(timerId) {
-        let timers = JSON.parse(localStorage.getItem(`timers_${recipeId}`) || '{}');
-        delete timers[timerId];
-        localStorage.setItem(`timers_${recipeId}`, JSON.stringify(timers));
-    }
-
-    function startTimer(displayId, duration, startBtn, resetBtn) {
-        if (activeTimers[displayId]) clearInterval(activeTimers[displayId]);
-        let seconds = duration * 60;
-        const saved = loadTimerState(displayId);
-        if (saved && saved.seconds > 0 && saved.seconds < seconds) seconds = saved.seconds;
-        const display = document.getElementById(displayId);
-        const interval = setInterval(() => {
-            if (seconds <= 1) {
-                playBeep();
-                clearInterval(interval);
-                delete activeTimers[displayId];
-                display.innerText = "✅ Готово!";
-                if (startBtn) startBtn.disabled = false;
-                if (resetBtn) resetBtn.disabled = false;
-                clearTimerState(displayId);
-            } else {
-                seconds--;
-                let mins = Math.floor(seconds / 60);
-                let secs = seconds % 60;
-                display.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
-                saveTimerState(displayId, seconds, true);
-            }
+    function startTimer(id, dur, sBtn, rBtn) {
+        if (activeTimers[id]) clearInterval(activeTimers[id]);
+        let sec = dur * 60;
+        const sv = loadTimerState(id);
+        if (sv && sv.seconds > 0 && sv.seconds < sec) sec = sv.seconds;
+        const disp = document.getElementById(id);
+        activeTimers[id] = setInterval(() => {
+            if (sec <= 1) { playBeep(); clearInterval(activeTimers[id]); delete activeTimers[id]; disp.innerText = "✅ Готово!"; if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false; clearTimerState(id); }
+            else { sec--; let m = Math.floor(sec/60), s = sec%60; disp.innerText = `${m}:${s.toString().padStart(2,'0')}`; saveTimerState(id, sec, true); }
         }, 1000);
-        activeTimers[displayId] = interval;
-        if (startBtn) startBtn.disabled = true;
-        if (resetBtn) resetBtn.disabled = false;
-        saveTimerState(displayId, seconds, true);
+        if (sBtn) sBtn.disabled = true; if (rBtn) rBtn.disabled = false; saveTimerState(id, sec, true);
     }
 
-    function resetTimer(displayId, duration, startBtn, resetBtn) {
-        if (activeTimers[displayId]) {
-            clearInterval(activeTimers[displayId]);
-            delete activeTimers[displayId];
-        }
-        clearTimerState(displayId);
-        document.getElementById(displayId).innerText = `${duration}:00`;
-        if (startBtn) startBtn.disabled = false;
-        if (resetBtn) resetBtn.disabled = false;
+    function resetTimer(id, dur, sBtn, rBtn) {
+        if (activeTimers[id]) { clearInterval(activeTimers[id]); delete activeTimers[id]; }
+        clearTimerState(id); document.getElementById(id).innerText = `${dur}:00`;
+        if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false;
     }
 
     document.querySelectorAll('.start-timer').forEach(btn => {
-        const duration = parseInt(btn.dataset.duration);
-        const timerId = btn.dataset.timerId;
-        const resetBtn = btn.closest('.timer-row').querySelector('.reset-timer');
-        const display = document.getElementById(timerId);
-        const saved = loadTimerState(timerId);
-        if (saved && saved.running && saved.seconds > 0) {
-            let mins = Math.floor(saved.seconds / 60);
-            let secs = saved.seconds % 60;
-            display.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
-            startTimer(timerId, duration, btn, resetBtn);
-        }
-        btn.addEventListener('click', () => startTimer(timerId, duration, btn, resetBtn));
-        resetBtn.addEventListener('click', () => resetTimer(timerId, duration, btn, resetBtn));
+        const dur = parseInt(btn.dataset.duration), tid = btn.dataset.timerId, rBtn = btn.closest('.timer-row').querySelector('.reset-timer'), disp = document.getElementById(tid);
+        const sv = loadTimerState(tid);
+        if (sv && sv.running && sv.seconds > 0) { let m = Math.floor(sv.seconds/60), s = sv.seconds%60; disp.innerText = `${m}:${s.toString().padStart(2,'0')}`; startTimer(tid, dur, btn, rBtn); }
+        btn.addEventListener('click', () => startTimer(tid, dur, btn, rBtn));
+        rBtn.addEventListener('click', () => resetTimer(tid, dur, btn, rBtn));
     });
 
     function startFullTimer() {
         if (fullInterval) clearInterval(fullInterval);
-        let totalSeconds = steps.reduce((sum, step) => sum + step.duration * 60, 0);
-        let remaining = totalSeconds;
-        const savedFull = localStorage.getItem(`fullTimer_${recipeId}`);
-        if (savedFull && parseInt(savedFull) > 0 && parseInt(savedFull) < totalSeconds) remaining = parseInt(savedFull);
-        fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
+        let total = steps.reduce((s, st) => s + st.duration * 60, 0), rem = total;
+        const sf = localStorage.getItem(`fullTimer_${recipeId}`);
+        if (sf && parseInt(sf) > 0 && parseInt(sf) < total) rem = parseInt(sf);
+        fullDisplay.innerText = `${Math.floor(rem/60)}:${(rem%60).toString().padStart(2,'0')}`;
         fullInterval = setInterval(() => {
-            if (remaining <= 1) {
-                playBeep();
-                clearInterval(fullInterval);
-                fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
-                document.getElementById('startFullBtn').disabled = false;
-                localStorage.removeItem(`fullTimer_${recipeId}`);
-                if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true);
-            } else {
-                remaining--;
-                fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
-                localStorage.setItem(`fullTimer_${recipeId}`, remaining);
-            }
+            if (rem <= 1) { playBeep(); clearInterval(fullInterval); fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉"; document.getElementById('startFullBtn').disabled = false; localStorage.removeItem(`fullTimer_${recipeId}`); if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true); }
+            else { rem--; fullDisplay.innerText = `${Math.floor(rem/60)}:${(rem%60).toString().padStart(2,'0')}`; localStorage.setItem(`fullTimer_${recipeId}`, rem); }
         }, 1000);
         document.getElementById('startFullBtn').disabled = true;
     }
 
-    function resetFullTimer() {
-        if (fullInterval) clearInterval(fullInterval);
-        fullDisplay.innerText = "--:--";
-        document.getElementById('startFullBtn').disabled = false;
-        localStorage.removeItem(`fullTimer_${recipeId}`);
-    }
-
+    function resetFullTimer() { if (fullInterval) clearInterval(fullInterval); fullDisplay.innerText = "--:--"; document.getElementById('startFullBtn').disabled = false; localStorage.removeItem(`fullTimer_${recipeId}`); }
     document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
     document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
 
-    const shareBtn = document.getElementById('shareBtn');
-    const copyBtn = document.getElementById('copyBtn');
-
-    function copyLink() {
-        navigator.clipboard.writeText(window.location.href);
-        alert('🔗 Ссылка скопирована!');
-    }
-
-    function shareLink() {
-        if (navigator.share) {
-            navigator.share({
-                title: '{{ recipe.title }}',
-                text: 'Пошаговый рецепт с таймерами на Wajos',
-                url: window.location.href
-            }).catch(e => {
-                if (e.name !== 'AbortError') alert('Не удалось поделиться.');
-            });
-        } else {
-            copyLink();
-        }
-    }
-
+    // ===== ПОДЕЛИТЬСЯ =====
+    const shareBtn = document.getElementById('shareBtn'), copyBtn = document.getElementById('copyBtn');
+    function copyLink() { navigator.clipboard.writeText(window.location.href); alert('🔗 Ссылка скопирована!'); }
+    function shareLink() { if (navigator.share) navigator.share({ title: '{{ recipe.title }}', text: 'Рецепт с таймерами на Wajos', url: window.location.href }).catch(() => copyLink()); else copyLink(); }
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (shareBtn && copyBtn) {
-        if (isMobile) {
-            shareBtn.onclick = shareLink;
-            copyBtn.onclick = copyLink;
-        } else {
-            shareBtn.style.display = 'none';
-            copyBtn.onclick = copyLink;
-        }
-    }
+    if (shareBtn && copyBtn) { if (isMobile) { shareBtn.onclick = shareLink; copyBtn.onclick = copyLink; } else { shareBtn.style.display = 'none'; copyBtn.onclick = copyLink; } }
 
+    // ===== ИЗБРАННОЕ =====
     const saveBtn = document.getElementById('saveRecipeBtn');
-    function getSavedRecipes() { return JSON.parse(localStorage.getItem('wajos_favorites') || '[]'); }
-
-    function saveRecipe(rid, rtitle) {
-        const saved = getSavedRecipes();
-        if (!saved.some(r => r.id === rid)) {
-            saved.push({ id: rid, title: rtitle });
-            localStorage.setItem('wajos_favorites', JSON.stringify(saved));
-            saveBtn.classList.add('saved');
-            saveBtn.innerHTML = '⭐ Сохранено';
-            showMessage('✅ Рецепт сохранён!');
-        } else {
-            showMessage('⚠️ Уже в избранном', true);
-        }
-    }
-
-    function removeRecipe(rid) {
-        let saved = getSavedRecipes().filter(r => r.id !== rid);
-        localStorage.setItem('wajos_favorites', JSON.stringify(saved));
-        saveBtn.classList.remove('saved');
-        saveBtn.innerHTML = '⭐ Сохранить рецепт';
-        showMessage('🗑️ Удалено из избранного');
-    }
-
-    function checkIfSaved(rid) {
-        if (getSavedRecipes().some(r => r.id === rid)) {
-            saveBtn.classList.add('saved');
-            saveBtn.innerHTML = '⭐ Сохранено';
-        }
-    }
-
-    function showMessage(text, isError = false) {
-        let msgDiv = document.getElementById('saveMessage');
-        if (!msgDiv) {
-            msgDiv = document.createElement('div');
-            msgDiv.id = 'saveMessage';
-            msgDiv.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 40px; z-index: 1000; font-size: 14px; display: none; font-weight: 600;';
-            document.body.appendChild(msgDiv);
-        }
-        msgDiv.textContent = text;
-        msgDiv.style.background = isError ? '#f44336' : '#4CAF50';
-        msgDiv.style.color = 'white';
-        msgDiv.style.display = 'block';
-        setTimeout(() => { msgDiv.style.display = 'none'; }, 2000);
-    }
-
+    function getSaved() { return JSON.parse(localStorage.getItem('wajos_favorites') || '[]'); }
+    function checkSaved(rid) { if (getSaved().some(r => r.id === rid)) { saveBtn.classList.add('saved'); saveBtn.innerHTML = '⭐ Сохранено'; } }
+    function showMsg(text, err) { let d = document.getElementById('saveMessage'); if (!d) { d = document.createElement('div'); d.id = 'saveMessage'; d.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:40px;z-index:1000;font-size:14px;display:none;font-weight:600;'; document.body.appendChild(d); } d.textContent = text; d.style.background = err ? '#f44336' : '#4CAF50'; d.style.color = 'white'; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 2000); }
     if (saveBtn) {
         saveBtn.addEventListener('click', function() {
-            const rid = parseInt(this.dataset.recipeId);
-            const rtitle = this.dataset.recipeTitle;
-            if (getSavedRecipes().some(r => r.id === rid)) {
-                removeRecipe(rid);
-            } else {
-                saveRecipe(rid, rtitle);
-            }
+            const rid = parseInt(this.dataset.recipeId), rt = this.dataset.recipeTitle, saved = getSaved();
+            if (saved.some(r => r.id === rid)) { let s = saved.filter(r => r.id !== rid); localStorage.setItem('wajos_favorites', JSON.stringify(s)); saveBtn.classList.remove('saved'); saveBtn.innerHTML = '⭐ Сохранить рецепт'; showMsg('🗑️ Удалено'); }
+            else { saved.push({ id: rid, title: rt }); localStorage.setItem('wajos_favorites', JSON.stringify(saved)); saveBtn.classList.add('saved'); saveBtn.innerHTML = '⭐ Сохранено'; showMsg('✅ Сохранено!'); }
         });
-        checkIfSaved({{ recipe.id }});
+        checkSaved({{ recipe.id }});
     }
+
+    // ===== ⭐ РЕЙТИНГ =====
+    (function initRating() {
+        const stars = document.querySelectorAll('.rating-stars input');
+        const summary = document.getElementById('ratingSummary');
+        const thanks = document.getElementById('ratingThanks');
+        if (!stars.length) return;
+        let fp = localStorage.getItem('wajos_fp');
+        if (!fp) { fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('wajos_fp', fp); }
+        stars.forEach(star => {
+            star.addEventListener('change', async function() {
+                const score = parseInt(this.value);
+                try {
+                    const res = await fetch('/recipe/{{ recipe.id }}/rate/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ score: score, fingerprint: fp }) });
+                    const data = await res.json();
+                    if (data.avg !== undefined) {
+                        summary.innerHTML = `<strong>${data.avg}</strong> ⭐ · ${data.count} ${pluralize(data.count)}`;
+                        thanks.style.display = 'block';
+                        setTimeout(() => { thanks.style.display = 'none'; }, 2500);
+                    }
+                } catch (e) { alert('Не удалось сохранить оценку'); }
+            });
+        });
+        function pluralize(n) { const m10 = n%10, m100 = n%100; if (m10===1 && m100!==11) return 'голос'; if (m10>=2 && m10<=4 && (m100<10||m100>=20)) return 'голоса'; return 'голосов'; }
+    })();
 </script>
 {% endblock %}
