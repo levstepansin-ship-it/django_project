@@ -5,10 +5,10 @@
 {% block content %}
 <div class="recipe-area">
     <div style="margin-bottom: 24px;">
-        <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
+        <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px; display: inline-block; transition: background 0.2s;">← На главную</a>
     </div>
 
-    <!-- БЛОКИ «ПОЧЕМУ РАЗОЧАРОВЫВАЮТ» И «ЧТО ДЕЛАТЬ» -->
+    <!-- БЛОКИ СОВЕТОВ И ПРЕДУПРЕЖДЕНИЙ -->
     {% if recipe.id == 2 %}
     <div class="warnings-block">
         <h4>❌ Почему пельмени из телятины часто не получаются</h4>
@@ -180,44 +180,38 @@
         <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
     </div>
 
-    <!-- ===== КОММЕНТАРИИ С АВАТАРКАМИ ===== -->
+    <!-- ===== КОММЕНТАРИИ ===== -->
     <div class="comments-section">
         <div class="comments-title">
-            💬 Комментарии 
-            <span style="font-size: 14px; color: var(--text-secondary);">({{ recipe.comments.count }})</span>
+            💬 Комментарии
+            <span style="font-size: 14px; color: var(--text-secondary); font-weight: 400;">({{ recipe.comments.count }})</span>
         </div>
-        
+
         <div class="comment-list">
             {% for comment in recipe.comments.all %}
             <div class="comment-card">
                 <div class="comment-header">
-                    <div class="comment-avatar">
-                        {{ comment.author|slice:":1"|upper }}
-                    </div>
+                    <div class="comment-avatar">{{ comment.author|slice:":1"|upper }}</div>
                     <div>
                         <div class="comment-author">{{ comment.author }}</div>
                         <div class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</div>
                     </div>
                 </div>
-                <div class="comment-text">
-                    {{ comment.text|linebreaksbr }}
-                </div>
+                <div class="comment-text">{{ comment.text|linebreaksbr }}</div>
             </div>
             {% empty %}
-            <div class="empty-comments">
-                🍃 Пока нет комментариев. Будьте первым, кто поделится впечатлением!
-            </div>
+            <div class="empty-comments">🍃 Пока нет комментариев. Будьте первым!</div>
             {% endfor %}
         </div>
-        
+
         <div class="comment-form">
             <h4>✍️ Написать комментарий</h4>
             <form method="POST" action="{% url 'add_comment' recipe.id %}">
                 {% csrf_token %}
-                <input type="text" name="author" placeholder="Ваше имя (необязательно, по умолчанию «Аноним»)" style="margin-bottom: 15px;">
-                <textarea name="text" rows="4" placeholder="Поделитесь впечатлением о рецепте... Ваш отзыв поможет другим!" required></textarea>
+                <input type="text" name="author" placeholder="Ваше имя (необязательно)">
+                <textarea name="text" rows="4" placeholder="Поделитесь впечатлением о рецепте..." required></textarea>
                 <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                    <button type="submit">📤 Отправить комментарий</button>
+                    <button type="submit" style="background: var(--accent); color: white; border: none; padding: 12px 28px; border-radius: 40px; font-size: 15px; cursor: pointer; font-weight: 600;">📤 Отправить</button>
                 </div>
             </form>
         </div>
@@ -270,9 +264,7 @@
             oscillator.start();
             gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
             oscillator.stop(audioContext.currentTime + 0.5);
-        } catch(e) {
-            console.log('Звук не поддерживается');
-        }
+        } catch(e) {}
     }
 
     function saveTimerState(timerId, secondsRemaining, isRunning) {
@@ -293,14 +285,10 @@
     }
 
     function startTimer(displayId, duration, startBtn, resetBtn) {
-        if (activeTimers[displayId]) {
-            clearInterval(activeTimers[displayId]);
-        }
+        if (activeTimers[displayId]) clearInterval(activeTimers[displayId]);
         let seconds = duration * 60;
         const saved = loadTimerState(displayId);
-        if (saved && saved.seconds > 0 && saved.seconds < seconds) {
-            seconds = saved.seconds;
-        }
+        if (saved && saved.seconds > 0 && saved.seconds < seconds) seconds = saved.seconds;
         const display = document.getElementById(displayId);
         const interval = setInterval(() => {
             if (seconds <= 1) {
@@ -341,7 +329,6 @@
         const timerId = btn.dataset.timerId;
         const resetBtn = btn.closest('.timer-row').querySelector('.reset-timer');
         const display = document.getElementById(timerId);
-        
         const saved = loadTimerState(timerId);
         if (saved && saved.running && saved.seconds > 0) {
             let mins = Math.floor(saved.seconds / 60);
@@ -349,25 +336,16 @@
             display.innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
             startTimer(timerId, duration, btn, resetBtn);
         }
-        
-        btn.addEventListener('click', function() {
-            startTimer(timerId, duration, btn, resetBtn);
-        });
-        resetBtn.addEventListener('click', function() {
-            resetTimer(timerId, duration, btn, resetBtn);
-        });
+        btn.addEventListener('click', () => startTimer(timerId, duration, btn, resetBtn));
+        resetBtn.addEventListener('click', () => resetTimer(timerId, duration, btn, resetBtn));
     });
 
     function startFullTimer() {
         if (fullInterval) clearInterval(fullInterval);
         let totalSeconds = steps.reduce((sum, step) => sum + step.duration * 60, 0);
         let remaining = totalSeconds;
-        
         const savedFull = localStorage.getItem(`fullTimer_${recipeId}`);
-        if (savedFull && parseInt(savedFull) > 0 && parseInt(savedFull) < totalSeconds) {
-            remaining = parseInt(savedFull);
-        }
-        
+        if (savedFull && parseInt(savedFull) > 0 && parseInt(savedFull) < totalSeconds) remaining = parseInt(savedFull);
         fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
         fullInterval = setInterval(() => {
             if (remaining <= 1) {
@@ -376,9 +354,7 @@
                 fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
                 document.getElementById('startFullBtn').disabled = false;
                 localStorage.removeItem(`fullTimer_${recipeId}`);
-                if (typeof showFeedbackModal === 'function') {
-                    showFeedbackModal('Весь рецепт', true);
-                }
+                if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true);
             } else {
                 remaining--;
                 fullDisplay.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
@@ -413,9 +389,7 @@
                 text: 'Пошаговый рецепт с таймерами на Wajos',
                 url: window.location.href
             }).catch(e => {
-                if (e.name !== 'AbortError') {
-                    alert('Не удалось поделиться. Скопируйте ссылку вручную.');
-                }
+                if (e.name !== 'AbortError') alert('Не удалось поделиться.');
             });
         } else {
             copyLink();
@@ -423,7 +397,6 @@
     }
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
     if (shareBtn && copyBtn) {
         if (isMobile) {
             shareBtn.onclick = shareLink;
@@ -434,73 +407,62 @@
         }
     }
 
-    // === СОХРАНЕНИЕ В ИЗБРАННОЕ (localStorage) ===
     const saveBtn = document.getElementById('saveRecipeBtn');
-    
-    function getSavedRecipes() {
-        return JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
-    }
-    
-    function saveRecipe(recipeId, recipeTitle) {
+    function getSavedRecipes() { return JSON.parse(localStorage.getItem('wajos_favorites') || '[]'); }
+
+    function saveRecipe(rid, rtitle) {
         const saved = getSavedRecipes();
-        if (!saved.some(r => r.id === recipeId)) {
-            saved.push({ id: recipeId, title: recipeTitle });
+        if (!saved.some(r => r.id === rid)) {
+            saved.push({ id: rid, title: rtitle });
             localStorage.setItem('wajos_favorites', JSON.stringify(saved));
             saveBtn.classList.add('saved');
             saveBtn.innerHTML = '⭐ Сохранено';
-            showMessage('✅ Рецепт сохранён в избранное!');
+            showMessage('✅ Рецепт сохранён!');
         } else {
-            showMessage('⚠️ Рецепт уже в избранном', true);
+            showMessage('⚠️ Уже в избранном', true);
         }
     }
-    
-    function removeRecipe(recipeId, recipeTitle) {
-        let saved = getSavedRecipes();
-        saved = saved.filter(r => r.id !== recipeId);
+
+    function removeRecipe(rid) {
+        let saved = getSavedRecipes().filter(r => r.id !== rid);
         localStorage.setItem('wajos_favorites', JSON.stringify(saved));
         saveBtn.classList.remove('saved');
         saveBtn.innerHTML = '⭐ Сохранить рецепт';
-        showMessage(`🗑️ Рецепт удалён из избранного`);
+        showMessage('🗑️ Удалено из избранного');
     }
-    
-    function checkIfSaved(recipeId) {
-        const saved = getSavedRecipes();
-        if (saved.some(r => r.id === recipeId)) {
+
+    function checkIfSaved(rid) {
+        if (getSavedRecipes().some(r => r.id === rid)) {
             saveBtn.classList.add('saved');
             saveBtn.innerHTML = '⭐ Сохранено';
         }
     }
-    
+
     function showMessage(text, isError = false) {
         let msgDiv = document.getElementById('saveMessage');
         if (!msgDiv) {
             msgDiv = document.createElement('div');
             msgDiv.id = 'saveMessage';
-            msgDiv.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 40px; z-index: 1000; font-size: 14px; display: none;';
+            msgDiv.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 40px; z-index: 1000; font-size: 14px; display: none; font-weight: 600;';
             document.body.appendChild(msgDiv);
         }
         msgDiv.textContent = text;
         msgDiv.style.background = isError ? '#f44336' : '#4CAF50';
         msgDiv.style.color = 'white';
         msgDiv.style.display = 'block';
-        setTimeout(() => {
-            msgDiv.style.display = 'none';
-        }, 2000);
+        setTimeout(() => { msgDiv.style.display = 'none'; }, 2000);
     }
-    
+
     if (saveBtn) {
         saveBtn.addEventListener('click', function() {
-            const recipeId = parseInt(this.dataset.recipeId);
-            const recipeTitle = this.dataset.recipeTitle;
-            const saved = getSavedRecipes();
-            
-            if (saved.some(r => r.id === recipeId)) {
-                removeRecipe(recipeId, recipeTitle);
+            const rid = parseInt(this.dataset.recipeId);
+            const rtitle = this.dataset.recipeTitle;
+            if (getSavedRecipes().some(r => r.id === rid)) {
+                removeRecipe(rid);
             } else {
-                saveRecipe(recipeId, recipeTitle);
+                saveRecipe(rid, rtitle);
             }
         });
-        
         checkIfSaved({{ recipe.id }});
     }
 </script>
