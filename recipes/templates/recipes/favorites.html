@@ -1,0 +1,41 @@
+﻿{% extends "recipes/base.html" %}
+
+{% block title %}Избранные рецепты — Wajos{% endblock %}
+
+{% block content %}
+<div class="recipe-area">
+    <h1 style="font-size: 32px; margin-bottom: 24px;">⭐ Избранные рецепты</h1>
+    
+    <div id="favoritesList" style="display: flex; flex-direction: column; gap: 16px;">
+    </div>
+    
+    <div id="emptyMessage" style="text-align: center; padding: 60px; color: var(--text-secondary); background: var(--step-bg); border-radius: 28px; display: none;">
+        🍳 У вас пока нет сохранённых рецептов.<br>
+        Нажмите ⭐ на странице рецепта, чтобы добавить.
+    </div>
+    
+    <div style="text-align: center; margin-top: 32px;">
+        <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 10px 28px; border-radius: 40px; text-decoration: none; display: inline-block;">← На главную</a>
+    </div>
+</div>
+
+<script>
+    const favorites = JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
+    const container = document.getElementById('favoritesList');
+    const emptyMsg = document.getElementById('emptyMessage');
+    
+    if (favorites.length === 0) {
+        emptyMsg.style.display = 'block';
+    } else {
+        favorites.forEach(recipe => {
+            const card = document.createElement('div');
+            card.style.cssText = 'background: var(--step-bg); border-radius: 20px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;';
+            card.innerHTML = `
+                <span style="font-size: 18px; font-weight: 600;">${recipe.title}</span>
+                <a href="/recipe/${recipe.id}/" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none;">Готовить →</a>
+            `;
+            container.appendChild(card);
+        });
+    }
+</script>
+{% endblock %}
