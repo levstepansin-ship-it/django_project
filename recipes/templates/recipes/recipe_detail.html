@@ -292,7 +292,7 @@
         </div>
     </div>
 
-        <!-- МЕНЮ ВНИЗУ (красивое) -->
+    <!-- МЕНЮ ВНИЗУ -->
     <div class="menu-area" style="margin-top: 40px; background: var(--bg-card); border-radius: 32px; padding: 32px 24px; box-shadow: 0 4px 20px var(--shadow);">
         <h3 style="font-size: 22px; color: var(--accent); text-align: center; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 8px; width: auto; margin: 0 auto 24px auto;">📖 Все рецепты</h3>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px 48px;">
@@ -323,6 +323,7 @@
             <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
         </div>
     </div>
+</div>
 
 <script>
     // ===== КОЛЛАПС СУПЕР-ТАЙМЕРА =====
@@ -337,7 +338,7 @@
     }
 
     // ===== ЗАГРУЗКА НАСТРОЕК (формат таймера) =====
-    let timerFormat = 'mm:ss';  // по умолчанию
+    let timerFormat = 'mm:ss';
     (async function loadPrefs() {
         let fp = localStorage.getItem('wajos_fp');
         if (!fp) { fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('wajos_fp', fp); }
