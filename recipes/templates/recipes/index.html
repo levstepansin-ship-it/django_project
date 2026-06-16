@@ -21,7 +21,7 @@
             <button type="submit">Найти</button>
         </form>
 
-        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель) -->
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с автопрокруткой) -->
         <div class="welcome-section">
             <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
             <div class="welcome-carousel-wrapper" id="carouselWrapper">
@@ -141,7 +141,7 @@
             <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" class="welcome-feedback-btn">📝 Оставить отзыв о сайте</button>
         </div>
 
-        <!-- СТАТИСТИКА (без комментариев и оценок) -->
+        <!-- СТАТИСТИКА -->
         <div class="welcome-stats">
             <div class="welcome-stat">
                 <span class="welcome-stat-value">{{ total_recipes }}</span>
@@ -170,14 +170,14 @@
         });
     });
 
-    // ===== АВТОПРОКРУТКА КАРУСЕЛИ (медленная, работает) =====
+    // ===== АВТОПРОКРУТКА КАРУСЕЛИ (медленная) =====
     (function autoScrollCarousel() {
         const wrapper = document.getElementById('carouselWrapper');
         const carousel = document.getElementById('carouselTrack');
         if (!wrapper || !carousel) return;
         
         let scrollAmount = 0;
-        const step = 0.3; // пикселей за кадр (очень медленно)
+        const step = 0.3;
         let animationId = null;
         let isHovering = false;
         let isPaused = false;
