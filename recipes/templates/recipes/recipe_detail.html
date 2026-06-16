@@ -135,6 +135,30 @@
             <li><strong>Подавать сразу</strong></li>
         </ul>
     </div>
+    {% elif recipe.id == 8 %}
+    <div class="warnings-block">
+        <h4>❌ Почему гречневая каша разочаровывает</h4>
+        <ul>
+            <li>Гречка получается разваренной в кашу-размазню — потому что её переварили или накрыли крышкой</li>
+            <li>Каша выходит сухой и рассыпается — воды было мало или она слишком бурно кипела</li>
+            <li>Совсем не чувствуется соли — забыли посолить воду перед закладкой</li>
+            <li>Пересолено — насыпали соли на глаз, а не отмерили ложкой</li>
+            <li>Крупа внутри пакетика сварилась неравномерно — пакетик лежал на дне или был сжат другими пакетиками</li>
+            <li>Время на упаковке не совпало с реальностью — у каждого производителя свои нюансы</li>
+        </ul>
+    </div>
+    <div class="tips-block">
+        <h4>✅ Что делать, чтобы каша получилась идеальной</h4>
+        <ul>
+            <li>Бери кастрюлю минимум на 2-3 литра — пакетик должен свободно плавать</li>
+            <li>Заливай ровно <strong>1,5 литра воды</strong> на один пакетик</li>
+            <li>Соли — <strong>1,5 столовой ложки без горки</strong> на 1,5 литра воды</li>
+            <li>Крышкой не накрывай во время варки — иначе каша разварится</li>
+            <li>Вари <strong>ровно 23 минуты 25 секунд</strong> — ни секундой больше!</li>
+            <li>После варки добавь сливочное масло — оно делает кашу нежной</li>
+            <li>Подавай сразу, пока горячая — гречка быстро остывает</li>
+        </ul>
+    </div>
     {% else %}
     <div class="warnings-block">
         <h4>❌ Почему пельмени разочаровывают</h4>
@@ -267,31 +291,38 @@
             </form>
         </div>
     </div>
-</div>
 
-<!-- ПРАВАЯ КОЛОНКА — МЕНЮ -->
-<div class="menu-area">
-    <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
-        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ request.GET.q }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 14px; background: var(--bg-card); color: var(--text-primary);">
-        <button type="submit" style="width: 100%; margin-top: 8px; background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
-    </form>
-    <h3 style="font-size: 22px; color: var(--accent);">📖 Рецепты</h3>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
-        <a href="{% url 'recipe_detail' recipe_id=4 %}" style="font-size: 16px;">Говяжьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=2 %}" style="font-size: 16px;">Телячьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=3 %}" style="font-size: 16px;">Свиные</a>
+        <!-- МЕНЮ ВНИЗУ (красивое) -->
+    <div class="menu-area" style="margin-top: 40px; background: var(--bg-card); border-radius: 32px; padding: 32px 24px; box-shadow: 0 4px 20px var(--shadow);">
+        <h3 style="font-size: 22px; color: var(--accent); text-align: center; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 8px; width: auto; margin: 0 auto 24px auto;">📖 Все рецепты</h3>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px 48px;">
+            <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🥟 Пельмени</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
+                    <a href="{% url 'recipe_detail' recipe_id=4 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Говяжьи</a>
+                    <a href="{% url 'recipe_detail' recipe_id=2 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Телячьи</a>
+                    <a href="{% url 'recipe_detail' recipe_id=3 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Свиные</a>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🥟 Вареники</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
+                    <a href="{% url 'recipe_detail' recipe_id=5 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С творогом</a>
+                    <a href="{% url 'recipe_detail' recipe_id=6 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С картошкой</a>
+                    <a href="{% url 'recipe_detail' recipe_id=7 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С вишней</a>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🍚 Каши</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
+                    <a href="{% url 'recipe_detail' recipe_id=8 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Гречневая</a>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
+        </div>
     </div>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
-        <a href="{% url 'recipe_detail' recipe_id=5 %}" style="font-size: 16px;">С творогом</a>
-        <a href="{% url 'recipe_detail' recipe_id=6 %}" style="font-size: 16px;">С картошкой</a>
-        <a href="{% url 'recipe_detail' recipe_id=7 %}" style="font-size: 16px;">С вишней</a>
-    </div>
-    <div style="margin-top: 16px; text-align: center;">
-        <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
-    </div>
-</div>
 
 <script>
     // ===== КОЛЛАПС СУПЕР-ТАЙМЕРА =====
