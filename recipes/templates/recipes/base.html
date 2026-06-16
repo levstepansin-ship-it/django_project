@@ -118,18 +118,17 @@
 
         .welcome-categories { display: flex; flex-direction: column; gap: 24px; text-align: center; }
         .welcome-cat-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent); }
-        .welcome-cat-links { font-size: 18px; font-weight: 600; color: var(--text-primary); }
-        .welcome-cat-links a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
-        .welcome-cat-links a:hover { color: var(--accent); text-decoration: underline; }
+        .welcome-cat-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; font-size: 18px; font-weight: 600; color: var(--text-primary); }
+        .welcome-cat-links a { color: var(--text-primary); text-decoration: none; font-weight: 600; padding: 4px 8px; border-radius: 40px; transition: all 0.2s; }
+        .welcome-cat-links a:hover { color: var(--accent); background: var(--hover-bg); }
 
-        .menu-area { background: var(--bg-card); border-radius: 32px; padding: 24px; box-shadow: 0 4px 12px var(--shadow); align-self: start; }
-        .menu-area h3 { font-size: 22px; margin-bottom: 20px; color: var(--accent); border-bottom: 2px solid var(--accent); display: inline-block; text-align: center; }
-        .menu-category { margin-bottom: 24px; text-align: center; }
-        .menu-category .cat-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent); }
-        .menu-category a { display: inline-block; padding: 0 6px; color: var(--text-primary); text-decoration: none; font-size: 18px; font-weight: 600; }
-        .menu-category a:hover { color: var(--accent); text-decoration: underline; }
-        .menu-area .search-form input { width: 100%; padding: 12px 16px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 14px; background: var(--bg-card); color: var(--text-primary); margin-bottom: 8px; }
-        .menu-area .search-form button { width: 100%; background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 40px; cursor: pointer; font-size: 14px; }
+        .menu-area { background: var(--bg-card); border-radius: 32px; padding: 32px 24px; box-shadow: 0 4px 20px var(--shadow); margin-top: 40px; }
+        .menu-area .menu-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 32px 48px; }
+        .menu-area .menu-group { text-align: center; }
+        .menu-area .menu-group-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent); }
+        .menu-area .menu-group-links { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center; }
+        .menu-area .menu-group-links a { color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s; }
+        .menu-area .menu-group-links a:hover { color: var(--accent); background: var(--hover-bg); transform: scale(1.05); }
 
         .legal-content { background: var(--bg-card); border-radius: 36px; padding: 48px 40px; margin-bottom: 40px; box-shadow: 0 8px 24px var(--shadow); color: var(--text-primary); }
         .legal-content h1 { font-size: 32px; margin-bottom: 8px; color: var(--accent); }
@@ -324,9 +323,9 @@
             .mobile-theme-btn-bottom { display: block; }
             .welcome-cat-title { font-size: 16px; }
             .welcome-cat-links { font-size: 16px; }
-            .menu-category .cat-title { font-size: 16px; }
-            .menu-category a { font-size: 16px; }
-            .menu-area h3 { font-size: 18px; }
+            .menu-area .menu-group-title { font-size: 16px; }
+            .menu-area .menu-group-links a { font-size: 14px; }
+            .menu-area .menu-grid { gap: 24px; }
             .legal-content { padding: 28px 20px; }
             .legal-content h1 { font-size: 26px; }
             .legal-content h2 { font-size: 20px; }
