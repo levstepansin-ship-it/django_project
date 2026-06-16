@@ -21,11 +21,11 @@
             <button type="submit">Найти</button>
         </form>
 
-        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с автопрокруткой) -->
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель) -->
         <div class="welcome-section">
             <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
-            <div class="welcome-carousel-wrapper">
-                <div class="welcome-carousel">
+            <div class="welcome-carousel-wrapper" id="carouselWrapper">
+                <div class="welcome-carousel" id="carouselTrack">
                     <!-- Говяжьи (ID 4) -->
                     <div class="welcome-card" data-recipe-id="4">
                         <div class="welcome-card-image-wrapper">
@@ -141,7 +141,7 @@
             <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" class="welcome-feedback-btn">📝 Оставить отзыв о сайте</button>
         </div>
 
-        <!-- СТАТИСТИКА -->
+        <!-- СТАТИСТИКА (без комментариев и оценок) -->
         <div class="welcome-stats">
             <div class="welcome-stat">
                 <span class="welcome-stat-value">{{ total_recipes }}</span>
@@ -170,19 +170,18 @@
         });
     });
 
-    // ===== АВТОПРОКРУТКА КАРУСЕЛИ (медленная) =====
+    // ===== АВТОПРОКРУТКА КАРУСЕЛИ (медленная, работает) =====
     (function autoScrollCarousel() {
-        const wrapper = document.querySelector('.welcome-carousel-wrapper');
-        const carousel = document.querySelector('.welcome-carousel');
+        const wrapper = document.getElementById('carouselWrapper');
+        const carousel = document.getElementById('carouselTrack');
         if (!wrapper || !carousel) return;
         
         let scrollAmount = 0;
-        const step = 0.4; // пикселей за кадр — очень медленно
+        const step = 0.3; // пикселей за кадр (очень медленно)
         let animationId = null;
         let isHovering = false;
         let isPaused = false;
 
-        // Останавливаем при наведении
         wrapper.addEventListener('mouseenter', () => { isHovering = true; });
         wrapper.addEventListener('mouseleave', () => { isHovering = false; });
         wrapper.addEventListener('touchstart', () => { isPaused = true; });
