@@ -28,8 +28,6 @@ def ensure_comments_table():
 def index(request):
     return render(request, 'recipes/index.html', {
         'total_recipes': Recipe.objects.count(),
-        'total_comments': Comment.objects.count(),
-        'total_ratings': Rating.objects.count(),
     })
 
 
