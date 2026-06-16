@@ -21,7 +21,7 @@
             <button type="submit">Найти</button>
         </form>
 
-        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель) -->
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с автопрокруткой) -->
         <div class="welcome-section">
             <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
             <div class="welcome-carousel-wrapper">
@@ -92,6 +92,17 @@
                         </div>
                         <span class="welcome-card-title">С вишней</span>
                     </div>
+                    <!-- Гречневая каша (ID 8) -->
+                    <div class="welcome-card" data-recipe-id="8">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="/media/images/grechka.jpg" 
+                                 alt="Гречневая каша"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Гречка'">
+                        </div>
+                        <span class="welcome-card-title">Гречневая</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -116,6 +127,12 @@
                         <a href="{% url 'recipe_detail' recipe_id=7 %}">С вишней</a>
                     </div>
                 </div>
+                <div class="welcome-cat">
+                    <div class="welcome-cat-title">🍚 Каши</div>
+                    <div class="welcome-cat-links">
+                        <a href="{% url 'recipe_detail' recipe_id=8 %}">Гречневая</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -131,12 +148,12 @@
                 <span class="welcome-stat-label">рецептов</span>
             </div>
             <div class="welcome-stat">
-                <span class="welcome-stat-value">{{ total_comments }}</span>
-                <span class="welcome-stat-label">отзывов</span>
+                <span class="welcome-stat-value">16%</span>
+                <span class="welcome-stat-label">отказов</span>
             </div>
             <div class="welcome-stat">
-                <span class="welcome-stat-value">{{ total_ratings }}</span>
-                <span class="welcome-stat-label">оценок</span>
+                <span class="welcome-stat-value">~9 мин</span>
+                <span class="welcome-stat-label">на сайте</span>
             </div>
         </div>
     </div>
@@ -152,6 +169,49 @@
             }
         });
     });
+
+    // ===== АВТОПРОКРУТКА КАРУСЕЛИ (медленная) =====
+    (function autoScrollCarousel() {
+        const wrapper = document.querySelector('.welcome-carousel-wrapper');
+        const carousel = document.querySelector('.welcome-carousel');
+        if (!wrapper || !carousel) return;
+        
+        let scrollAmount = 0;
+        const step = 0.4; // пикселей за кадр — очень медленно
+        let animationId = null;
+        let isHovering = false;
+        let isPaused = false;
+
+        // Останавливаем при наведении
+        wrapper.addEventListener('mouseenter', () => { isHovering = true; });
+        wrapper.addEventListener('mouseleave', () => { isHovering = false; });
+        wrapper.addEventListener('touchstart', () => { isPaused = true; });
+        wrapper.addEventListener('touchend', () => { setTimeout(() => { isPaused = false; }, 2000); });
+
+        function scrollStep() {
+            if (!isHovering && !isPaused && carousel.scrollWidth > wrapper.clientWidth) {
+                scrollAmount += step;
+                if (scrollAmount >= carousel.scrollWidth - wrapper.clientWidth) {
+                    scrollAmount = 0;
+                    carousel.scrollTo({ left: 0, behavior: 'smooth' });
+                    setTimeout(() => {
+                        if (!isHovering && !isPaused) {
+                            scrollAmount = 0;
+                            carousel.scrollLeft = 0;
+                        }
+                    }, 600);
+                    animationId = requestAnimationFrame(scrollStep);
+                    return;
+                }
+                carousel.scrollLeft = scrollAmount;
+                animationId = requestAnimationFrame(scrollStep);
+            } else {
+                animationId = requestAnimationFrame(scrollStep);
+            }
+        }
+
+        animationId = requestAnimationFrame(scrollStep);
+    })();
 </script>
 
 {% endblock %}
