@@ -54,7 +54,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# === БАЗА ДАННЫХ (SQLite) ===
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -83,7 +82,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ===== АВТОМАТИЧЕСКИЕ МИГРАЦИИ (чтобы не было ошибок при запуске) =====
+# ===== АВТОМАТИЧЕСКИЕ МИГРАЦИИ =====
 if 'runserver' not in sys.argv and 'makemigrations' not in sys.argv:
     try:
         from django.core.management import call_command
