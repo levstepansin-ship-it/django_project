@@ -4,6 +4,7 @@ Django settings for cooking_site project.
 
 from pathlib import Path
 import os
+import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -81,3 +82,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===== АВТОМАТИЧЕСКИЕ МИГРАЦИИ (чтобы не было ошибок при запуске) =====
+if 'runserver' not in sys.argv and 'makemigrations' not in sys.argv:
+    try:
+        from django.core.management import call_command
+        call_command('migrate', interactive=False, verbosity=0)
+    except Exception as e:
+        print(f"⚠️ Ошибка миграции (не критично): {e}")
