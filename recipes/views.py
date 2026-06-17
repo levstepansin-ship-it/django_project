@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Recipe, Comment, Rating, UserPreferences
+from django.contrib.auth.models import User
 import os
 import requests
 import json
@@ -23,6 +24,21 @@ def ensure_comments_table():
     except OperationalError:
         from django.core.management import call_command
         call_command('migrate', verbosity=0)
+
+
+# ===== ВРЕМЕННЫЙ КОД ДЛЯ СОЗДАНИЯ АДМИНА НА RENDER =====
+def create_admin_if_not_exists():
+    try:
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@example.com', 'WajosAdmin2026')
+            print("✅ Админ создан: admin / WajosAdmin2026")
+        else:
+            print("✅ Админ уже существует")
+    except Exception as e:
+        print(f"⚠️ Ошибка создания админа: {e}")
+
+# Вызываем при запуске
+create_admin_if_not_exists()
 
 
 def index(request):
