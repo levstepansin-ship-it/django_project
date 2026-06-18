@@ -52,12 +52,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
 # ==================================================
-# БАЗА ДАННЫХ — ПРЯМОЙ ХОСТ (БЕЗ pooler)
+# БАЗА ДАННЫХ — РУЧНОЕ ПОДКЛЮЧЕНИЕ (IPv4 + SSL)
 # ==================================================
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres:KamkmdxdLlM3yDd3@db.dunsxzfeskpiwvokoflw.supabase.co:5432/postgres'
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'KamkmdxdLlM3yDd3',
+        'HOST': 'db.dunsxzfeskpiwvokoflw.supabase.co',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
