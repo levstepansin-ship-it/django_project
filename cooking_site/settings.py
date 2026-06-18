@@ -7,7 +7,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-dev')
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
