@@ -59,7 +59,7 @@ WSGI_APPLICATION = 'cooking_site.wsgi.application'
 # ----- БАЗА ДАННЫХ (Supabase PostgreSQL) -----
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres.dunsxzfeskpiwvokoflw:KamkmdxdLlM3yDd3@aws-0-eu-central-1.pooler.supabase.com:6543/postgres'
+        default='postgresql://postgres:KamkmdxdLlM3yDd3@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?options=project%3Ddunsxzfeskpiwvokoflw'
     )
 }
 
