@@ -1,18 +1,18 @@
-﻿"""
-Django settings for cooking_site project.
-"""
-
+﻿import os
+import dj_database_url
 from pathlib import Path
-import os
+from dotenv import load_dotenv
 
+# Загружаем переменные окружения
+load_dotenv()
+
+# Базовые настройки проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = 'django-insecure-fvqc)^$n9zq65ak*n_)$5%!kolj5$%342e!2ea9w@g_s*yzz=l'
-
-DEBUG = True
-
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-dev')
+DEBUG = True  # На время разработки, потом сменить на False
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
+# Приложения
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,11 +20,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'recipes',
+    'recipes',  # Твоё приложение
 ]
 
+# Middleware (оставь как есть, ничего не трогай)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Для статики
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -35,6 +37,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'cooking_site.urls'
 
+# Шаблоны
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -53,13 +56,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
+# ----- БАЗА ДАННЫХ (Supabase PostgreSQL) -----
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='postgresql://postgres.dunsxzfeskpiwvokoflw:KamkmdxdLlM3yDd3@aws-0-eu-central-1.pooler.supabase.com:6543/postgres'
+    )
 }
 
+# Валидация паролей (не трогай)
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -72,11 +76,17 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
+# Статика и медиа
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'recipes' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройки для Telegram (из .env)
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
