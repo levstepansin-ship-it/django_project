@@ -16,6 +16,17 @@ TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
+# ===== СОЗДАНИЕ АДМИНА =====
+def create_admin_if_not_exists():
+    from django.contrib.auth.models import User
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        print("✅ Админ создан через views.py!")
+    else:
+        print("⚠️ Админ уже существует")
+
+
+# ===== ПРОВЕРКА ТАБЛИЦ КОММЕНТАРИЕВ =====
 def ensure_comments_table():
     try:
         with connection.cursor() as cursor:
@@ -25,17 +36,19 @@ def ensure_comments_table():
         call_command('migrate', verbosity=0)
 
 
+# ===== ГЛАВНАЯ СТРАНИЦА =====
 def index(request):
+    create_admin_if_not_exists()
     return render(request, 'recipes/index.html', {
         'total_recipes': Recipe.objects.count(),
     })
 
 
+# ===== СТРАНИЦА РЕЦЕПТА =====
 def recipe_detail(request, recipe_id):
     ensure_comments_table()
     recipe = get_object_or_404(Recipe, id=recipe_id)
 
-    # Похожие рецепты — из той же категории
     related = Recipe.objects.filter(
         subcategory__category=recipe.subcategory.category
     ).exclude(id=recipe.id)[:3]
@@ -46,6 +59,7 @@ def recipe_detail(request, recipe_id):
     })
 
 
+# ===== СЛУЧАЙНЫЙ РЕЦЕПТ =====
 def random_recipe(request):
     recipe = Recipe.objects.order_by('?').first()
     if recipe:
@@ -53,10 +67,12 @@ def random_recipe(request):
     return redirect('index')
 
 
+# ===== ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ =====
 def privacy(request):
     return render(request, 'recipes/privacy.html')
 
 
+# ===== ПОИСК =====
 def search(request):
     query = request.GET.get('q', '').strip()
     results = []
@@ -71,10 +87,12 @@ def search(request):
     return render(request, 'recipes/search_results.html', {'query': query, 'results': results})
 
 
+# ===== УСЛОВИЯ ИСПОЛЬЗОВАНИЯ =====
 def terms(request):
     return render(request, 'recipes/terms.html')
 
 
+# ===== ОТПРАВКА ОТЗЫВА В TELEGRAM =====
 @csrf_exempt
 def send_feedback(request):
     if request.method == 'POST':
@@ -103,6 +121,7 @@ def send_feedback(request):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+# ===== РЕЙТИНГ =====
 @csrf_exempt
 def rate_recipe(request, recipe_id):
     if request.method != 'POST':
@@ -126,6 +145,7 @@ def rate_recipe(request, recipe_id):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+# ===== ПРЕДЛОЖЕНИЕ РЕЦЕПТА =====
 def suggest_recipe(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
@@ -141,6 +161,7 @@ def suggest_recipe(request):
     return redirect('index')
 
 
+# ===== ДОБАВЛЕНИЕ КОММЕНТАРИЯ =====
 def add_comment(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.method == 'POST':
@@ -153,14 +174,17 @@ def add_comment(request, recipe_id):
     return redirect('recipe_detail', recipe_id=recipe_id)
 
 
+# ===== ИЗБРАННОЕ =====
 def favorites(request):
     return render(request, 'recipes/favorites.html')
 
 
+# ===== НАСТРОЙКИ =====
 def settings_page(request):
     return render(request, 'recipes/settings.html')
 
 
+# ===== API ДЛЯ НАСТРОЕК =====
 @csrf_exempt
 def api_settings(request):
     if request.method == 'POST':
