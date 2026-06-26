@@ -8,16 +8,14 @@
 
 {% block content %}
 <div class="recipe-area">
-    <div style="margin-bottom: 24px;">
-        <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px; display: inline-block; transition: background 0.2s;">← На главную</a>
-    </div>
+    <a href="{% url 'index' %}" class="btn btn-secondary back-btn">← На главную</a>
 
     <!-- ХЛЕБНЫЕ КРОШКИ -->
-    <nav class="breadcrumbs">
-        <a href="{% url 'index' %}">🏠 Главная</a>
-        <span class="separator">›</span>
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+        <a href="{% url 'index' %}"><span aria-hidden="true">🏠</span> Главная</a>
+        <span class="separator" aria-hidden="true">›</span>
         <span>{{ recipe.subcategory.category.name }}</span>
-        <span class="separator">›</span>
+        <span class="separator" aria-hidden="true">›</span>
         <span class="current">{{ recipe.title }}</span>
     </nav>
 
@@ -180,8 +178,8 @@
     </div>
     {% endif %}
 
-    <h1 style="font-size: 36px; color: var(--text-primary);">{{ recipe.title }}</h1>
-    <div class="subhead" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 18px;">Пошаговая инструкция с таймерами</div>
+    <h1 class="page-title recipe-title">{{ recipe.title }}</h1>
+    <div class="page-subtitle">Пошаговая инструкция с таймерами</div>
 
     <!-- ⭐ РЕЙТИНГ -->
     <div class="rating-widget">
@@ -205,36 +203,38 @@
 
     {% for step in recipe.steps %}
     <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг {{ forloop.counter }}. {{ step.text }}</div>
+        <div class="step-title step-title-lg"><span aria-hidden="true">📌</span> Шаг {{ forloop.counter }}. {{ step.text }}</div>
         {% if step.desc %}
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">{{ step.desc }}</div>
+        <div class="step-desc step-desc-lg">{{ step.desc }}</div>
         {% endif %}
         <div class="timer-row">
-            <span class="timer-display" id="timer{{ forloop.counter }}" style="font-size: 48px;">{{ step.duration }}:00</span>
-            <button class="start-timer" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" style="background: var(--accent); color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт ({{ step.duration }} мин)</button>
-            <button class="reset-timer" data-timer-id="timer{{ forloop.counter }}" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+            <span class="timer-display timer-display-lg" id="timer{{ forloop.counter }}">{{ step.duration }}:00</span>
+            <button class="start-timer btn btn-primary" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" aria-label="Запустить таймер шага {{ forloop.counter }}"><span aria-hidden="true">🔥</span> Старт ({{ step.duration }} мин)</button>
+            <button class="reset-timer btn btn-secondary" data-timer-id="timer{{ forloop.counter }}" aria-label="Сбросить таймер шага {{ forloop.counter }}">Сброс</button>
         </div>
     </div>
     {% endfor %}
 
     <!-- КОМПАКТНЫЙ TOOLBAR -->
     <div id="shareButtons" class="compact-toolbar">
-        <button id="shareBtn" class="toolbar-btn" title="Поделиться">📤</button>
-        <button id="copyBtn" class="toolbar-btn" title="Копировать ссылку">🔗</button>
-        <button id="saveRecipeBtn" class="toolbar-btn toolbar-save" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}" title="Сохранить">⭐</button>
+        <button id="shareBtn" class="toolbar-btn" title="Поделиться" aria-label="Поделиться рецептом"><span aria-hidden="true">📤</span></button>
+        <button id="copyBtn" class="toolbar-btn" title="Копировать ссылку" aria-label="Копировать ссылку"><span aria-hidden="true">🔗</span></button>
+        <button id="saveRecipeBtn" class="toolbar-btn toolbar-save" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}" title="Сохранить" aria-label="Сохранить в избранное"><span aria-hidden="true">⭐</span></button>
     </div>
 
     <!-- СУПЕР-ТАЙМЕР (раскрываемый) -->
     <div class="global-timer-collapsible">
-        <div class="global-timer-header" id="globalTimerToggle">
-            <span>⚡ Супер-таймер <small>(все шаги подряд)</small></span>
-            <span class="collapse-arrow" id="collapseArrow">▸</span>
+        <div class="global-timer-header" id="globalTimerToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="globalTimerBody">
+            <span><span aria-hidden="true">⚡</span> Супер-таймер <small>(все шаги подряд)</small></span>
+            <span class="collapse-arrow" id="collapseArrow" aria-hidden="true">▸</span>
         </div>
         <div class="global-timer-body" id="globalTimerBody">
-            <div class="global-timer" style="background: linear-gradient(135deg, var(--accent), #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center;">
-                <div class="timer" id="fullTimer" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">--:--</div>
-                <button id="startFullBtn" style="background: white; color: var(--accent); border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px; cursor: pointer;">🚀 Запустить полный цикл</button>
-                <button id="resetFullBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px; cursor: pointer;">Сбросить всё</button>
+            <div class="global-timer global-timer-panel">
+                <div class="timer global-timer-display" id="fullTimer">--:--</div>
+                <div class="global-timer-actions">
+                    <button id="startFullBtn" class="btn btn-secondary global-timer-btn"><span aria-hidden="true">🚀</span> Запустить полный цикл</button>
+                    <button id="resetFullBtn" class="btn btn-danger">Сбросить всё</button>
+                </div>
             </div>
         </div>
     </div>
@@ -261,7 +261,7 @@
     <div class="comments-section">
         <div class="comments-title">
             💬 Комментарии
-            <span style="font-size: 14px; color: var(--text-secondary); font-weight: 400;">({{ recipe.comments.count }})</span>
+            <span class="comments-count">({{ recipe.comments.count }})</span>
         </div>
         <div class="comment-list">
             {% for comment in recipe.comments.all %}
@@ -285,42 +285,18 @@
                 {% csrf_token %}
                 <input type="text" name="author" placeholder="Ваше имя (необязательно)">
                 <textarea name="text" rows="4" placeholder="Поделитесь впечатлением о рецепте..." required></textarea>
-                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                    <button type="submit" style="background: var(--accent); color: white; border: none; padding: 12px 28px; border-radius: 40px; font-size: 15px; cursor: pointer; font-weight: 600;">📤 Отправить</button>
+                <div class="comment-form-actions">
+                    <button type="submit" class="btn btn-primary">📤 Отправить</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- МЕНЮ ВНИЗУ -->
-    <div class="menu-area" style="margin-top: 40px; background: var(--bg-card); border-radius: 32px; padding: 32px 24px; box-shadow: 0 4px 20px var(--shadow);">
-        <h3 style="font-size: 22px; color: var(--accent); text-align: center; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 8px; width: auto; margin: 0 auto 24px auto;">📖 Все рецепты</h3>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 32px 48px;">
-            <div style="text-align: center;">
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🥟 Пельмени</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
-                    <a href="{% url 'recipe_detail' recipe_id=4 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Говяжьи</a>
-                    <a href="{% url 'recipe_detail' recipe_id=2 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Телячьи</a>
-                    <a href="{% url 'recipe_detail' recipe_id=3 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Свиные</a>
-                </div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🥟 Вареники</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
-                    <a href="{% url 'recipe_detail' recipe_id=5 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С творогом</a>
-                    <a href="{% url 'recipe_detail' recipe_id=6 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С картошкой</a>
-                    <a href="{% url 'recipe_detail' recipe_id=7 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">С вишней</a>
-                </div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px; color: var(--accent);">🍚 Каши</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: center;">
-                    <a href="{% url 'recipe_detail' recipe_id=8 %}" style="color: var(--text-primary); text-decoration: none; font-size: 16px; font-weight: 500; padding: 4px 8px; border-radius: 40px; transition: all 0.2s;">Гречневая</a>
-                </div>
-            </div>
-        </div>
-        <div style="margin-top: 24px; text-align: center;">
-            <a href="{% url 'favorites' %}" class="favorites-link">⭐ Избранное</a>
+    <!-- НАВИГАЦИЯ -->
+    <div class="menu-area">
+        <div class="menu-actions">
+            <a href="{% url 'index' %}" class="btn btn-ghost btn-sm">📖 Все рецепты</a>
+            <a href="{% url 'favorites' %}" class="btn btn-secondary btn-sm">⭐ Избранное</a>
         </div>
     </div>
 </div>
@@ -431,7 +407,7 @@
     const saveBtn = document.getElementById('saveRecipeBtn');
     function getSaved() { return JSON.parse(localStorage.getItem('wajos_favorites') || '[]'); }
     function checkSaved(rid) { if (getSaved().some(r => r.id === rid)) { saveBtn.classList.add('saved'); saveBtn.innerHTML = '⭐ Сохранено'; } }
-    function showMsg(text, err) { let d = document.getElementById('saveMessage'); if (!d) { d = document.createElement('div'); d.id = 'saveMessage'; d.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:40px;z-index:1000;font-size:14px;display:none;font-weight:600;'; document.body.appendChild(d); } d.textContent = text; d.style.background = err ? '#f44336' : '#4CAF50'; d.style.color = 'white'; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 2000); }
+    function showMsg(text, err) { let d = document.getElementById('saveMessage'); if (!d) { d = document.createElement('div'); d.id = 'saveMessage'; d.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:16px 30px;border-radius:40px;z-index:1000;font-size:15px;display:none;font-weight:600;color:white;box-shadow:0 12px 40px rgba(0,0,0,0.2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);'; document.body.appendChild(d); } d.textContent = text; d.style.background = err ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #22c55e, #16a34a)'; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 2200); }
     if (saveBtn) {
         saveBtn.addEventListener('click', function() {
             const rid = parseInt(this.dataset.recipeId), rt = this.dataset.recipeTitle, saved = getSaved();
