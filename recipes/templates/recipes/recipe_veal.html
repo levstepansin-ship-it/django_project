@@ -3,25 +3,23 @@
 {% block title %}Пельмени из телятины — нежные и сочные{% endblock %}
 
 {% block content %}
-<!-- Левая колонка -->
 <div class="recipe-area">
-    <div style="margin-bottom: 24px;">
-        <a href="{% url 'index' %}" style="background: #e67e22; color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none; font-size: 16px;">← На главную</a>
-    </div>
-    
-    <h1 style="font-size: 36px;">🥩 Пельмени из телятины</h1>
-    <div class="subhead" style="color: #666; margin-bottom: 20px; font-size: 18px;">Нежное мясо, тонкое тесто — варим так, чтобы не развалились</div>
+    <a href="{% url 'index' %}" class="btn btn-secondary back-btn">← На главную</a>
 
-    <!-- Блок проблем и решений -->
-    <div style="background: #fef2e6; border-radius: 24px; padding: 20px; margin-bottom: 32px;">
-        <h2 style="font-size: 22px; margin-bottom: 12px;">❌ Почему пельмени из телятины часто не получаются</h2>
-        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+    <h1 class="page-title recipe-title">🥩 Пельмени из телятины</h1>
+    <div class="page-subtitle">Нежное мясо, тонкое тесто — варим так, чтобы не развалились</div>
+
+    <div class="warnings-block">
+        <h4>❌ Почему пельмени из телятины часто не получаются</h4>
+        <ul>
             <li>Телятина очень нежная — легко переварить, мясо станет сухим</li>
             <li>Тесто может разорваться, если вода слишком бурно кипит</li>
             <li>Слипаются, если мало воды или пельменей слишком много</li>
         </ul>
-        <h2 style="font-size: 22px; margin: 20px 0 12px;">✅ Что делать</h2>
-        <ul style="margin-left: 20px; font-size: 16px; line-height: 1.6;">
+    </div>
+    <div class="tips-block">
+        <h4>✅ Что делать</h4>
+        <ul>
             <li>Варить <strong>строго 5–7 минут после всплытия</strong> (не больше!)</li>
             <li>Воды брать <strong>3–4 части на 1 часть пельменей</strong></li>
             <li>После всплытия <strong>убавить огонь до среднего</strong>, чтобы вода не бурлила</li>
@@ -31,80 +29,67 @@
 
     <!-- ШАГ 1 -->
     <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 1. Кипятим воду</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+        <div class="step-title step-title-lg">📌 Шаг 1. Кипятим воду</div>
+        <div class="step-desc step-desc-lg">
             Налей в кастрюлю <strong>2–2,5 литра холодной воды</strong>. Добавь <strong>1,5 столовой ложки соли</strong>. По желанию — лавровый лист, 3–4 горошины чёрного перца и <strong>1 ст. ложку растительного масла</strong> (против слипания). Поставь на сильный огонь и накрой крышкой — так закипит быстрее.
         </div>
         <div class="timer-row">
-            <span class="timer-display" id="timerWaterVeal" style="font-size: 48px;">4:00</span>
-            <button id="startWaterVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🔥 Старт (4 мин)</button>
-            <button id="resetWaterVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+            <span class="timer-display timer-display-lg" id="timerWaterVeal">4:00</span>
+            <button id="startWaterVealBtn" class="btn btn-primary">🔥 Старт (4 мин)</button>
+            <button id="resetWaterVealBtn" class="btn btn-secondary">Сброс</button>
         </div>
     </div>
 
     <!-- ШАГ 2 -->
     <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 2. Бросаем пельмени</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+        <div class="step-title step-title-lg">📌 Шаг 2. Бросаем пельмени</div>
+        <div class="step-desc step-desc-lg">
             Достань пельмени из морозилки прямо перед варкой. <strong>Не размораживай!</strong> Закрути ложкой воронку в кипящей воде и кидай пельмени <strong>по одному или небольшими партиями</strong>. Аккуратно перемешай <strong>один раз</strong>, чтобы не прилипли ко дну.
         </div>
         <div class="timer-row">
-            <span class="timer-display" id="timerFloatVeal" style="font-size: 48px;">2:30</span>
-            <button id="startFloatVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🍥 Старт (2:30 до всплытия)</button>
-            <button id="resetFloatVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+            <span class="timer-display timer-display-lg" id="timerFloatVeal">2:30</span>
+            <button id="startFloatVealBtn" class="btn btn-primary">🍥 Старт (2:30 до всплытия)</button>
+            <button id="resetFloatVealBtn" class="btn btn-secondary">Сброс</button>
         </div>
     </div>
 
     <!-- ШАГ 3 -->
     <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 3. Финишная варка (самое важное)</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+        <div class="step-title step-title-lg">📌 Шаг 3. Финишная варка (самое важное)</div>
+        <div class="step-desc step-desc-lg">
             Как только пельмени всплыли, <strong>убавь огонь до среднего</strong>. Телятина очень нежная — переваривать нельзя! Запускай таймер. Крышкой <strong>не накрывай</strong>.
         </div>
         <div class="timer-row">
-            <span class="timer-display" id="timerBoilVeal" style="font-size: 48px;">6:00</span>
-            <button id="startBoilVealBtn" style="background: #e67e22; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">⏱️ Старт (6 мин)</button>
-            <button id="resetBoilVealBtn" style="background: #ced4da; color: #1f1f1f; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сброс</button>
+            <span class="timer-display timer-display-lg" id="timerBoilVeal">6:00</span>
+            <button id="startBoilVealBtn" class="btn btn-primary">⏱️ Старт (6 мин)</button>
+            <button id="resetBoilVealBtn" class="btn btn-secondary">Сброс</button>
         </div>
     </div>
 
     <!-- ШАГ 4 -->
     <div class="step-card">
-        <div class="step-title" style="font-size: 24px;">📌 Шаг 4. Достаём и подаём</div>
-        <div class="step-desc" style="font-size: 17px; line-height: 1.5; margin-bottom: 20px;">
+        <div class="step-title step-title-lg">📌 Шаг 4. Достаём и подаём</div>
+        <div class="step-desc step-desc-lg">
             Выключи огонь. Доставай пельмени шумовкой, дай воде стечь. Сразу добавь кусочек сливочного масла — оно не даст слипнуться и подчеркнёт нежный вкус телятины. Подавай со сметаной, соевым соусом или растопленным маслом с зеленью.
         </div>
     </div>
 
     <!-- СУПЕР-ТАЙМЕР -->
-    <div class="global-timer" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white; border-radius: 28px; padding: 24px; text-align: center; margin-top: 32px;">
-        <div style="font-size: 20px; font-weight: 600;">⚡ СУПЕР-ТАЙМЕР (кипячение → всплытие → варка)</div>
-        <div class="timer" id="fullTimerVeal" style="font-size: 56px; font-weight: 600; letter-spacing: 6px; margin: 16px 0;">12:30</div>
-        <button id="startFullVealBtn" style="background: white; color: #e67e22; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">🚀 Запустить полный цикл</button>
-        <button id="resetFullVealBtn" style="background: #d9534f; color: white; border: none; font-size: 16px; padding: 10px 24px; border-radius: 40px;">Сбросить всё</button>
+    <div class="global-timer global-timer-panel">
+        <div class="global-timer-label">⚡ СУПЕР-ТАЙМЕР (кипячение → всплытие → варка)</div>
+        <div class="timer global-timer-display" id="fullTimerVeal">12:30</div>
+        <div class="global-timer-actions">
+            <button id="startFullVealBtn" class="btn btn-secondary global-timer-btn">🚀 Запустить полный цикл</button>
+            <button id="resetFullVealBtn" class="btn btn-danger">Сбросить всё</button>
+        </div>
     </div>
-</div>
 
-<!-- Правая колонка с меню -->
-<div class="menu-area">
-    <h3 style="font-size: 22px;">📖 Рецепты</h3>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Пельмени</div>
-        <a href="#" style="font-size: 16px;">Классические</a>
-        <a href="#" style="font-size: 16px;">Куриные</a>
-        <a href="#" style="font-size: 16px;">Говяжьи</a>
-    </div>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🥟 Вареники</div>
-        <a href="#" style="font-size: 16px;">С творогом</a>
-        <a href="#" style="font-size: 16px;">С картошкой</a>
-        <a href="#" style="font-size: 16px;">С вишней</a>
-    </div>
-    <div class="menu-category">
-        <div class="cat-title" style="font-size: 18px;">🍳 Другое</div>
-        <a href="#" style="font-size: 16px;">Яйца всмятку</a>
-        <a href="#" style="font-size: 16px;">Макароны</a>
-        <a href="#" style="font-size: 16px;">Рис</a>
+    <!-- НАВИГАЦИЯ -->
+    <div class="menu-area">
+        <div class="menu-actions">
+            <a href="{% url 'index' %}" class="btn btn-ghost btn-sm">📖 Все рецепты</a>
+            <a href="{% url 'favorites' %}" class="btn btn-secondary btn-sm">⭐ Избранное</a>
+        </div>
     </div>
 </div>
 
