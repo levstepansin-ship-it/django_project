@@ -1,48 +1,46 @@
-﻿{% extends "recipes/base.html" %}
+{% extends "recipes/base.html" %}
 
-{% block title %}Поиск: {{ query }}{% endblock %}
+{% block title %}Поиск: {{ query }} — Wajos{% endblock %}
 
 {% block content %}
 <div class="recipe-area">
-    <h1 style="font-size: 36px;">🔍 Результаты поиска: «{{ query }}»</h1>
-    
+    <a href="{% url 'index' %}" class="btn btn-secondary back-btn">← На главную</a>
+
+    <h1 class="page-title">Результаты поиска</h1>
+    <p class="page-subtitle">Запрос: «{{ query }}»</p>
+
     {% if results %}
-        <ul style="margin-top: 24px; list-style: none;">
+        <div class="search-results-list">
         {% for recipe in results %}
-            <li style="margin-bottom: 16px; padding: 16px; background: #fef9f4; border-radius: 24px;">
-                <a href="{% url 'recipe_detail' recipe_id=recipe.id %}" style="font-size: 20px; font-weight: 600; color: #e67e22; text-decoration: none;">{{ recipe.title }}</a>
-                <p style="color: #666; margin-top: 8px;">{{ recipe.subcategory.category.name }} → {{ recipe.subcategory.name }}</p>
-            </li>
+            <a href="{% url 'recipe_detail' recipe_id=recipe.id %}" class="card card-lift search-result-card">
+                <div class="card-body search-result-body">
+                    <div class="search-result-icon" aria-hidden="true">🥟</div>
+                    <div class="search-result-text">
+                        <div class="card-title">{{ recipe.title }}</div>
+                        <div class="card-text">{{ recipe.subcategory.category.name }} → {{ recipe.subcategory.name }}</div>
+                    </div>
+                    <div class="search-result-arrow" aria-hidden="true">→</div>
+                </div>
+            </a>
         {% endfor %}
-        </ul>
+        </div>
     {% else %}
-        <p style="margin-top: 24px; font-size: 18px;">😕 Ничего не найдено. Попробуйте изменить запрос.</p>
+        <div class="empty-state">
+            <span class="empty-state-icon" aria-hidden="true">🔍</span>
+            <p>Ничего не найдено по запросу «{{ query }}».</p>
+            <p style="margin-top: 8px; font-size: 15px;">Попробуйте изменить запрос или вернуться на главную.</p>
+        </div>
     {% endif %}
-    
-    <a href="{% url 'index' %}" style="display: inline-block; margin-top: 32px; background: #e67e22; color: white; padding: 10px 24px; border-radius: 40px; text-decoration: none;">← На главную</a>
 </div>
 
-<!-- Правая колонка с меню -->
-<div class="menu-area">
-    <form method="GET" action="{% url 'search' %}" style="margin-bottom: 20px;">
-        <input type="text" name="q" placeholder="🔍 Найти рецепт..." value="{{ query }}" style="width: 100%; padding: 10px 15px; border-radius: 40px; border: 1px solid #ddd;">
-        <button type="submit" style="width: 100%; margin-top: 8px; background: #e67e22; color: white; border: none; padding: 8px 15px; border-radius: 40px;">Искать</button>
-    </form>
-    
-    <h3>📖 Рецепты</h3>
-    <!-- Дальше идёт твоё обычное меню, можешь скопировать его из index.html -->
-    <div class="menu-category">
-        <div class="cat-title">🥟 Пельмени</div>
-        <a href="{% url 'recipe_detail' recipe_id=1 %}">Классические</a>
-        <a href="{% url 'recipe_detail' recipe_id=4 %}">Говяжьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=2 %}">Телячьи</a>
-        <a href="{% url 'recipe_detail' recipe_id=3 %}">Свиные</a>
-    </div>
-    <div class="menu-category">
-        <div class="cat-title">🥟 Вареники</div>
-        <a href="{% url 'recipe_detail' recipe_id=5 %}">С творогом</a>
-        <a href="{% url 'recipe_detail' recipe_id=6 %}">С картошкой</a>
-        <a href="#">С вишней</a>
-    </div>
-</div>
+<style>
+    .search-results-list { display: flex; flex-direction: column; gap: 18px; margin-top: 18px; }
+    .search-result-card { text-decoration: none; }
+    .search-result-body { display: flex; align-items: center; gap: 22px; }
+    .search-result-icon { font-size: 44px; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(var(--accent-rgb),0.3)); }
+    .search-result-text { flex: 1; min-width: 0; }
+    .search-result-text .card-title { font-size: 20px; }
+    .search-result-arrow { font-size: 26px; color: var(--accent); flex-shrink: 0; transition: all 0.3s var(--spring); filter: drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.3)); }
+    .search-result-card:hover .search-result-arrow { transform: translateX(8px) scale(1.2); }
+</style>
 {% endblock %}
