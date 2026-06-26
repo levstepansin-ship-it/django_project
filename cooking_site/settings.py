@@ -1,10 +1,11 @@
 ﻿import os
+import dj_database_url
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-temporary-key-for-dev'
-DEBUG = False
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-dev')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
@@ -48,12 +49,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# ----- БАЗА ДАННЫХ (SQLite) -----
+# ----- БАЗА ДАННЫХ (PostgreSQL на Neon) -----
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3'
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -78,6 +78,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Telegram (из переменных окружения)
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
