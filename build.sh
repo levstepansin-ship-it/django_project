@@ -9,13 +9,5 @@ python manage.py collectstatic --noinput
 # Применяем миграции
 python manage.py migrate
 
-# Пересоздаём суперпользователя (гарантированно)
-python manage.py shell << EOF
-from django.contrib.auth.models import User
-User.objects.filter(username='admin').delete()
-User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-print("✅ Админ пересоздан!")
-EOF
-
-# Загружаем рецепты из дампа
+# Загружаем все данные (категории, подкатегории, рецепты, пользователей)
 python manage.py loaddata full_data.json
