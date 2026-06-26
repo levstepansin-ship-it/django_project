@@ -3,11 +3,18 @@
 # Устанавливаем зависимости
 pip install -r requirements.txt
 
-# Собираем статику (картинки, CSS, JS)
+# Собираем статику
 python manage.py collectstatic --noinput
 
-# Применяем миграции к базе данных
+# Применяем миграции
 python manage.py migrate
 
-# Создаём суперпользователя (если его нет)
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin123') if not User.objects.filter(username='admin').exists() else None" | python manage.py shell
+# Создаём суперпользователя (гарантированно)
+python manage.py shell << EOF
+from django.contrib.auth.models import User
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+    print("✅ Суперпользователь создан!")
+else:
+    print("⚠️ Суперпользователь уже существует")
+EOF
