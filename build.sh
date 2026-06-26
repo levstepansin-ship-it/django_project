@@ -9,12 +9,10 @@ python manage.py collectstatic --noinput
 # Применяем миграции
 python manage.py migrate
 
-# Создаём суперпользователя (гарантированно)
+# Пересоздаём суперпользователя (гарантированно)
 python manage.py shell << EOF
 from django.contrib.auth.models import User
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-    print("✅ Суперпользователь создан!")
-else:
-    print("⚠️ Суперпользователь уже существует")
+User.objects.filter(username='admin').delete()
+User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+print("✅ Админ пересоздан!")
 EOF
