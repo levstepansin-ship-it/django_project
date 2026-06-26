@@ -1,41 +1,88 @@
-﻿{% extends "recipes/base.html" %}
+{% extends "recipes/base.html" %}
 
 {% block title %}Избранные рецепты — Wajos{% endblock %}
 
 {% block content %}
 <div class="recipe-area">
-    <h1 style="font-size: 32px; margin-bottom: 24px;">⭐ Избранные рецепты</h1>
-    
-    <div id="favoritesList" style="display: flex; flex-direction: column; gap: 16px;">
-    </div>
-    
-    <div id="emptyMessage" style="text-align: center; padding: 60px; color: var(--text-secondary); background: var(--step-bg); border-radius: 28px; display: none;">
-        🍳 У вас пока нет сохранённых рецептов.<br>
-        Нажмите ⭐ на странице рецепта, чтобы добавить.
-    </div>
-    
-    <div style="text-align: center; margin-top: 32px;">
-        <a href="{% url 'index' %}" style="background: var(--accent); color: white; padding: 10px 28px; border-radius: 40px; text-decoration: none; display: inline-block;">← На главную</a>
+    <a href="{% url 'index' %}" class="btn btn-secondary back-btn">← На главную</a>
+
+    <h1 class="page-title">Избранные рецепты</h1>
+    <p class="page-subtitle">Здесь хранятся рецепты, которые вы сохранили для позже.</p>
+
+    <div id="favoritesList" class="favorites-list"></div>
+
+    <div id="emptyMessage" class="empty-state" style="display: none;">
+        <span class="empty-state-icon" aria-hidden="true">⭐</span>
+        <p>У вас пока нет сохранённых рецептов.</p>
+        <p style="margin-top: 8px; font-size: 15px;">Нажмите ⭐ на странице рецепта, чтобы добавить его сюда.</p>
+        <a href="{% url 'index' %}" class="btn btn-primary" style="margin-top: 20px;">Найти рецепты</a>
     </div>
 </div>
+
+<style>
+    .favorites-list { display: flex; flex-direction: column; gap: 18px; }
+    .fav-card {
+        background: var(--glass-bg-strong);
+        backdrop-filter: var(--blur-amount); -webkit-backdrop-filter: var(--blur-amount);
+        border-radius: 24px;
+        box-shadow: var(--glass-shadow); border: 1px solid var(--glass-border);
+        padding: 22px 26px;
+        display: flex; justify-content: space-between; align-items: center;
+        flex-wrap: wrap; gap: 14px;
+        transition: all 0.4s var(--spring);
+    }
+    .fav-card:hover { box-shadow: var(--glass-shadow-hover); transform: translateY(-4px); border-color: var(--accent); }
+    .fav-card-icon { font-size: 32px; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(var(--accent-rgb),0.3)); }
+    .fav-card-title { font-size: 18px; font-weight: 700; color: var(--text-primary); flex: 1; min-width: 0; }
+    .fav-card-remove {
+        background: var(--glass-bg); backdrop-filter: var(--blur-light); -webkit-backdrop-filter: var(--blur-light);
+        border: 1px solid var(--glass-border-soft); color: var(--muted-text);
+        cursor: pointer; font-size: 22px; padding: 10px;
+        border-radius: 50%; transition: all 0.3s var(--spring);
+    }
+    .fav-card-remove:hover { color: white; background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; transform: scale(1.15) rotate(90deg); box-shadow: 0 4px 16px rgba(220,38,38,0.35); }
+</style>
 
 <script>
     const favorites = JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
     const container = document.getElementById('favoritesList');
     const emptyMsg = document.getElementById('emptyMessage');
-    
-    if (favorites.length === 0) {
-        emptyMsg.style.display = 'block';
-    } else {
-        favorites.forEach(recipe => {
+
+    function renderFavorites() {
+        const favs = JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
+        container.innerHTML = '';
+
+        if (favs.length === 0) {
+            emptyMsg.style.display = 'block';
+            return;
+        }
+        emptyMsg.style.display = 'none';
+
+        favs.forEach(recipe => {
             const card = document.createElement('div');
-            card.style.cssText = 'background: var(--step-bg); border-radius: 20px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;';
+            card.className = 'fav-card';
             card.innerHTML = `
-                <span style="font-size: 18px; font-weight: 600;">${recipe.title}</span>
-                <a href="/recipe/${recipe.id}/" style="background: var(--accent); color: white; padding: 8px 20px; border-radius: 40px; text-decoration: none;">Готовить →</a>
+                <span class="fav-card-icon" aria-hidden="true">🥟</span>
+                <span class="fav-card-title">${recipe.title}</span>
+                <button class="fav-card-remove" data-id="${recipe.id}" title="Удалить" aria-label="Удалить из избранного">✕</button>
+                <a href="/recipe/${recipe.id}/" class="btn btn-primary btn-sm">Готовить →</a>
             `;
             container.appendChild(card);
         });
+
+        // Кнопки удаления
+        container.querySelectorAll('.fav-card-remove').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                let favs = JSON.parse(localStorage.getItem('wajos_favorites') || '[]');
+                favs = favs.filter(r => r.id !== id);
+                localStorage.setItem('wajos_favorites', JSON.stringify(favs));
+                renderFavorites();
+                if (window.showToast) showToast('🗑️ Удалено из избранного', 'success');
+            });
+        });
     }
+
+    renderFavorites();
 </script>
 {% endblock %}
