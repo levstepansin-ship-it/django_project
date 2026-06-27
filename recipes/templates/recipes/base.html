@@ -1059,6 +1059,254 @@
         .related-card-rating { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
         .related-card-rating .star { color: var(--star-active); }
 
+        /* ===== NAV BAR (Glass) ===== */
+        .nav-bar {
+            position: sticky;
+            top: 12px;
+            z-index: 100;
+            margin-bottom: 24px;
+            animation: fadeIn 0.5s var(--ease-out);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 24px;
+            background: var(--glass-bg-strong);
+            backdrop-filter: var(--blur-amount);
+            -webkit-backdrop-filter: var(--blur-amount);
+            border-radius: 50px;
+            box-shadow: var(--glass-shadow);
+            border: 1px solid var(--glass-border);
+        }
+
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .nav-logo span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 50px;
+            transition: all 0.3s var(--spring);
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            background: var(--hover-bg);
+        }
+
+        /* Auth кнопки в навбаре */
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .nav-login-btn, .nav-register-btn {
+            font-size: 13px;
+            padding: 8px 18px;
+        }
+
+        /* Меню пользователя */
+        .nav-user-menu {
+            position: relative;
+        }
+
+        .nav-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-light);
+            -webkit-backdrop-filter: var(--blur-light);
+            cursor: pointer;
+            transition: all 0.3s var(--spring);
+            font-family: inherit;
+        }
+
+        .nav-user-btn:hover {
+            border-color: var(--accent);
+            background: var(--hover-bg);
+        }
+
+        .nav-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .nav-username {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .nav-chevron {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.3s var(--spring);
+        }
+
+        .nav-user-btn[aria-expanded="true"] .nav-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Дропдаун */
+        .nav-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 220px;
+            background: var(--glass-bg-strong);
+            backdrop-filter: var(--blur-amount);
+            -webkit-backdrop-filter: var(--blur-amount);
+            border-radius: 20px;
+            box-shadow: var(--elevation-3);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            animation: dropdownIn 0.25s var(--spring);
+            z-index: 200;
+        }
+
+        .nav-dropdown.active {
+            display: block;
+        }
+
+        @keyframes dropdownIn {
+            0% { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .nav-dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+        }
+
+        .nav-dropdown-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .nav-dropdown-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-dropdown-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .nav-dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s var(--ease-out);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .nav-dropdown-item:hover {
+            background: var(--hover-bg);
+            color: var(--accent);
+        }
+
+        .nav-dropdown-logout {
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: none;
+            color: var(--error);
+        }
+
+        .nav-dropdown-logout:hover {
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        /* ===== MESSAGES TOAST ===== */
+        .messages-toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            border-radius: 50px;
+            z-index: 10001;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent-gradient);
+            box-shadow: var(--glow-accent-strong);
+            animation: toastIn 0.4s var(--spring);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 800px) {
             body { padding: 16px; }
@@ -1090,6 +1338,18 @@
             .rating-stars label { font-size: 38px; }
             .related-grid { grid-template-columns: 1fr 1fr; }
             .global-timer .timer, .global-timer-display { font-size: 48px; }
+
+            /* Nav mobile */
+            .nav-inner {
+                padding: 10px 16px;
+                border-radius: 40px;
+                gap: 10px;
+            }
+            .nav-links { gap: 2px; }
+            .nav-link { font-size: 13px; padding: 6px 10px; }
+            .nav-username { display: none; }
+            .nav-user-btn { padding: 4px; }
+            .nav-dropdown { min-width: 200px; right: -4px; }
         }
 
         @media (min-width: 801px) {
@@ -1111,7 +1371,67 @@
     document.getElementById('closeBannerBtn')?.addEventListener('click', function() { document.getElementById('welcomeBanner').style.display = 'none'; localStorage.setItem('welcomeBannerClosed', 'true'); });
 </script>
 
+<!-- ===== НАВИГАЦИОННАЯ ПАНЕЛЬ ===== -->
+<nav class="nav-bar" aria-label="Основная навигация">
+    <div class="nav-inner">
+        <a href="{% url 'index' %}" class="nav-logo">🥟 <span>Wajos</span></a>
+
+        <div class="nav-links">
+            <a href="{% url 'index' %}" class="nav-link">Главная</a>
+            <a href="{% url 'favorites' %}" class="nav-link">⭐ Избранное</a>
+            <a href="{% url 'settings' %}" class="nav-link">⚙️</a>
+        </div>
+
+        <div class="nav-auth">
+            {% if user.is_authenticated %}
+                <div class="nav-user-menu" id="navUserMenu">
+                    <button class="nav-user-btn" id="navUserBtn" aria-expanded="false" aria-haspopup="true">
+                        <span class="nav-avatar">{{ user.username|make_list|first|upper }}</span>
+                        <span class="nav-username">{{ user.username }}</span>
+                        <span class="nav-chevron">▾</span>
+                    </button>
+                    <div class="nav-dropdown" id="navDropdown">
+                        <div class="nav-dropdown-header">
+                            <span class="nav-dropdown-avatar">{{ user.username|make_list|first|upper }}</span>
+                            <div>
+                                <div class="nav-dropdown-name">{{ user.username }}</div>
+                                <div class="nav-dropdown-label">Аккаунт</div>
+                            </div>
+                        </div>
+                        <div class="nav-dropdown-divider"></div>
+                        <a href="{% url 'favorites' %}" class="nav-dropdown-item">⭐ Избранное</a>
+                        <a href="{% url 'settings' %}" class="nav-dropdown-item">⚙️ Настройки</a>
+                        <div class="nav-dropdown-divider"></div>
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-dropdown-item nav-dropdown-logout">🚪 Выйти</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-ghost btn-sm nav-login-btn">Войти</a>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-sm nav-register-btn">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
 <main class="wrapper">
+    <!-- Django messages -->
+    {% if messages %}
+    <div class="messages-toast" id="messagesToast">
+        {% for message in messages %}
+        <span>{{ message }}</span>
+        {% endfor %}
+    </div>
+    <script>
+        (function() {
+            const el = document.getElementById('messagesToast');
+            if (el) setTimeout(() => el.remove(), 3000);
+        })();
+    </script>
+    {% endif %}
+
     {% block content %}{% endblock %}
 </main>
 
@@ -1249,6 +1569,35 @@
     if (localStorage.getItem('darkTheme') === 'true') setTheme(true);
     if (desktopBtn) desktopBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
     if (mobileBottomBtn) mobileBottomBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+
+    // ===== USER DROPDOWN =====
+    (function initUserDropdown() {
+        const btn = document.getElementById('navUserBtn');
+        const dropdown = document.getElementById('navDropdown');
+        if (!btn || !dropdown) return;
+
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = dropdown.classList.contains('active');
+            dropdown.classList.toggle('active');
+            btn.setAttribute('aria-expanded', !isOpen);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.classList.remove('active');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+                btn.setAttribute('aria-expanded', 'false');
+                btn.focus();
+            }
+        });
+    })();
 
     const aiToggleBtn = document.getElementById('aiToggleBtn');
     const aiChatbox = document.getElementById('aiChatbox');
