@@ -263,17 +263,68 @@
             💬 Комментарии
             <span class="comments-count">({{ recipe.comments.count }})</span>
         </div>
+
+        <!-- ФИЛЬТР СОРТИРОВКИ -->
+        <div class="comment-sort">
+            <button class="sort-btn {% if sort_order == 'new' %}active{% endif %}" data-sort="new">🕐 Сначала новые</button>
+            <button class="sort-btn {% if sort_order == 'old' %}active{% endif %}" data-sort="old">📜 Сначала старые</button>
+        </div>
+
         <div class="comment-list">
-            {% for comment in recipe.comments.all %}
-            <div class="comment-card">
+            {% for item in comments_data %}
+            <div class="comment-card" id="comment-{{ item.comment.id }}">
                 <div class="comment-header">
-                    <div class="comment-avatar">{{ comment.author|slice:":1"|upper }}</div>
+                    <div class="comment-avatar">{{ item.comment.author|slice:":1"|upper }}</div>
                     <div>
-                        <div class="comment-author">{{ comment.author }}</div>
-                        <div class="comment-date">{{ comment.created_at|date:"d.m.Y в H:i" }}</div>
+                        <div class="comment-author">{{ item.comment.author }}</div>
+                        <div class="comment-date">{{ item.comment.created_at|date:"d.m.Y в H:i" }}</div>
                     </div>
                 </div>
-                <div class="comment-text">{{ comment.text|linebreaksbr }}</div>
+                <div class="comment-text">{{ item.comment.text|linebreaksbr }}</div>
+                <div class="comment-actions">
+                    <button class="like-btn" data-comment-id="{{ item.comment.id }}" title="Нравится">
+                        <span class="like-icon">🤍</span>
+                        <span class="like-count">{{ item.comment.likes_count }}</span>
+                    </button>
+                    <button class="reply-toggle-btn" data-parent-id="{{ item.comment.id }}">↩️ Ответить</button>
+                </div>
+                <!-- ФОРМА ОТВЕТА -->
+                <div class="reply-form" id="reply-form-{{ item.comment.id }}" style="display:none;">
+                    <form method="POST" action="{% url 'add_comment' recipe.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ item.comment.id }}">
+                        <input type="hidden" name="sort" value="{{ sort_order }}">
+                        <input type="text" name="author" placeholder="Ваше имя (необязательно)" class="reply-author-input">
+                        <textarea name="text" rows="2" placeholder="Напишите ответ..." required class="reply-textarea"></textarea>
+                        <div class="reply-form-actions">
+                            <button type="submit" class="btn btn-primary btn-sm">📤 Ответить</button>
+                            <button type="button" class="btn btn-ghost btn-sm cancel-reply-btn" data-parent-id="{{ item.comment.id }}">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- ОТВЕТЫ -->
+                {% if item.replies %}
+                <div class="replies-list">
+                    {% for reply in item.replies %}
+                    <div class="comment-card reply-card" id="comment-{{ reply.id }}">
+                        <div class="comment-header">
+                            <div class="comment-avatar reply-avatar">{{ reply.author|slice:":1"|upper }}</div>
+                            <div>
+                                <div class="comment-author">{{ reply.author }}</div>
+                                <div class="comment-date">{{ reply.created_at|date:"d.m.Y в H:i" }}</div>
+                            </div>
+                        </div>
+                        <div class="comment-text">{{ reply.text|linebreaksbr }}</div>
+                        <div class="comment-actions">
+                            <button class="like-btn" data-comment-id="{{ reply.id }}" title="Нравится">
+                                <span class="like-icon">🤍</span>
+                                <span class="like-count">{{ reply.likes_count }}</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             {% empty %}
             <div class="empty-comments">🍃 Пока нет комментариев. Будьте первым!</div>
@@ -281,8 +332,9 @@
         </div>
         <div class="comment-form">
             <h4>✍️ Написать комментарий</h4>
-            <form method="POST" action="{% url 'add_comment' recipe.id %}">
+            <form method="POST" action="{% url 'add_comment' recipe.id %}" id="mainCommentForm">
                 {% csrf_token %}
+                <input type="hidden" name="sort" value="{{ sort_order }}">
                 <input type="text" name="author" placeholder="Ваше имя (необязательно)">
                 <textarea name="text" rows="4" placeholder="Поделитесь впечатлением о рецепте..." required></textarea>
                 <div class="comment-form-actions">
@@ -441,5 +493,91 @@
         });
         function pluralize(n) { const m10 = n%10, m100 = n%100; if (m10===1 && m100!==11) return 'голос'; if (m10>=2 && m10<=4 && (m100<10||m100>=20)) return 'голоса'; return 'голосов'; }
     })();
+
+    // ===== СОРТИРОВКА КОММЕНТАРИЕВ =====
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const sort = this.dataset.sort;
+            const url = new URL(window.location);
+            url.searchParams.set('sort', sort);
+            window.location = url.toString();
+        });
+    });
+
+    // ===== КНОПКА ОТВЕТА =====
+    document.querySelectorAll('.reply-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const parentId = this.dataset.parentId;
+            const form = document.getElementById('reply-form-' + parentId);
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                if (form.style.display === 'block') {
+                    form.querySelector('textarea').focus();
+                }
+            }
+        });
+    });
+    document.querySelectorAll('.cancel-reply-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const parentId = this.dataset.parentId;
+            const form = document.getElementById('reply-form-' + parentId);
+            if (form) form.style.display = 'none';
+        });
+    });
+
+    // ===== ЛАЙК КОММЕНТАРИЯ =====
+    let fp = localStorage.getItem('wajos_fp');
+    if (!fp) { fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('wajos_fp', fp); }
+
+    // Загружаем состояние лайков пользователя
+    (async function initLikes() {
+        try {
+            const likedIds = JSON.parse(localStorage.getItem('wajos_liked_comments') || '[]');
+            likedIds.forEach(cid => {
+                const btn = document.querySelector(`.like-btn[data-comment-id="${cid}"]`);
+                if (btn) {
+                    btn.classList.add('liked');
+                    btn.querySelector('.like-icon').textContent = '❤️';
+                }
+            });
+        } catch(e) {}
+    })();
+
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const commentId = this.dataset.commentId;
+            const icon = this.querySelector('.like-icon');
+            const countEl = this.querySelector('.like-count');
+            const isLiked = this.classList.contains('liked');
+
+            try {
+                const res = await fetch(`/comment/${commentId}/like/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fingerprint: fp })
+                });
+                const data = await res.json();
+                if (data.liked) {
+                    this.classList.add('liked');
+                    icon.textContent = '❤️';
+                } else {
+                    this.classList.remove('liked');
+                    icon.textContent = '🤍';
+                }
+                countEl.textContent = data.count;
+
+                // Сохраняем в localStorage
+                let likedIds = JSON.parse(localStorage.getItem('wajos_liked_comments') || '[]');
+                if (data.liked) {
+                    if (!likedIds.includes(commentId)) likedIds.push(commentId);
+                } else {
+                    likedIds = likedIds.filter(id => id !== commentId);
+                }
+                localStorage.setItem('wajos_liked_comments', JSON.stringify(likedIds));
+            } catch(e) {
+                console.error('Like error:', e);
+            }
+        });
+    });
 </script>
 {% endblock %}
