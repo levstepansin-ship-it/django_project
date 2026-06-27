@@ -1341,15 +1341,34 @@
 
             /* Nav mobile */
             .nav-inner {
-                padding: 10px 16px;
+                padding: 10px 14px;
                 border-radius: 40px;
-                gap: 10px;
+                gap: 6px;
             }
             .nav-links { gap: 2px; }
-            .nav-link { font-size: 13px; padding: 6px 10px; }
+            .nav-link { font-size: 12px; padding: 6px 8px; }
+            /* Компактные auth-кнопки, чтобы помещались в ряд */
+            .nav-auth { gap: 6px; }
+            .nav-login-btn, .nav-register-btn {
+                font-size: 12px;
+                padding: 7px 12px;
+                white-space: nowrap;
+            }
             .nav-username { display: none; }
             .nav-user-btn { padding: 4px; }
             .nav-dropdown { min-width: 200px; right: -4px; }
+        }
+
+        /* Узкие телефоны: убираем дублирующие ссылки из шапки
+           (Избранное/Настройки доступны в футере),
+           оставляем логотип + компактные auth-кнопки */
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+            .nav-inner { gap: 8px; padding: 8px 12px; }
+            .nav-login-btn, .nav-register-btn {
+                font-size: 11px;
+                padding: 7px 11px;
+            }
         }
 
         @media (min-width: 801px) {
