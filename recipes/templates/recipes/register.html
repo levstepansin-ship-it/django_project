@@ -1,0 +1,290 @@
+{% extends "recipes/base.html" %}
+
+{% block title %}Регистрация — Wajos{% endblock %}
+{% block description %}Создайте аккаунт на Wajos, чтобы сохранять рецепты, ставить лайки и оставлять комментарии.{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <!-- Гласс-блик -->
+        <div class="auth-card-shine"></div>
+
+        <div class="auth-header">
+            <span class="auth-icon" aria-hidden="true">🍳</span>
+            <h1 class="auth-title">Создать аккаунт</h1>
+            <p class="auth-subtitle">Присоединяйтесь к Wajos — готовьте без страха</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="auth-errors">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <span class="auth-error">{{ error }}</span>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <span class="auth-error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form" novalidate>
+            {% csrf_token %}
+
+            <div class="auth-field">
+                <label for="id_username" class="auth-label">Никнейм</label>
+                {{ form.username }}
+            </div>
+
+            <div class="auth-field">
+                <label for="id_password1" class="auth-label">Пароль</label>
+                {{ form.password1 }}
+            </div>
+
+            <div class="auth-field">
+                <label for="id_password2" class="auth-label">Подтверждение пароля</label>
+                {{ form.password2 }}
+            </div>
+
+            <label class="auth-privacy">
+                {{ form.agree_privacy }}
+                <span>Мне больше 14 лет, и я принимаю
+                    <a href="{% url 'privacy' %}" target="_blank">политику конфиденциальности</a>
+                </span>
+            </label>
+
+            <button type="submit" class="btn btn-primary auth-submit">Создать аккаунт</button>
+        </form>
+
+        <div class="auth-footer">
+            <span>Уже есть аккаунт?</span>
+            <a href="{% url 'login' %}" class="auth-link">Войти</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 24px 16px;
+    }
+
+    .auth-card {
+        position: relative;
+        width: 100%;
+        max-width: 440px;
+        background: var(--glass-bg-strong);
+        backdrop-filter: var(--blur-amount);
+        -webkit-backdrop-filter: var(--blur-amount);
+        border-radius: 32px;
+        padding: 40px 32px;
+        box-shadow: var(--glass-shadow);
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        animation: authCardIn 0.6s var(--spring);
+    }
+
+    @keyframes authCardIn {
+        0% { opacity: 0; transform: translateY(24px) scale(0.95); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Стеклянный блик сверху */
+    .auth-card-shine {
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.5), transparent 50%);
+        opacity: 0.6;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 28px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-icon {
+        font-size: 52px;
+        display: block;
+        margin-bottom: 12px;
+        filter: drop-shadow(0 4px 12px rgba(var(--accent-rgb), 0.4));
+        animation: gentleFloat 4s ease-in-out infinite;
+    }
+
+    .auth-title {
+        font-size: 28px;
+        font-weight: 800;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+        font-size: 15px;
+        color: var(--text-secondary);
+    }
+
+    /* Ошибки */
+    .auth-errors {
+        background: var(--error-bg);
+        border: 1px solid var(--error-border);
+        border-radius: 16px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-error {
+        display: block;
+        font-size: 13px;
+        color: var(--error);
+        margin-bottom: 4px;
+    }
+
+    .auth-error:last-child { margin-bottom: 0; }
+
+    /* Форма */
+    .auth-form {
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-field {
+        margin-bottom: 18px;
+    }
+
+    .auth-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .auth-field input {
+        width: 100%;
+        padding: 14px 20px;
+        border-radius: 50px;
+        border: 1.5px solid var(--input-border);
+        background: var(--glass-bg);
+        backdrop-filter: var(--blur-light);
+        -webkit-backdrop-filter: var(--blur-light);
+        color: var(--text-primary);
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.3s var(--spring);
+        box-sizing: border-box;
+    }
+
+    .auth-field input::placeholder {
+        color: var(--muted-text);
+    }
+
+    .auth-field input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.14);
+        background: var(--glass-bg-strong);
+    }
+
+    .auth-field input.input-error {
+        border-color: var(--error);
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
+    }
+
+    /* Чекбокс приватности */
+    .auth-privacy {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        margin-bottom: 22px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-privacy input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        accent-color: var(--accent);
+        cursor: pointer;
+    }
+
+    .auth-privacy a {
+        color: var(--link-color);
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 2px;
+    }
+
+    .auth-privacy a:hover {
+        text-decoration-style: solid;
+    }
+
+    /* Кнопка отправки */
+    .auth-submit {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Подвал */
+    .auth-footer {
+        text-align: center;
+        margin-top: 22px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-link {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 4px;
+        transition: opacity 0.2s;
+    }
+
+    .auth-link:hover {
+        opacity: 0.75;
+        text-decoration: underline;
+    }
+
+    /* Адаптив */
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 32px 22px;
+            border-radius: 28px;
+        }
+        .auth-title { font-size: 24px; }
+        .auth-icon { font-size: 44px; }
+    }
+</style>
+
+<script>
+    // Добавляем класс input-error при ошибке валидации (client-side highlight)
+    document.querySelectorAll('.auth-field input').forEach(input => {
+        // Подсветка полей с серверными ошибками
+        if (input.nextElementSibling && input.nextElementSibling.classList.contains('errorlist')) {
+            input.classList.add('input-error');
+        }
+    });
+</script>
+{% endblock %}
