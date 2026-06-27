@@ -1,8 +1,9 @@
 ﻿from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Recipe, Comment, Rating, UserPreferences
+from .models import Recipe, Comment, CommentLike, Rating, UserPreferences
 import os
 import requests
 import json
@@ -53,9 +54,26 @@ def recipe_detail(request, recipe_id):
         subcategory__category=recipe.subcategory.category
     ).exclude(id=recipe.id)[:3]
 
+    sort_order = request.GET.get('sort', 'new')
+    if sort_order == 'old':
+        comments = recipe.comments.filter(parent=None).order_by('created_at')
+    else:
+        comments = recipe.comments.filter(parent=None).order_by('-created_at')
+
+    # Собираем ответы для каждого комментария
+    comments_data = []
+    for c in comments:
+        replies_list = list(c.replies.all().order_by('created_at'))
+        comments_data.append({
+            'comment': c,
+            'replies': replies_list,
+        })
+
     return render(request, 'recipes/recipe_detail.html', {
         'recipe': recipe,
         'related': related,
+        'comments_data': comments_data,
+        'sort_order': sort_order,
     })
 
 
@@ -167,11 +185,19 @@ def add_comment(request, recipe_id):
     if request.method == 'POST':
         author = request.POST.get('author', '').strip()
         text = request.POST.get('text', '').strip()
+        parent_id = request.POST.get('parent_id', '').strip()
         if text:
             if not author:
                 author = 'Anonymous'
-            Comment.objects.create(recipe=recipe, author=author, text=text)
-    return redirect('recipe_detail', recipe_id=recipe_id)
+            parent = None
+            if parent_id:
+                try:
+                    parent = Comment.objects.get(id=int(parent_id), recipe=recipe)
+                except (Comment.DoesNotExist, ValueError):
+                    pass
+            Comment.objects.create(recipe=recipe, author=author, text=text, parent=parent)
+    sort_order = request.POST.get('sort', 'new')
+    return redirect(f"{reverse('recipe_detail', kwargs={'recipe_id': recipe_id})}?sort={sort_order}")
 
 
 # ===== ИЗБРАННОЕ =====
@@ -212,3 +238,26 @@ def api_settings(request):
             return JsonResponse({'timer_format': prefs.timer_format})
         return JsonResponse({'timer_format': 'mm:ss'})
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+# ===== ЛАЙК КОММЕНТАРИЯ =====
+@csrf_exempt
+def toggle_comment_like(request, comment_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    try:
+        comment = get_object_or_404(Comment, id=comment_id)
+        data = json.loads(request.body)
+        fingerprint = data.get('fingerprint', '').strip()
+        if not fingerprint:
+            return JsonResponse({'error': 'No fingerprint'}, status=400)
+        like, created = CommentLike.objects.get_or_create(
+            comment=comment, fingerprint=fingerprint
+        )
+        if created:
+            return JsonResponse({'liked': True, 'count': comment.likes.count()})
+        else:
+            like.delete()
+            return JsonResponse({'liked': False, 'count': comment.likes.count()})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
