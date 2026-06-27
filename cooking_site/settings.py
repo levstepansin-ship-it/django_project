@@ -3,7 +3,6 @@ import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Загружаем переменные окружения из .env
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,7 +52,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cooking_site.wsgi.application'
 
-# ----- БАЗА ДАННЫХ (PostgreSQL на Neon) -----
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///db.sqlite3',
@@ -84,7 +82,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ----- АВТОРИЗАЦИЯ -----
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -92,4 +89,4 @@ AUTH_USER_MODEL = 'auth.User'
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-# Переход на Neon — 27.06.2026
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
