@@ -16,4 +16,10 @@ urlpatterns = [
     path('favorites/', views.favorites, name='favorites'),
     path('settings/', views.settings_page, name='settings'),
     path('api/settings/', views.api_settings, name='api_settings'),
+    path('api/favorites/add/', views.api_favorite_add, name='api_favorite_add'),
+    path('api/favorites/remove/', views.api_favorite_remove, name='api_favorite_remove'),
+    # Auth
+    path('register/', views.register_view, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
 ]
