@@ -19,6 +19,7 @@ load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
 
 
 # ===== СОЗДАНИЕ АДМИНА =====
@@ -27,8 +28,6 @@ def create_admin_if_not_exists():
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser('admin', '', 'admin123')
         print("✅ Админ создан через views.py!")
-    else:
-        print("⚠️ Админ уже существует")
 
 
 # ===== ПРОВЕРКА ТАБЛИЦ КОММЕНТАРИЕВ =====
@@ -64,11 +63,9 @@ def recipe_detail(request, recipe_id):
     else:
         comments = recipe.comments.filter(parent=None).order_by('-created_at')
 
-    # Собираем ответы для каждого комментария
     comments_data = []
     for c in comments:
         replies_list = list(c.replies.all().order_by('created_at'))
-        # Отмечаем лайки текущего пользователя
         user_liked = False
         reply_liked_ids = []
         if request.user.is_authenticated:
@@ -85,7 +82,6 @@ def recipe_detail(request, recipe_id):
             'reply_liked_ids': reply_liked_ids,
         })
 
-    # Проверяем, в избранном ли рецепт
     is_favorited = False
     if request.user.is_authenticated:
         is_favorited = Favorite.objects.filter(user=request.user, recipe=recipe).exists()
@@ -349,3 +345,31 @@ def logout_view(request):
     logout(request)
     messages.info(request, 'Вы вышли из аккаунта')
     return redirect('index')
+
+
+# ===== AI ПОМОЩНИК (Mistral) =====
+@csrf_exempt
+def ai_ask(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Метод не разрешён'}, status=405)
+
+    query = request.POST.get('query', '').strip()
+    if not query:
+        return JsonResponse({'error': 'Пустой запрос'}, status=400)
+
+    try:
+        url = "https://api.mistral.ai/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {MISTRAL_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "mistral-tiny",
+            "messages": [{"role": "user", "content": query}]
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        data = response.json()
+        answer = data['choices'][0]['message']['content']
+        return JsonResponse({'answer': answer})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
