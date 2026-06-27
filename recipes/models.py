@@ -1,4 +1,5 @@
 ﻿from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -41,7 +42,7 @@ class Recipe(models.Model):
 
 class Comment(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='comments')
-    author = models.CharField(max_length=100, blank=True, default='Аноним')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
@@ -51,7 +52,11 @@ class Comment(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'{self.author}: {self.text[:50]}'
+        return f'{self.user.username}: {self.text[:50]}'
+
+    @property
+    def author_name(self):
+        return self.user.username
 
     @property
     def likes_count(self):
@@ -60,30 +65,42 @@ class Comment(models.Model):
 
 class CommentLike(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
-    fingerprint = models.CharField(max_length=64)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('comment', 'fingerprint')
+        unique_together = ('comment', 'user')
 
     def __str__(self):
-        return f'Like: {self.comment.id}'
+        return f'Like by {self.user.username} on comment {self.comment.id}'
 
 
 class Rating(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     score = models.PositiveSmallIntegerField()  # 1-5
-    fingerprint = models.CharField(max_length=64)  # уникальный ID браузера
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('recipe', 'fingerprint')  # один голос с одного браузера
+        unique_together = ('recipe', 'user')  # один голос с одного пользователя
 
     def __str__(self):
-        return f'{self.recipe.title}: {self.score}⭐'
+        return f'{self.recipe.title}: {self.score}⭐ by {self.user.username}'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='favorited_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'recipe')
+
+    def __str__(self):
+        return f'{self.user.username} → {self.recipe.title}'
 
 
 class UserPreferences(models.Model):
-    fingerprint = models.CharField(max_length=64, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='prefs')
     timer_format = models.CharField(max_length=10, default='mm:ss')  # 'mm:ss' или 'seconds'
 
     class Meta:
@@ -91,4 +108,4 @@ class UserPreferences(models.Model):
         verbose_name_plural = 'Настройки пользователей'
 
     def __str__(self):
-        return f'Настройки: {self.fingerprint[:12]}… ({self.timer_format})'
+        return f'Настройки: {self.user.username} ({self.timer_format})'
