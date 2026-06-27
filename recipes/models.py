@@ -45,12 +45,28 @@ class Comment(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return f'{self.author}: {self.text[:50]}'
+
+    @property
+    def likes_count(self):
+        return self.likes.count()
+
+
+class CommentLike(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
+    fingerprint = models.CharField(max_length=64)
+
+    class Meta:
+        unique_together = ('comment', 'fingerprint')
+
+    def __str__(self):
+        return f'Like: {self.comment.id}'
 
 
 class Rating(models.Model):
