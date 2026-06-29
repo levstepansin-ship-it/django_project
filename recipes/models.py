@@ -99,9 +99,24 @@ class Favorite(models.Model):
         return f'{self.user.username} → {self.recipe.title}'
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True, default='', verbose_name='О себе')
+    show_email = models.BooleanField(default=False, verbose_name='Показывать email')
+
+    class Meta:
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
+
+    def __str__(self):
+        return f'Профиль: {self.user.username}'
+
+
 class UserPreferences(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='prefs')
     timer_format = models.CharField(max_length=10, default='mm:ss')  # 'mm:ss' или 'seconds'
+    public_profile = models.BooleanField(default=True, verbose_name='Публичный профиль')
+    receive_notifications = models.BooleanField(default=True, verbose_name='Получать уведомления')
 
     class Meta:
         verbose_name = 'Настройки пользователя'
@@ -109,3 +124,18 @@ class UserPreferences(models.Model):
 
     def __str__(self):
         return f'Настройки: {self.user.username} ({self.timer_format})'
+
+
+class PushSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='push_subscriptions')
+    endpoint = models.URLField(unique=True)
+    p256dh_key = models.CharField(max_length=255)
+    auth_key = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Push-подписка'
+        verbose_name_plural = 'Push-подписки'
+
+    def __str__(self):
+        return f'Push: {self.user.username}'
