@@ -1,5 +1,5 @@
 ﻿from django.contrib import admin
-from .models import Category, Subcategory, Recipe, Comment, CommentLike, Rating, Favorite, UserPreferences
+from .models import Category, Subcategory, Recipe, Comment, CommentLike, Rating, Favorite, UserPreferences, UserProfile, PushSubscription
 
 admin.site.register(Category)
 admin.site.register(Subcategory)
@@ -34,3 +34,15 @@ class UserPreferencesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CommentLike)
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'bio', 'show_email')
+    search_fields = ('user__username',)
+
+
+@admin.register(PushSubscription)
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'endpoint', 'created_at')
+    search_fields = ('user__username',)
