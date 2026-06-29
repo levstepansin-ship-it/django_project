@@ -1,0 +1,243 @@
+{% extends "recipes/base.html" %}
+
+{% block title %}{{ profile_user.username }} — профиль на Wajos{% endblock %}
+{% block description %}Профиль пользователя {{ profile_user.username }} на Wajos.{% endblock %}
+
+{% block content %}
+<div class="recipe-area">
+    <a href="{% url 'index' %}" class="btn btn-secondary back-btn">← На главную</a>
+
+    <!-- ШАПКА ПРОФИЛЯ -->
+    <div class="profile-hero">
+        <div class="profile-hero-shine"></div>
+        <div class="profile-hero-inner">
+            <div class="profile-avatar-big">{{ profile_user.username|slice:":1"|upper }}</div>
+            <h1 class="profile-name">{{ profile_user.username }}</h1>
+            <div class="profile-since">На Wajos с {{ profile_user.date_joined|date:"d.m.Y" }}</div>
+
+            {% if profile and profile.bio %}
+            <p class="profile-bio">{{ profile.bio|linebreaksbr }}</p>
+            {% endif %}
+
+            {% if profile and profile.show_email and profile_user.email %}
+            <a href="mailto:{{ profile_user.email }}" class="profile-email">📧 {{ profile_user.email }}</a>
+            {% endif %}
+
+            {% if user == profile_user %}
+            <a href="{% url 'edit_profile' %}" class="btn btn-secondary btn-sm profile-edit-btn">⚙️ Редактировать</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="profile-stats">
+        <div class="profile-stat">
+            <span class="profile-stat-value">{{ comments_count }}</span>
+            <span class="profile-stat-label">Комментариев</span>
+        </div>
+        <div class="profile-stat">
+            <span class="profile-stat-value">{{ favorites_count }}</span>
+            <span class="profile-stat-label">В избранном</span>
+        </div>
+        <div class="profile-stat">
+            <span class="profile-stat-value">{{ likes_received }}</span>
+            <span class="profile-stat-label">Лайков получено</span>
+        </div>
+    </div>
+
+    <!-- ПОСЛЕДНИЕ КОММЕНТАРИИ -->
+    <div class="comments-section">
+        <div class="comments-title">
+            💬 Последние комментарии
+            <span class="comments-count">({{ comments_count }})</span>
+        </div>
+
+        <div class="comment-list">
+            {% for c in recent_comments %}
+            <div class="comment-card">
+                <div class="comment-header">
+                    <div class="comment-avatar">{{ profile_user.username|slice:":1"|upper }}</div>
+                    <div>
+                        <a href="{% url 'recipe_detail' c.recipe.id %}" class="profile-comment-recipe">
+                            {{ c.recipe.title }}
+                        </a>
+                        <div class="comment-date">{{ c.created_at|date:"d.m.Y в H:i" }}</div>
+                    </div>
+                </div>
+                <div class="comment-text">{{ c.text|linebreaksbr }}</div>
+                <div class="comment-actions">
+                    <span class="like-btn" title="Лайки">
+                        <span class="like-icon">❤️</span>
+                        <span class="like-count">{{ c.likes_count }}</span>
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-comments">🍃 Пользователь ещё не оставлял комментариев</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-hero {
+        position: relative;
+        background: var(--glass-bg-strong);
+        backdrop-filter: var(--blur-amount);
+        -webkit-backdrop-filter: var(--blur-amount);
+        border-radius: 36px;
+        padding: 48px 36px;
+        margin-bottom: 28px;
+        box-shadow: var(--glass-shadow);
+        border: 1px solid var(--glass-border);
+        text-align: center;
+        overflow: hidden;
+        animation: profileCardIn 0.6s var(--spring);
+    }
+
+    @keyframes profileCardIn {
+        0% { opacity: 0; transform: translateY(24px) scale(0.96); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .profile-hero-shine {
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4), transparent 50%);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .profile-hero-inner { position: relative; z-index: 1; }
+
+    .profile-avatar-big {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: var(--accent-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        font-weight: 800;
+        box-shadow: var(--glow-accent-strong);
+        animation: gentleFloat 4s ease-in-out infinite;
+    }
+
+    .profile-name {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
+    }
+
+    .profile-since {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 18px;
+    }
+
+    .profile-bio {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        max-width: 600px;
+        margin: 0 auto 18px;
+        background: var(--glass-bg);
+        backdrop-filter: var(--blur-light);
+        -webkit-backdrop-filter: var(--blur-light);
+        border-radius: 18px;
+        padding: 16px 22px;
+        border: 1px solid var(--glass-border-soft);
+    }
+
+    .profile-email {
+        display: inline-block;
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding: 8px 18px;
+        border-radius: 40px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border-soft);
+        transition: all 0.3s var(--spring);
+    }
+
+    .profile-email:hover { background: var(--hover-bg); border-color: var(--accent); transform: translateY(-2px); }
+
+    .profile-edit-btn { margin-top: 4px; }
+
+    /* Статистика */
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 36px;
+        flex-wrap: wrap;
+    }
+
+    .profile-stat {
+        flex: 1;
+        min-width: 140px;
+        max-width: 200px;
+        background: var(--glass-bg-strong);
+        backdrop-filter: var(--blur-amount);
+        -webkit-backdrop-filter: var(--blur-amount);
+        border-radius: 24px;
+        padding: 26px 18px;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
+        border: 1px solid var(--glass-border);
+        transition: all 0.4s var(--spring);
+    }
+
+    .profile-stat:hover { transform: translateY(-4px); box-shadow: var(--glass-shadow-hover); border-color: var(--accent); }
+
+    .profile-stat-value {
+        display: block;
+        font-size: 36px;
+        font-weight: 800;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .profile-stat-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .profile-comment-recipe {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--accent);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .profile-comment-recipe:hover { opacity: 0.75; }
+
+    @media (max-width: 480px) {
+        .profile-hero { padding: 36px 22px; border-radius: 28px; }
+        .profile-avatar-big { width: 96px; height: 96px; font-size: 44px; }
+        .profile-name { font-size: 26px; }
+        .profile-stat { padding: 20px 12px; }
+        .profile-stat-value { font-size: 28px; }
+    }
+</style>
+{% endblock %}
