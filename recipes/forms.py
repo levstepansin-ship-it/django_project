@@ -81,3 +81,77 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].help_text = None
         self.error_messages['invalid_login'] = 'Неверный никнейм или пароль'
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'placeholder': 'Ваш никнейм',
+                'autocomplete': 'username',
+            }),
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'email@example.com',
+                'autocomplete': 'email',
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].help_text = None
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '')
+        forbidden = ['admin', 'administrator', 'root', 'moderator', 'support', 'wajos']
+        if username.lower() in forbidden:
+            raise ValidationError(f'Никнейм "{username}" зарезервирован')
+        qs = User.objects.exclude(pk=self.instance.pk).filter(username=username)
+        if qs.exists():
+            raise ValidationError('Этот никнейм уже занят')
+        return username
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Введите текущий пароль',
+            'autocomplete': 'current-password',
+        })
+    )
+    new_password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Минимум 8 символов',
+            'autocomplete': 'new-password',
+        })
+    )
+    new_password2 = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Повторите новый пароль',
+            'autocomplete': 'new-password',
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old = self.cleaned_data.get('old_password', '')
+        if self.user and not self.user.check_password(old):
+            raise ValidationError('Неверный текущий пароль')
+        return old
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('new_password1', '')
+        p2 = cleaned.get('new_password2', '')
+        if p1 and p2 and p1 != p2:
+            self.add_error('new_password2', 'Пароли не совпадают')
+        if p1 and len(p1) < 8:
+            self.add_error('new_password1', 'Пароль должен быть не менее 8 символов')
+        return cleaned
