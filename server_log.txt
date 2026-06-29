@@ -1,0 +1,2 @@
+E:\Документы\Desktop\django_project\venv\Lib\site-packages\django\core\handlers\base.py:61: UserWarning: No directory at: E:\Документы\Desktop\django_project\staticfiles\
+  mw_instance = middleware(adapted_handler)
