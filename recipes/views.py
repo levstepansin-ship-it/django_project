@@ -219,8 +219,8 @@ def add_comment(request, recipe_id):
                 fav_users = Favorite.objects.filter(recipe=recipe).select_related('user').values_list('user', flat=True).distinct()
                 for uid in fav_users:
                     if uid != request.user.id:
-                        from django.contrib.auth.models import User as AuthUser
-                        fav_user = AuthUser.objects.get(id=uid)
+                        from django.contrib.auth.models import User
+                        fav_user = User.objects.get(id=uid)
                         send_push_notification(
                             fav_user,
                             title=f'💬 Новый комментарий к «{recipe.title}»',
@@ -364,6 +364,7 @@ def logout_view(request):
 
 # ===== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ =====
 def profile_view(request, username):
+    from django.contrib.auth.models import User
     user = get_object_or_404(User, username=username)
     try:
         profile = user.profile
