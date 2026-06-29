@@ -22,4 +22,10 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('profile/<str:username>/', views.profile_view, name='profile'),
+    path('edit-profile/', views.edit_profile_view, name='edit_profile'),
+    path('api/push/subscribe/', views.api_push_subscribe, name='api_push_subscribe'),
+    path('api/push/unsubscribe/', views.api_push_unsubscribe, name='api_push_unsubscribe'),
+    path('api/notifications/', views.api_notification_settings, name='api_notification_settings'),
+    path('api/vapid-key/', views.vapid_public_key, name='api_vapid_key'),
 ]
