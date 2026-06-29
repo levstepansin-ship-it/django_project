@@ -1509,6 +1509,8 @@
         @media (min-width: 801px) {
             .desktop-hide-feedback { display: none; }
         }
+
+        {% block extra_styles %}{% endblock %}
     </style>
 </head>
 <body>
@@ -1553,6 +1555,7 @@
                             </div>
                         </div>
                         <div class="nav-dropdown-divider"></div>
+                        <a href="{% url 'profile' user.username %}" class="nav-dropdown-item">👤 Мой профиль</a>
                         <a href="{% url 'favorites' %}" class="nav-dropdown-item">⭐ Избранное</a>
                         <a href="{% url 'settings' %}" class="nav-dropdown-item">⚙️ Настройки</a>
                         <div class="nav-dropdown-divider"></div>
@@ -1595,6 +1598,9 @@
         <a href="{% url 'index' %}">Главная</a>
         <a href="{% url 'favorites' %}">⭐ Избранное</a>
         <a href="{% url 'settings' %}">⚙️ Настройки</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile' user.username %}">👤 Профиль</a>
+        {% endif %}
         <a href="{% url 'terms' %}">Условия</a>
         <a href="{% url 'privacy' %}">Конфиденциальность</a>
     </div>
@@ -1895,8 +1901,59 @@
         if (e.key === 'Enter') askAI();
     });
 
-    // PWA Service Worker
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/static/recipes/sw.js').catch(() => {}); }); }
+    // PWA Service Worker + Push Notifications
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/recipes/sw.js')
+                .then(reg => {
+                    {% if user.is_authenticated %}
+                    initPushNotifications(reg);
+                    {% endif %}
+                })
+                .catch(() => {});
+        });
+    }
+
+    {% if user.is_authenticated %}
+    // ===== PUSH-УВЕДОМЛЕНИЯ =====
+    async function initPushNotifications(reg) {
+        if (!('PushManager' in window)) return;
+        try {
+            // Проверяем, есть ли уже подписка
+            const existing = await reg.pushManager.getSubscription();
+            if (existing) return; // уже подписан
+
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') return;
+
+            const res = await fetch('/api/vapid-key/');
+            const data = await res.json();
+            if (!data.key) return;
+
+            const subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(data.key)
+            });
+
+            await fetch('/api/push/subscribe/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.content || '' },
+                body: JSON.stringify(subscription)
+            });
+        } catch(e) {}
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+    {% endif %}
 </script>
 
 <!-- ============================================================ -->
