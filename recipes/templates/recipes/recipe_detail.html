@@ -1,10 +1,169 @@
 ﻿{% extends "recipes/base.html" %}
 
 {% block title %}{{ recipe.title }} — рецепт с таймерами на Wajos{% endblock %}
-{% block description %}{{ recipe.title }} — пошаговый рецепт с таймерами на каждый шаг. Готовьте без страха вместе с Wajos.{% endblock %}
+{% block description %}{{ recipe.title }} — пошаговый рецепт с таймерами на Wajos{% endblock %}
 {% block og_title %}{{ recipe.title }} — Wajos{% endblock %}
 {% block og_description %}Пошаговый рецепт с таймерами. Готовьте без страха!{% endblock %}
 {% block og_type %}article{% endblock %}
+
+{% block extra_styles %}
+<style>
+/* ===== КОМПАКТНАЯ АНИМАЦИЯ КОТЁЛКА 🥘 ===== */
+.timer-anim {
+    display: none;
+    font-size: 24px;
+    margin-left: 8px;
+    align-self: center;
+    position: relative;
+    line-height: 1;
+}
+
+.timer-anim.active {
+    display: inline-block;
+    animation: potWobble 0.9s ease-in-out infinite;
+}
+
+@keyframes potWobble {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    25% { transform: rotate(-4deg) translateY(-2px); }
+    75% { transform: rotate(4deg) translateY(-1px); }
+}
+
+/* Мини-пузырьки от котёлка */
+.timer-anim.active::before,
+.timer-anim.active::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(var(--accent-rgb), 0.6);
+    bottom: 100%;
+}
+
+.timer-anim.active::before {
+    left: 20%;
+    animation: potBubble 1.4s 0s infinite ease-out;
+}
+
+.timer-anim.active::after {
+    right: 20%;
+    animation: potBubble 1.4s 0.6s infinite ease-out;
+}
+
+@keyframes potBubble {
+    0% { opacity: 0.7; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-16px) scale(0.3); }
+}
+
+/* ===== ЗАСТАВКА «ГОТОВО!» ===== */
+.done-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(10, 12, 20, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.done-overlay.active {
+    display: flex;
+    animation: overlayIn 0.4s ease-out;
+}
+
+@keyframes overlayIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.done-title {
+    font-size: clamp(32px, 10vw, 72px);
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #f5b301 0%, #e67e22 40%, #22c55e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: doneScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 0 20px;
+}
+
+@keyframes doneScale {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.done-emoji {
+    font-size: clamp(48px, 15vw, 120px);
+    animation: doneBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 8px 24px rgba(245, 179, 1, 0.5));
+}
+
+@keyframes doneBounce {
+    0% { transform: scale(0) rotate(-20deg); }
+    60% { transform: scale(1.3) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.done-sub {
+    font-size: clamp(16px, 4vw, 22px);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    animation: doneFadeIn 0.8s 0.3s both;
+}
+
+@keyframes doneFadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.done-close {
+    padding: 14px 36px;
+    border-radius: 50px;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--glow-accent-strong);
+    animation: doneFadeIn 0.8s 0.5s both;
+    transition: transform 0.3s;
+}
+
+.done-close:hover { transform: scale(1.05); }
+
+/* --- Конфетти --- */
+.confetti {
+    position: fixed;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    z-index: 100001;
+    pointer-events: none;
+    animation: confettiFall var(--fall, 3s) var(--delay, 0s) linear forwards;
+    will-change: transform;
+}
+
+@keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(105vh) rotate(var(--spin, 720deg)); opacity: 0; }
+}
+
+/* Отключить анимации для prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .timer-anim, .timer-anim::before, .timer-anim::after, .confetti { animation: none !important; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="recipe-area">
@@ -202,15 +361,16 @@
     </div>
 
     {% for step in recipe.steps %}
-    <div class="step-card">
+    <div class="step-card" id="stepCard{{ forloop.counter }}">
         <div class="step-title step-title-lg"><span aria-hidden="true">📌</span> Шаг {{ forloop.counter }}. {{ step.text }}</div>
         {% if step.desc %}
         <div class="step-desc step-desc-lg">{{ step.desc }}</div>
         {% endif %}
         <div class="timer-row">
             <span class="timer-display timer-display-lg" id="timer{{ forloop.counter }}">{{ step.duration }}:00</span>
-            <button class="start-timer btn btn-primary" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" aria-label="Запустить таймер шага {{ forloop.counter }}"><span aria-hidden="true">🔥</span> Старт ({{ step.duration }} мин)</button>
-            <button class="reset-timer btn btn-secondary" data-timer-id="timer{{ forloop.counter }}" aria-label="Сбросить таймер шага {{ forloop.counter }}">Сброс</button>
+            <span class="timer-anim" id="anim{{ forloop.counter }}">🥘</span>
+            <button class="start-timer btn btn-primary" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" data-step="{{ forloop.counter }}" aria-label="Запустить таймер шага {{ forloop.counter }}"><span aria-hidden="true">🔥</span> Старт ({{ step.duration }} мин)</button>
+            <button class="reset-timer btn btn-secondary" data-timer-id="timer{{ forloop.counter }}" data-step="{{ forloop.counter }}" aria-label="Сбросить таймер шага {{ forloop.counter }}">Сброс</button>
         </div>
     </div>
     {% endfor %}
@@ -229,7 +389,7 @@
             <span class="collapse-arrow" id="collapseArrow" aria-hidden="true">▸</span>
         </div>
         <div class="global-timer-body" id="globalTimerBody">
-            <div class="global-timer global-timer-panel">
+            <div class="global-timer global-timer-panel" id="globalTimerPanel">
                 <div class="timer global-timer-display" id="fullTimer">--:--</div>
                 <div class="global-timer-actions">
                     <button id="startFullBtn" class="btn btn-secondary global-timer-btn"><span aria-hidden="true">🚀</span> Запустить полный цикл</button>
@@ -377,6 +537,14 @@
     </div>
 </div>
 
+<!-- ЗАСТАВКА «ВАШЕ БЛЮДО ГОТОВО!» -->
+<div class="done-overlay" id="doneOverlay">
+    <div class="done-emoji">🍽️</div>
+    <div class="done-title">ВАШЕ БЛЮДО ГОТОВО!</div>
+    <div class="done-sub" id="doneSub">Приятного аппетита! 🎉</div>
+    <button class="done-close" id="doneCloseBtn">Отлично!</button>
+</div>
+
 <script>
     // ===== КОЛЛАПС СУПЕР-ТАЙМЕРА =====
     const timerToggle = document.getElementById('globalTimerToggle');
@@ -404,12 +572,58 @@
         return m + ':' + s.toString().padStart(2, '0');
     }
 
+    // ===== КОМПАКТНАЯ АНИМАЦИЯ: котёлок 🥘 =====
+    function setAnim(stepNum, on) {
+        const anim = document.getElementById('anim' + stepNum);
+        if (anim) anim.classList.toggle('active', on);
+    }
+
+    // ===== КОНФЕТТИ =====
+    function launchConfetti() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const colors = ['#f5b301', '#e67e22', '#22c55e', '#ef4444', '#3b82f6', '#a855f7', '#ec4899'];
+        const isMobile = window.innerWidth < 800;
+        const count = isMobile ? 40 : 80;
+        for (let i = 0; i < count; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = (Math.random() * 100) + 'vw';
+            c.style.width = (5 + Math.random() * 8) + 'px';
+            c.style.height = (5 + Math.random() * 8) + 'px';
+            c.style.background = colors[Math.floor(Math.random() * colors.length)];
+            c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            c.style.setProperty('--fall', (2 + Math.random() * 2.5) + 's');
+            c.style.setProperty('--delay', (Math.random() * 0.8) + 's');
+            c.style.setProperty('--spin', (360 + Math.random() * 720) + 'deg');
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
+    }
+
+    // ===== ЗАСТАВКА «ГОТОВО!» =====
+    const doneOverlay = document.getElementById('doneOverlay');
+    const doneCloseBtn = document.getElementById('doneCloseBtn');
+    if (doneCloseBtn) {
+        doneCloseBtn.addEventListener('click', () => {
+            doneOverlay.classList.remove('active');
+        });
+    }
+
+    function showDoneOverlay() {
+        launchConfetti();
+        if (doneOverlay) doneOverlay.classList.add('active');
+        playBeep();
+        setTimeout(() => playBeep(), 300);
+        setTimeout(() => playBeep(), 600);
+    }
+
     // ===== ТАЙМЕРЫ =====
     let activeTimers = {};
     let steps = {{ recipe.steps|safe }};
     let fullInterval = null;
     const fullDisplay = document.getElementById('fullTimer');
     const recipeId = {{ recipe.id }};
+    const totalSteps = {{ recipe.steps|length }};
 
     function playBeep() {
         try {
@@ -432,9 +646,25 @@
         const sv = loadTimerState(id);
         if (sv && sv.seconds > 0 && sv.seconds < sec) sec = sv.seconds;
         const disp = document.getElementById(id);
+
+        const stepNum = sBtn ? parseInt(sBtn.dataset.step) : null;
+        if (stepNum) setAnim(stepNum, true);
+
         activeTimers[id] = setInterval(() => {
-            if (sec <= 1) { playBeep(); clearInterval(activeTimers[id]); delete activeTimers[id]; disp.innerText = "✅ Готово!"; if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false; clearTimerState(id); }
-            else { sec--; disp.innerText = formatTime(sec); saveTimerState(id, sec, true); }
+            if (sec <= 1) {
+                clearInterval(activeTimers[id]); delete activeTimers[id];
+                disp.innerText = "✅ Готово!";
+                if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false;
+                clearTimerState(id);
+                if (stepNum) setAnim(stepNum, false);
+                // Заставка «Готово» только на последний шаг
+                if (stepNum === totalSteps) {
+                    showDoneOverlay();
+                    if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true);
+                }
+            } else {
+                sec--; disp.innerText = formatTime(sec); saveTimerState(id, sec, true);
+            }
         }, 1000);
         if (sBtn) sBtn.disabled = true; if (rBtn) rBtn.disabled = false; saveTimerState(id, sec, true);
     }
@@ -443,6 +673,8 @@
         if (activeTimers[id]) { clearInterval(activeTimers[id]); delete activeTimers[id]; }
         clearTimerState(id); document.getElementById(id).innerText = `${dur}:00`;
         if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false;
+        const stepNum = sBtn ? parseInt(sBtn.dataset.step) : null;
+        if (stepNum) setAnim(stepNum, false);
     }
 
     document.querySelectorAll('.start-timer').forEach(btn => {
@@ -460,13 +692,27 @@
         if (sf && parseInt(sf) > 0 && parseInt(sf) < total) rem = parseInt(sf);
         fullDisplay.innerText = formatTime(rem);
         fullInterval = setInterval(() => {
-            if (rem <= 1) { playBeep(); clearInterval(fullInterval); fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉"; document.getElementById('startFullBtn').disabled = false; localStorage.removeItem(`fullTimer_${recipeId}`); if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true); }
-            else { rem--; fullDisplay.innerText = formatTime(rem); localStorage.setItem(`fullTimer_${recipeId}`, rem); }
+            if (rem <= 1) {
+                playBeep(); clearInterval(fullInterval);
+                fullDisplay.innerText = "🎉 ВСЁ ГОТОВО! 🎉";
+                document.getElementById('startFullBtn').disabled = false;
+                localStorage.removeItem(`fullTimer_${recipeId}`);
+                showDoneOverlay();
+                if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true);
+            } else {
+                rem--; fullDisplay.innerText = formatTime(rem);
+                localStorage.setItem(`fullTimer_${recipeId}`, rem);
+            }
         }, 1000);
         document.getElementById('startFullBtn').disabled = true;
     }
 
-    function resetFullTimer() { if (fullInterval) clearInterval(fullInterval); fullDisplay.innerText = "--:--"; document.getElementById('startFullBtn').disabled = false; localStorage.removeItem(`fullTimer_${recipeId}`); }
+    function resetFullTimer() {
+        if (fullInterval) clearInterval(fullInterval);
+        fullDisplay.innerText = "--:--";
+        document.getElementById('startFullBtn').disabled = false;
+        localStorage.removeItem(`fullTimer_${recipeId}`);
+    }
     document.getElementById('startFullBtn').addEventListener('click', startFullTimer);
     document.getElementById('resetFullBtn').addEventListener('click', resetFullTimer);
 
