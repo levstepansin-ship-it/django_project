@@ -6,6 +6,8 @@
 <div class="recipe-area">
     <a href="{% url 'index' %}" class="btn btn-primary back-btn">← На главную</a>
 
+    {% csrf_token %}
+
     <div class="settings-card">
         <h1 class="page-title">⚙️ Настройки</h1>
         <p class="page-subtitle">Настройте Wajos под себя. Изменения сохраняются автоматически.</p>
@@ -37,6 +39,27 @@
             </div>
             <div class="setting-status" id="timerFormatStatus"></div>
         </div>
+
+        {% if user.is_authenticated %}
+        <!-- Push-уведомления -->
+        <div class="setting-item">
+            <div class="setting-label">
+                <span class="setting-icon">🔔</span>
+                <div>
+                    <div class="setting-title">Push-уведомления</div>
+                    <div class="setting-desc">Уведомления о новых комментариях к вашим рецептам</div>
+                </div>
+            </div>
+            <div class="setting-control">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="pushNotificationsToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-state" id="pushStateText">Проверка…</span>
+            </div>
+            <div class="setting-status" id="pushStatus"></div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -94,6 +117,34 @@
         color: var(--success); opacity: 0; transition: opacity 0.4s var(--spring);
     }
     .setting-status.visible { opacity: 1; }
+
+    .toggle-switch {
+        position: relative; display: inline-block; width: 58px; height: 32px; cursor: pointer; flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+        position: absolute; inset: 0; border-radius: 50px;
+        background: var(--input-border);
+        transition: all 0.3s var(--spring);
+    }
+    .toggle-slider::before {
+        content: ''; position: absolute; height: 24px; width: 24px; left: 4px; top: 4px;
+        background: white; border-radius: 50%;
+        transition: all 0.3s var(--spring);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider {
+        background: var(--accent-gradient);
+        box-shadow: var(--glow-accent);
+    }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(26px); }
+    .toggle-state {
+        font-size: 14px; font-weight: 600; color: var(--text-secondary);
+        align-self: center; transition: color 0.3s var(--spring);
+    }
+    .toggle-state.on { color: var(--success); }
+    .toggle-state.off { color: var(--text-secondary); }
+    .toggle-state.unsupported { color: var(--error); }
 </style>
 
 <script>
@@ -130,6 +181,179 @@
                 } catch(e) {}
             });
         });
+
+        // ===== PUSH-УВЕДОМЛЕНИЯ =====
+        const pushToggle = document.getElementById('pushNotificationsToggle');
+        const pushStateText = document.getElementById('pushStateText');
+        const pushStatus = document.getElementById('pushStatus');
+
+        function setPushState(state) {
+            // state: 'on' | 'off' | 'unsupported' | 'denied'
+            if (!pushToggle) return;
+            if (state === 'on') {
+                pushToggle.checked = true;
+                pushToggle.disabled = false;
+                pushStateText.textContent = 'Включены';
+                pushStateText.className = 'toggle-state on';
+            } else if (state === 'off') {
+                pushToggle.checked = false;
+                pushToggle.disabled = false;
+                pushStateText.textContent = 'Выключены';
+                pushStateText.className = 'toggle-state off';
+            } else if (state === 'denied') {
+                pushToggle.checked = false;
+                pushToggle.disabled = true;
+                pushStateText.textContent = 'Заблокированы в браузере';
+                pushStateText.className = 'toggle-state unsupported';
+            } else {
+                pushToggle.checked = false;
+                pushToggle.disabled = true;
+                pushStateText.textContent = 'Не поддерживаются';
+                pushStateText.className = 'toggle-state unsupported';
+            }
+        }
+
+        function showPushStatus(text) {
+            if (!pushStatus) return;
+            pushStatus.textContent = text;
+            pushStatus.classList.add('visible');
+            setTimeout(() => pushStatus.classList.remove('visible'), 2500);
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        async function subscribePush() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                setPushState('unsupported');
+                return false;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                let subscription = await reg.pushManager.getSubscription();
+
+                if (!subscription) {
+                    const perm = await Notification.requestPermission();
+                    if (perm !== 'granted') {
+                        if (perm === 'denied') setPushState('denied');
+                        else setPushState('off');
+                        return false;
+                    }
+                    const res = await fetch('/api/vapid-key/');
+                    const data = await res.json();
+                    if (!data.key) { setPushState('unsupported'); return false; }
+
+                    subscription = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(data.key)
+                    });
+
+                    const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.content || '';
+                    await fetch('/api/push/subscribe/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                        body: JSON.stringify(subscription)
+                    });
+                }
+
+                // Сохраняем на сервере: пользователь хочет получать уведомления
+                const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.content || '';
+                await fetch('/api/notifications/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                    body: JSON.stringify({ receive_notifications: true })
+                });
+
+                setPushState('on');
+                showPushStatus('🔔 Уведомления включены');
+                return true;
+            } catch(e) {
+                setPushState('off');
+                showPushStatus('❌ Не удалось включить');
+                return false;
+            }
+        }
+
+        async function unsubscribePush() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                setPushState('unsupported');
+                return;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const subscription = await reg.pushManager.getSubscription();
+                const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.content || '';
+
+                if (subscription) {
+                    await subscription.unsubscribe();
+                    await fetch('/api/push/unsubscribe/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                        body: JSON.stringify({ endpoint: subscription.endpoint })
+                    });
+                }
+
+                // Пользователь отключил уведомления в настройках
+                await fetch('/api/notifications/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+                    body: JSON.stringify({ receive_notifications: false })
+                });
+
+                setPushState('off');
+                showPushStatus('🔕 Уведомления выключены');
+            } catch(e) {
+                showPushStatus('❌ Ошибка');
+            }
+        }
+
+        async function initPushSettings() {
+            if (!pushToggle) return;
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                setPushState('unsupported');
+                return;
+            }
+
+            // Загружаем текущую настройку пользователя
+            let receive = true;
+            try {
+                const res = await fetch('/api/notifications/');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (typeof data.receive_notifications !== 'undefined') {
+                        receive = data.receive_notifications;
+                    }
+                }
+            } catch(e) {}
+
+            if (!receive) { setPushState('off'); }
+            else {
+                // Проверяем реальное состояние подписки в браузере
+                if (Notification.permission === 'denied') { setPushState('denied'); return; }
+                try {
+                    const reg = await navigator.serviceWorker.ready;
+                    const subscription = await reg.pushManager.getSubscription();
+                    setPushState(subscription ? 'on' : 'off');
+                } catch(e) {
+                    setPushState('off');
+                }
+            }
+
+            pushToggle.addEventListener('change', function() {
+                if (this.checked) subscribePush();
+                else unsubscribePush();
+            });
+        }
+
+        initPushSettings();
     })();
 </script>
 {% endblock %}
