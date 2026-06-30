@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recipes',
+    'hcaptcha',
 ]
 
 MIDDLEWARE = [
@@ -90,3 +91,7 @@ AUTH_USER_MODEL = 'auth.User'
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY')
+
+# ===== hCaptcha =====
+HCAPTCHA_SITE_KEY = os.getenv('HCAPTCHA_SITE_KEY')
+HCAPTCHA_SECRET_KEY = os.getenv('HCAPTCHA_SECRET_KEY')
