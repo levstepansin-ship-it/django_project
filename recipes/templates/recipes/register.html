@@ -1,17 +1,15 @@
-{% extends "recipes/base.html" %}
+﻿{% extends "recipes/base.html" %}
 
 {% block title %}Регистрация — Wajos{% endblock %}
-{% block description %}Создайте аккаунт на Wajos, чтобы сохранять рецепты, ставить лайки и оставлять комментарии.{% endblock %}
 
 {% block content %}
 <div class="auth-page">
     <div class="auth-card">
-        <!-- Гласс-блик -->
-        <div class="auth-card-shine"></div>
+        <div class="auth-card-shine" aria-hidden="true"></div>
 
         <div class="auth-header">
             <span class="auth-icon" aria-hidden="true">🍳</span>
-            <h1 class="auth-title">Создать аккаунт</h1>
+            <h1 class="auth-title">Добро пожаловать</h1>
             <p class="auth-subtitle">Присоединяйтесь к Wajos — готовьте без страха</p>
         </div>
 
@@ -44,6 +42,12 @@
             <div class="auth-field">
                 <label for="id_password2" class="auth-label">Подтверждение пароля</label>
                 {{ form.password2 }}
+            </div>
+
+            <!-- ===== hCaptcha ===== -->
+            <div class="auth-field auth-captcha">
+                <label class="auth-label">Проверка</label>
+                {{ form.captcha }}
             </div>
 
             <label class="auth-privacy">
@@ -92,7 +96,6 @@
         100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Стеклянный блик сверху */
     .auth-card-shine {
         position: absolute;
         top: -50%; left: -50%;
@@ -118,6 +121,11 @@
         animation: gentleFloat 4s ease-in-out infinite;
     }
 
+    @keyframes gentleFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+
     .auth-title {
         font-size: 28px;
         font-weight: 800;
@@ -133,7 +141,6 @@
         color: var(--text-secondary);
     }
 
-    /* Ошибки */
     .auth-errors {
         background: var(--error-bg);
         border: 1px solid var(--error-border);
@@ -153,7 +160,6 @@
 
     .auth-error:last-child { margin-bottom: 0; }
 
-    /* Форма */
     .auth-form {
         position: relative;
         z-index: 1;
@@ -202,7 +208,20 @@
         box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
     }
 
-    /* Чекбокс приватности */
+    /* ===== hCaptcha ===== */
+    .auth-captcha {
+        margin-bottom: 16px;
+    }
+
+    .auth-captcha .h-captcha {
+        display: flex;
+        justify-content: center;
+    }
+
+    .auth-captcha iframe {
+        border-radius: 12px !important;
+    }
+
     .auth-privacy {
         display: flex;
         align-items: flex-start;
@@ -235,7 +254,6 @@
         text-decoration-style: solid;
     }
 
-    /* Кнопка отправки */
     .auth-submit {
         width: 100%;
         padding: 15px;
@@ -244,7 +262,6 @@
         z-index: 1;
     }
 
-    /* Подвал */
     .auth-footer {
         text-align: center;
         margin-top: 22px;
@@ -267,7 +284,6 @@
         text-decoration: underline;
     }
 
-    /* Адаптив */
     @media (max-width: 480px) {
         .auth-card {
             padding: 32px 22px;
@@ -279,9 +295,7 @@
 </style>
 
 <script>
-    // Добавляем класс input-error при ошибке валидации (client-side highlight)
     document.querySelectorAll('.auth-field input').forEach(input => {
-        // Подсветка полей с серверными ошибками
         if (input.nextElementSibling && input.nextElementSibling.classList.contains('errorlist')) {
             input.classList.add('input-error');
         }
