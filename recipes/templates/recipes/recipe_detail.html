@@ -389,10 +389,11 @@
     </div>
     {% endfor %}
 
-    <!-- КОМПАКТНЫЙ TOOLBAR -->
+    <!-- КОМПАКТНЫЙ TOOLBAR С PDF -->
     <div id="shareButtons" class="compact-toolbar">
         <button id="shareBtn" class="toolbar-btn" title="Поделиться" aria-label="Поделиться рецептом"><span aria-hidden="true">📤</span></button>
         <button id="copyBtn" class="toolbar-btn" title="Копировать ссылку" aria-label="Копировать ссылку"><span aria-hidden="true">🔗</span></button>
+        <a href="{% url 'download_recipe_pdf' recipe.id %}" class="toolbar-btn" title="Скачать PDF" aria-label="Скачать рецепт в PDF"><span aria-hidden="true">📄</span></a>
         <button id="saveRecipeBtn" class="toolbar-btn toolbar-save" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}" title="Сохранить" aria-label="Сохранить в избранное"><span aria-hidden="true">⭐</span></button>
     </div>
 
