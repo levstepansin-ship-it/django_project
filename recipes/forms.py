@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, RegexValidator
+from hcaptcha.fields import hCaptchaField
 
 
 class RegisterForm(UserCreationForm):
@@ -32,6 +33,10 @@ class RegisterForm(UserCreationForm):
         label='',
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'auth-checkbox'})
+    )
+    captcha = hCaptchaField(
+        label='',
+        error_messages={'required': 'Пожалуйста, подтвердите, что вы не робот'}
     )
 
     class Meta:
@@ -75,6 +80,10 @@ class LoginForm(AuthenticationForm):
             'placeholder': 'Ваш пароль',
             'autocomplete': 'current-password',
         })
+    )
+    captcha = hCaptchaField(
+        label='',
+        error_messages={'required': 'Пожалуйста, подтвердите, что вы не робот'}
     )
 
     def __init__(self, *args, **kwargs):
