@@ -1,6 +1,6 @@
 ﻿from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.urls import reverse
 from .models import Recipe, Comment, CommentLike, Rating, Favorite, UserPreferences, UserProfile, PushSubscription
 from .forms import RegisterForm, LoginForm, ProfileForm, ChangePasswordForm
+from .utils import generate_recipe_pdf
 import os
 import requests
 import json
@@ -96,6 +97,17 @@ def recipe_detail(request, recipe_id):
         'sort_order': sort_order,
         'is_favorited': is_favorited,
     })
+
+
+# ===== СКАЧИВАНИЕ PDF =====
+def download_recipe_pdf(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    pdf_buffer = generate_recipe_pdf(recipe)
+    return FileResponse(
+        pdf_buffer,
+        as_attachment=True,
+        filename=f"{recipe.title}.pdf"
+    )
 
 
 # ===== СЛУЧАЙНЫЙ РЕЦЕПТ =====
