@@ -380,22 +380,26 @@
         {% if step.desc %}
         <div class="step-desc step-desc-lg">{{ step.desc }}</div>
         {% endif %}
+        {% if step.duration > 0 %}
         <div class="timer-row">
             <span class="timer-display timer-display-lg" id="timer{{ forloop.counter }}">{{ step.duration }}:00</span>
             <span class="timer-anim" id="anim{{ forloop.counter }}">🥘</span>
             <button class="start-timer btn btn-primary" data-duration="{{ step.duration }}" data-timer-id="timer{{ forloop.counter }}" data-step="{{ forloop.counter }}" aria-label="Запустить таймер шага {{ forloop.counter }}"><span aria-hidden="true">🔥</span> Старт ({{ step.duration }} мин)</button>
             <button class="reset-timer btn btn-secondary" data-timer-id="timer{{ forloop.counter }}" data-step="{{ forloop.counter }}" aria-label="Сбросить таймер шага {{ forloop.counter }}">Сброс</button>
         </div>
+        {% endif %}
     </div>
     {% endfor %}
 
-    <!-- КОМПАКТНЫЙ TOOLBAR С PDF -->
+    <!-- КОМПАКТНЫЙ TOOLBAR С PDF И ГОЛОСОМ -->
     <div id="shareButtons" class="compact-toolbar">
         <button id="shareBtn" class="toolbar-btn" title="Поделиться" aria-label="Поделиться рецептом"><span aria-hidden="true">📤</span></button>
         <button id="copyBtn" class="toolbar-btn" title="Копировать ссылку" aria-label="Копировать ссылку"><span aria-hidden="true">🔗</span></button>
         <a href="{% url 'download_recipe_pdf' recipe.id %}" class="toolbar-btn" title="Скачать PDF" aria-label="Скачать рецепт в PDF"><span aria-hidden="true">📄</span></a>
         <button id="saveRecipeBtn" class="toolbar-btn toolbar-save" data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}" title="Сохранить" aria-label="Сохранить в избранное"><span aria-hidden="true">⭐</span></button>
+        <button id="voiceBtn" class="toolbar-btn" title="Голосовое управление" aria-label="Голосовое управление" style="background: var(--accent-gradient); color: white; border-color: transparent;"><span aria-hidden="true">🎤</span></button>
     </div>
+    <div id="voiceStatus" style="text-align: center; margin-top: 4px; font-size: 13px; color: var(--text-secondary);">Нажмите 🎤 и говорите: Старт, Стоп, Сброс, Дальше</div>
 
     <!-- СУПЕР-ТАЙМЕР (раскрываемый) -->
     <div class="global-timer-collapsible">
@@ -859,5 +863,143 @@
             }
         });
     });
+
+    // ===== ГОЛОСОВОЕ УПРАВЛЕНИЕ =====
+    (function initVoiceControl() {
+        const voiceBtn = document.getElementById('voiceBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        if (!voiceBtn) return;
+
+        // Проверяем поддержку браузера
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            voiceStatus.textContent = '❌ Ваш браузер не поддерживает голосовое управление';
+            voiceBtn.disabled = true;
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ru-RU';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        let isListening = false;
+
+        // Команды
+        const commands = {
+            'старт': () => {
+                const btn = document.querySelector('.start-timer:not([disabled])');
+                if (btn) {
+                    btn.click();
+                    speak('Таймер запущен');
+                } else {
+                    speak('Таймер уже работает или не выбран шаг');
+                }
+            },
+            'стоп': () => {
+                const resetBtn = document.querySelector('.reset-timer:not([disabled])');
+                if (resetBtn) {
+                    resetBtn.click();
+                    speak('Таймер остановлен');
+                } else {
+                    speak('Нет активного таймера');
+                }
+            },
+            'сброс': () => {
+                const resetBtn = document.querySelector('.reset-timer:not([disabled])');
+                if (resetBtn) {
+                    resetBtn.click();
+                    speak('Таймер сброшен');
+                } else {
+                    speak('Нет активного таймера');
+                }
+            },
+            'дальше': () => {
+                const startFullBtn = document.getElementById('startFullBtn');
+                if (startFullBtn && !startFullBtn.disabled) {
+                    startFullBtn.click();
+                    speak('Запускаю полный цикл');
+                } else {
+                    speak('Полный цикл уже запущен или кнопка неактивна');
+                }
+            }
+        };
+
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            if (!synth) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.9;
+            synth.speak(utterance);
+        }
+
+        recognition.onstart = () => {
+            isListening = true;
+            voiceStatus.textContent = '🎙️ Слушаю...';
+            voiceBtn.classList.add('btn-danger');
+            voiceBtn.innerHTML = '🎤 Остановить';
+            speak('Голосовое управление активно');
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            voiceStatus.textContent = 'Нажмите 🎤 и говорите';
+            voiceBtn.classList.remove('btn-danger');
+            voiceBtn.innerHTML = '🎤 Голосовое управление';
+            if (!voiceBtn.dataset.manualStop) {
+                setTimeout(() => {
+                    if (!isListening && !voiceBtn.disabled) {
+                        try { recognition.start(); } catch(e) {}
+                    }
+                }, 500);
+            }
+        };
+
+        recognition.onresult = (event) => {
+            const last = event.results.length - 1;
+            const transcript = event.results[last][0].transcript.toLowerCase().trim();
+            voiceStatus.textContent = `🎙️ Вы сказали: "${transcript}"`;
+
+            for (const [cmd, action] of Object.entries(commands)) {
+                if (transcript.includes(cmd)) {
+                    action();
+                    break;
+                }
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.warn('Voice recognition error:', event.error);
+            if (event.error === 'not-allowed') {
+                voiceStatus.textContent = '❌ Доступ к микрофону запрещён';
+                voiceBtn.disabled = true;
+            } else {
+                voiceStatus.textContent = `⚠️ Ошибка: ${event.error}`;
+            }
+        };
+
+        voiceBtn.addEventListener('click', () => {
+            if (isListening) {
+                voiceBtn.dataset.manualStop = 'true';
+                recognition.stop();
+                isListening = false;
+                voiceStatus.textContent = '⏸️ Остановлено';
+                voiceBtn.innerHTML = '🎤 Голосовое управление';
+            } else {
+                voiceBtn.dataset.manualStop = '';
+                try {
+                    recognition.start();
+                } catch(e) {
+                    voiceStatus.textContent = '⚠️ Ошибка запуска микрофона';
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (isListening) recognition.stop();
+        });
+    })();
+
 </script>
 {% endblock %}
