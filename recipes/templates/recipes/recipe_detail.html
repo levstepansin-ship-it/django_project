@@ -863,12 +863,15 @@
             }
         });
     });
-    // ===== ГОЛОСОВОЕ УПРАВЛЕНИЕ (ТИХАЯ ВЕРСИЯ) =====
-(function initVoiceControl() {
+    // ============================================================
+//  ГОЛОСОВОЙ ПОМОЩНИК ДЛЯ WAJOS (ВЕРСИЯ 2.0 — ТИХАЯ И УМНАЯ)
+// ============================================================
+(function initSmartVoice() {
     const voiceBtn = document.getElementById('voiceBtn');
     const voiceStatus = document.getElementById('voiceStatus');
     if (!voiceBtn) return;
 
+    // Проверка поддержки браузера
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         voiceStatus.textContent = '❌ Ваш браузер не поддерживает голосовое управление';
         voiceBtn.disabled = true;
@@ -882,10 +885,16 @@
     recognition.interimResults = true;
 
     let isListening = false;
-    let lastCommand = '';
-    let commandCooldown = 0;
+    let currentStep = 1;
+    let totalSteps = {{ recipe.steps|length }};
+    let isPaused = false;
+    let timerInterval = null;
+    let remainingSeconds = 0;
+    let timerId = null;
 
-    // Звук-щелчок (как в Telegram) вместо голоса
+    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+
+    // Звук-щелчок (короткий, без голоса)
     function playClick() {
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -895,60 +904,162 @@
             gain.connect(ctx.destination);
             osc.frequency.value = 1200;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.15, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
             osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.1);
+            osc.stop(ctx.currentTime + 0.08);
         } catch (e) {}
     }
 
-    // Команды (без голосовых ответов, только статус)
+    // Получить текущий шаг (номер)
+    function getStepElement(stepNum) {
+        return document.querySelector(`#stepCard${stepNum}`);
+    }
+
+    // Запустить таймер на шаге
+    function startStepTimer(stepNum) {
+        const stepCard = getStepElement(stepNum);
+        if (!stepCard) return false;
+        const startBtn = stepCard.querySelector('.start-timer');
+        if (startBtn && !startBtn.disabled) {
+            startBtn.click();
+            return true;
+        }
+        return false;
+    }
+
+    // Сбросить таймер на шаге
+    function resetStepTimer(stepNum) {
+        const stepCard = getStepElement(stepNum);
+        if (!stepCard) return false;
+        const resetBtn = stepCard.querySelector('.reset-timer');
+        if (resetBtn && !resetBtn.disabled) {
+            resetBtn.click();
+            return true;
+        }
+        return false;
+    }
+
+    // Показать статус
+    function setStatus(text, isError = false) {
+        voiceStatus.textContent = text;
+        voiceStatus.style.color = isError ? 'var(--error)' : 'var(--text-secondary)';
+        setTimeout(() => {
+            voiceStatus.style.color = 'var(--text-secondary)';
+        }, 3000);
+    }
+
+    // Остановить все таймеры
+    function stopAllTimers() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        // Сброс через кнопки на всех шагах
+        document.querySelectorAll('.reset-timer').forEach(btn => {
+            if (!btn.disabled) btn.click();
+        });
+        isPaused = false;
+    }
+
+    // ===== ГОЛОСОВЫЕ КОМАНДЫ =====
+
     const commands = {
         'старт': () => {
-            const btn = document.querySelector('.start-timer:not([disabled])');
-            if (btn) {
-                btn.click();
-                voiceStatus.textContent = '✅ Таймер запущен';
+            if (isPaused) {
+                // Если на паузе — продолжаем
+                isPaused = false;
+                if (timerInterval) {
+                    // таймер уже есть, просто снимаем паузу
+                    setStatus('▶️ Продолжаем');
+                    playClick();
+                    return;
+                }
+            }
+            // Запускаем первый шаг
+            if (startStepTimer(currentStep)) {
+                setStatus(`✅ Шаг ${currentStep} запущен`);
                 playClick();
             } else {
-                voiceStatus.textContent = '⚠️ Нет доступного таймера';
+                setStatus('⚠️ Не удалось запустить шаг', true);
             }
         },
-        'стоп': () => {
-            const resetBtn = document.querySelector('.reset-timer:not([disabled])');
-            if (resetBtn) {
-                resetBtn.click();
-                voiceStatus.textContent = '⏸️ Таймер остановлен';
-                playClick();
-            } else {
-                voiceStatus.textContent = '⚠️ Нет активного таймера';
-            }
-        },
-        'сброс': () => {
-            const resetBtn = document.querySelector('.reset-timer:not([disabled])');
-            if (resetBtn) {
-                resetBtn.click();
-                voiceStatus.textContent = '🔄 Таймер сброшен';
-                playClick();
-            } else {
-                voiceStatus.textContent = '⚠️ Нет активного таймера';
-            }
-        },
+
         'дальше': () => {
-            const startFullBtn = document.getElementById('startFullBtn');
-            if (startFullBtn && !startFullBtn.disabled) {
-                startFullBtn.click();
-                voiceStatus.textContent = '🚀 Полный цикл запущен';
+            // Переходим к следующему шагу
+            if (currentStep < totalSteps) {
+                // Останавливаем текущий таймер
+                stopAllTimers();
+                // Переключаем шаг
+                currentStep++;
+                // Запускаем новый
+                if (startStepTimer(currentStep)) {
+                    setStatus(`✅ Шаг ${currentStep} запущен`);
+                    playClick();
+                } else {
+                    setStatus(`⚠️ Шаг ${currentStep} не имеет таймера`, true);
+                }
+            } else {
+                setStatus('🎉 Все шаги выполнены!');
+                playClick();
+            }
+        },
+
+        'стоп': () => {
+            if (timerInterval) {
+                // Ставим таймер на паузу (без сброса)
+                isPaused = true;
+                setStatus(`⏸️ Шаг ${currentStep} на паузе`);
                 playClick();
             } else {
-                voiceStatus.textContent = '⚠️ Полный цикл уже запущен';
+                setStatus('⚠️ Нет активного таймера', true);
             }
+        },
+
+        'сначала': () => {
+            // Полный сброс к шагу 1
+            stopAllTimers();
+            currentStep = 1;
+            // Сбрасываем все таймеры
+            for (let i = 1; i <= totalSteps; i++) {
+                resetStepTimer(i);
+            }
+            setStatus('🔄 Сброшено к началу');
+            playClick();
+        },
+
+        'пауза': () => {
+            // Алиас для "стоп"
+            commands['стоп']();
+        },
+
+        'продолжить': () => {
+            // Алиас для "старт"
+            commands['старт']();
+        },
+
+        'повтори': () => {
+            // Повторить текущий шаг (перезапустить таймер)
+            resetStepTimer(currentStep);
+            setTimeout(() => {
+                if (startStepTimer(currentStep)) {
+                    setStatus(`🔄 Шаг ${currentStep} перезапущен`);
+                    playClick();
+                }
+            }, 300);
+        },
+
+        'помощь': () => {
+            setStatus('Команды: старт, дальше, стоп, сначала, пауза, продолжить, повтори');
+            playClick();
         }
     };
 
+    // ===== ИНИЦИАЛИЗАЦИЯ РАСПОЗНАВАНИЯ =====
+
     recognition.onstart = () => {
         isListening = true;
-        voiceStatus.textContent = '🎙️ Слушаю... (скажите команду)';
+        setStatus('🎙️ Слушаю... (скажите команду)');
         voiceBtn.classList.add('btn-danger');
         voiceBtn.innerHTML = '🎤 Остановить';
         playClick();
@@ -956,9 +1067,10 @@
 
     recognition.onend = () => {
         isListening = false;
-        voiceStatus.textContent = '🎤 Нажмите и говорите';
+        setStatus('🎤 Нажмите и говорите');
         voiceBtn.classList.remove('btn-danger');
         voiceBtn.innerHTML = '🎤 Голосовое управление';
+        // Автоматический перезапуск (без лишних звуков)
         if (!voiceBtn.dataset.manualStop) {
             setTimeout(() => {
                 if (!isListening && !voiceBtn.disabled) {
@@ -971,20 +1083,11 @@
     recognition.onresult = (event) => {
         const last = event.results.length - 1;
         const transcript = event.results[last][0].transcript.toLowerCase().trim();
-        voiceStatus.textContent = `🎙️ Вы сказали: "${transcript}"`;
+        setStatus(`🎙️ Вы сказали: "${transcript}"`);
 
-        // Отфильтровываем пустые команды
-        if (!transcript) return;
-
+        // Проверяем команды
         for (const [cmd, action] of Object.entries(commands)) {
             if (transcript.includes(cmd)) {
-                // Защита от повторного срабатывания одной команды
-                if (cmd === lastCommand && Date.now() - commandCooldown < 2000) {
-                    voiceStatus.textContent = `⏳ Уже выполнено: "${cmd}"`;
-                    return;
-                }
-                lastCommand = cmd;
-                commandCooldown = Date.now();
                 action();
                 break;
             }
@@ -993,36 +1096,79 @@
 
     recognition.onerror = (event) => {
         if (event.error === 'not-allowed') {
-            voiceStatus.textContent = '❌ Доступ к микрофону запрещён';
+            setStatus('❌ Доступ к микрофону запрещён', true);
             voiceBtn.disabled = true;
         } else if (event.error === 'no-speech') {
-            voiceStatus.textContent = '🎙️ Не услышал, повторите';
+            setStatus('🎙️ Не услышал, повторите');
         } else {
-            voiceStatus.textContent = `⚠️ Ошибка: ${event.error}`;
+            setStatus(`⚠️ Ошибка: ${event.error}`, true);
         }
     };
+
+    // ===== КНОПКА ВКЛ/ВЫКЛ =====
 
     voiceBtn.addEventListener('click', () => {
         if (isListening) {
             voiceBtn.dataset.manualStop = 'true';
             recognition.stop();
             isListening = false;
-            voiceStatus.textContent = '⏸️ Остановлено';
+            setStatus('⏸️ Остановлено');
             voiceBtn.innerHTML = '🎤 Голосовое управление';
+            voiceBtn.classList.remove('btn-danger');
             playClick();
         } else {
             voiceBtn.dataset.manualStop = '';
             try {
                 recognition.start();
             } catch(e) {
-                voiceStatus.textContent = '⚠️ Ошибка запуска микрофона';
+                setStatus('⚠️ Ошибка запуска микрофона', true);
             }
         }
     });
 
+    // Останавливаем при уходе со страницы
     window.addEventListener('beforeunload', () => {
         if (isListening) recognition.stop();
     });
+
+    // ===== ОТСЛЕЖИВАНИЕ ЗАВЕРШЕНИЯ ТАЙМЕРА =====
+
+    // Подписываемся на завершение таймеров (через MutationObserver)
+    document.querySelectorAll('.start-timer').forEach(btn => {
+        const timerId = btn.dataset.timerId;
+        const display = document.getElementById(timerId);
+        if (display) {
+            // Проверяем каждые 500 мс, не появилась ли надпись "Готово!"
+            const observer = new MutationObserver(() => {
+                if (display.innerText.includes('Готово')) {
+                    setStatus(`✅ Шаг ${currentStep} готов!`);
+                    playClick();
+                    // Переход на следующий шаг
+                    setTimeout(() => {
+                        if (currentStep < totalSteps) {
+                            commands['дальше']();
+                        } else {
+                            setStatus('🎉 Все шаги выполнены!');
+                            playClick();
+                        }
+                    }, 1500);
+                }
+            });
+            observer.observe(display, { childList: true, characterData: true, subtree: true });
+        }
+    });
+
+    // ===== ПОЛУЧЕНИЕ КОЛИЧЕСТВА ШАГОВ =====
+    // Динамически обновляем totalSteps, если шаги добавляются
+    const updateTotalSteps = () => {
+        const cards = document.querySelectorAll('.step-card');
+        if (cards.length > 0) {
+            totalSteps = cards.length;
+        }
+    };
+    updateTotalSteps();
+
+    console.log('✅ Голосовой помощник Wajos активен. Команды: старт, дальше, стоп, сначала, пауза, продолжить, повтори, помощь');
 })();
 
 </script>
