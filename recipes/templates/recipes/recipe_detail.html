@@ -1,167 +1,159 @@
 ﻿{% extends "recipes/base.html" %}
 
-{% block title %}{{ recipe.title }} — рецепт с таймерами на Wajos{% endblock %}
-{% block description %}{{ recipe.title }} — пошаговый рецепт с таймерами на Wajos{% endblock %}
-{% block og_title %}{{ recipe.title }} — Wajos{% endblock %}
-{% block og_description %}Пошаговый рецепт с таймерами. Готовьте без страха!{% endblock %}
-{% block og_type %}article{% endblock %}
-
-{% block extra_styles %}
+{% block extra_css %}
 <style>
-/* ===== КОМПАКТНАЯ АНИМАЦИЯ КОТЁЛКА 🥘 ===== */
-.timer-anim {
-    display: none;
-    font-size: 24px;
-    margin-left: 8px;
-    align-self: center;
-    position: relative;
-    line-height: 1;
-}
+    /* ===== СТИЛИ ДЛЯ АНИМАЦИИ КОТЁЛКА И ЗАСТАВКИ ===== */
+    .timer-anim {
+        display: none;
+        font-size: 24px;
+        margin-left: 8px;
+        align-self: center;
+        position: relative;
+        line-height: 1;
+    }
 
-.timer-anim.active {
-    display: inline-block;
-    animation: potWobble 0.9s ease-in-out infinite;
-}
+    .timer-anim.active {
+        display: inline-block;
+        animation: potWobble 0.9s ease-in-out infinite;
+    }
 
-@keyframes potWobble {
-    0%, 100% { transform: rotate(0deg) translateY(0); }
-    25% { transform: rotate(-4deg) translateY(-2px); }
-    75% { transform: rotate(4deg) translateY(-1px); }
-}
+    @keyframes potWobble {
+        0%, 100% { transform: rotate(0deg) translateY(0); }
+        25% { transform: rotate(-4deg) translateY(-2px); }
+        75% { transform: rotate(4deg) translateY(-1px); }
+    }
 
-/* Мини-пузырьки от котёлка */
-.timer-anim.active::before,
-.timer-anim.active::after {
-    content: '';
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgba(var(--accent-rgb), 0.6);
-    bottom: 100%;
-}
+    .timer-anim.active::before,
+    .timer-anim.active::after {
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(var(--accent-rgb), 0.6);
+        bottom: 100%;
+    }
 
-.timer-anim.active::before {
-    left: 20%;
-    animation: potBubble 1.4s 0s infinite ease-out;
-}
+    .timer-anim.active::before {
+        left: 20%;
+        animation: potBubble 1.4s 0s infinite ease-out;
+    }
 
-.timer-anim.active::after {
-    right: 20%;
-    animation: potBubble 1.4s 0.6s infinite ease-out;
-}
+    .timer-anim.active::after {
+        right: 20%;
+        animation: potBubble 1.4s 0.6s infinite ease-out;
+    }
 
-@keyframes potBubble {
-    0% { opacity: 0.7; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-16px) scale(0.3); }
-}
+    @keyframes potBubble {
+        0% { opacity: 0.7; transform: translateY(0) scale(1); }
+        100% { opacity: 0; transform: translateY(-16px) scale(0.3); }
+    }
 
-/* ===== ЗАСТАВКА «ГОТОВО!» ===== */
-.done-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100000;
-    background: rgba(10, 12, 20, 0.88);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 20px;
-}
+    /* ===== ЗАСТАВКА «ГОТОВО!» ===== */
+    .done-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        background: rgba(10, 12, 20, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-.done-overlay.active {
-    display: flex;
-    animation: overlayIn 0.4s ease-out;
-}
+    .done-overlay.active {
+        display: flex;
+        animation: overlayIn 0.4s ease-out;
+    }
 
-@keyframes overlayIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
+    @keyframes overlayIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
 
-.done-title {
-    font-size: clamp(32px, 10vw, 72px);
-    font-weight: 900;
-    text-align: center;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, #f5b301 0%, #e67e22 40%, #22c55e 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: doneScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    padding: 0 20px;
-}
+    .done-title {
+        font-size: clamp(32px, 10vw, 72px);
+        font-weight: 900;
+        text-align: center;
+        letter-spacing: -1px;
+        background: linear-gradient(135deg, #f5b301 0%, #e67e22 40%, #22c55e 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: doneScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        padding: 0 20px;
+    }
 
-@keyframes doneScale {
-    0% { transform: scale(0.3); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
+    @keyframes doneScale {
+        0% { transform: scale(0.3); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
 
-.done-emoji {
-    font-size: clamp(48px, 15vw, 120px);
-    animation: doneBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 8px 24px rgba(245, 179, 1, 0.5));
-}
+    .done-emoji {
+        font-size: clamp(48px, 15vw, 120px);
+        animation: doneBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        filter: drop-shadow(0 8px 24px rgba(245, 179, 1, 0.5));
+    }
 
-@keyframes doneBounce {
-    0% { transform: scale(0) rotate(-20deg); }
-    60% { transform: scale(1.3) rotate(10deg); }
-    100% { transform: scale(1) rotate(0deg); }
-}
+    @keyframes doneBounce {
+        0% { transform: scale(0) rotate(-20deg); }
+        60% { transform: scale(1.3) rotate(10deg); }
+        100% { transform: scale(1) rotate(0deg); }
+    }
 
-.done-sub {
-    font-size: clamp(16px, 4vw, 22px);
-    color: rgba(255,255,255,0.7);
-    text-align: center;
-    animation: doneFadeIn 0.8s 0.3s both;
-}
+    .done-sub {
+        font-size: clamp(16px, 4vw, 22px);
+        color: rgba(255,255,255,0.7);
+        text-align: center;
+        animation: doneFadeIn 0.8s 0.3s both;
+    }
 
-@keyframes doneFadeIn {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
+    @keyframes doneFadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
 
-.done-close {
-    padding: 14px 36px;
-    border-radius: 50px;
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: var(--glow-accent-strong);
-    animation: doneFadeIn 0.8s 0.5s both;
-    transition: transform 0.3s;
-}
+    .done-close {
+        padding: 14px 36px;
+        border-radius: 50px;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: var(--glow-accent-strong);
+        animation: doneFadeIn 0.8s 0.5s both;
+        transition: transform 0.3s;
+    }
 
-.done-close:hover { transform: scale(1.05); }
+    .done-close:hover { transform: scale(1.05); }
 
-/* --- Конфетти --- */
-.confetti {
-    position: fixed;
-    top: -10px;
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-    z-index: 100001;
-    pointer-events: none;
-    animation: confettiFall var(--fall, 3s) var(--delay, 0s) linear forwards;
-    will-change: transform;
-}
+    /* --- Конфетти --- */
+    .confetti {
+        position: fixed;
+        top: -10px;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        z-index: 100001;
+        pointer-events: none;
+        animation: confettiFall var(--fall, 3s) var(--delay, 0s) linear forwards;
+        will-change: transform;
+    }
 
-@keyframes confettiFall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    80% { opacity: 1; }
-    100% { transform: translateY(105vh) rotate(var(--spin, 720deg)); opacity: 0; }
-}
+    @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        80% { opacity: 1; }
+        100% { transform: translateY(105vh) rotate(var(--spin, 720deg)); opacity: 0; }
+    }
 
-/* Отключить анимации для prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-    .timer-anim, .timer-anim::before, .timer-anim::after, .confetti { animation: none !important; }
-}
+    @media (prefers-reduced-motion: reduce) {
+        .timer-anim, .timer-anim::before, .timer-anim::after, .confetti { animation: none !important; }
+    }
 </style>
 {% endblock %}
 
@@ -314,6 +306,28 @@
             <li>Вари <strong>ровно 23 минуты 25 секунд</strong> — ни секундой больше!</li>
             <li>После варки добавь сливочное масло — оно делает кашу нежной</li>
             <li>Подавай сразу, пока горячая — гречка быстро остывает</li>
+        </ul>
+    </div>
+    {% elif recipe.id == 9 %}
+    <div class="warnings-block">
+        <h4>❌ Почему омлет часто не получается</h4>
+        <ul>
+            <li><strong>Опадает после приготовления</strong> — если открывать крышку во время готовки или резко менять температуру</li>
+            <li><strong>Резиновый или жёсткий</strong> — от слишком интенсивного взбивания или долгого приготовления</li>
+            <li><strong>Водянистый, не пропёкся</strong> — слишком много молока или сочных овощей</li>
+            <li><strong>Пригорает снизу, а сверху сырой</strong> — огонь слишком сильный</li>
+            <li><strong>Получается плоским</strong> — мало молока или часто открывали крышку</li>
+        </ul>
+    </div>
+    <div class="tips-block">
+        <h4>✅ Что делать, чтобы получилось</h4>
+        <ul>
+            <li><strong>Соблюдай пропорцию:</strong> 1 ст. ложка молока на 1 яйцо (100 мл на 4 яйца). Это основа.</li>
+            <li><strong>Дайте яйцам нагреться</strong> — достаньте из холодильника за 20 минут до готовки.</li>
+            <li><strong>Не открывайте крышку</strong> первые 5–7 минут. Пар внутри сковороды поднимает омлет.</li>
+            <li><strong>Убавьте огонь</strong> сразу после заливки смеси до среднего-малого. Так омлет не пригорит.</li>
+            <li><strong>Солите в конце</strong> — соль вытягивает влагу, если добавить её в начале.</li>
+            <li><strong>Подавайте сразу</strong> на тёплой тарелке. Омлет оседает, когда остывает.</li>
         </ul>
     </div>
     {% else %}
@@ -657,7 +671,6 @@
                 if (sBtn) sBtn.disabled = false; if (rBtn) rBtn.disabled = false;
                 clearTimerState(id);
                 if (stepNum) setAnim(stepNum, false);
-                // Заставка «Готово» только на последний шаг
                 if (stepNum === totalSteps) {
                     showDoneOverlay();
                     if (typeof showFeedbackModal === 'function') showFeedbackModal('Весь рецепт', true);
