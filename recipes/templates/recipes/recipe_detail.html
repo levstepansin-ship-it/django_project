@@ -1047,11 +1047,19 @@
         const transcript = lastResult[0].transcript.toLowerCase().trim();
         const isFinal = lastResult.isFinal;
 
-        // Пробуждение
+        // Пробуждение — ВСЕ ВОЗМОЖНЫЕ ВАРИАНТЫ ПРОИЗНОШЕНИЯ
+        const wakeWords = [
+            'ваджос', 'вайос', 'важос', 'воджос', 'ваджус', 'вайус', 'вожос',
+            'wajos', 'wajos', 'wajoos', 'wajoss',
+            'помощник', 'ассистент', 'слышь', 'слушай', 'wajos'
+        ];
+
         if (!state.isAwake && isFinal) {
-            if (transcript.includes(state.wakeWord) || transcript.includes('ваджос') || transcript.includes('слушай')) {
-                wakeUp();
-                return;
+            for (const word of wakeWords) {
+                if (transcript.includes(word)) {
+                    wakeUp();
+                    return;
+                }
             }
         }
 
