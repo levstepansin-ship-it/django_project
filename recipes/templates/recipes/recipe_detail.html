@@ -863,143 +863,167 @@
             }
         });
     });
+    // ===== ГОЛОСОВОЕ УПРАВЛЕНИЕ (ТИХАЯ ВЕРСИЯ) =====
+(function initVoiceControl() {
+    const voiceBtn = document.getElementById('voiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    if (!voiceBtn) return;
 
-    // ===== ГОЛОСОВОЕ УПРАВЛЕНИЕ =====
-    (function initVoiceControl() {
-        const voiceBtn = document.getElementById('voiceBtn');
-        const voiceStatus = document.getElementById('voiceStatus');
-        if (!voiceBtn) return;
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        voiceStatus.textContent = '❌ Ваш браузер не поддерживает голосовое управление';
+        voiceBtn.disabled = true;
+        return;
+    }
 
-        // Проверяем поддержку браузера
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            voiceStatus.textContent = '❌ Ваш браузер не поддерживает голосовое управление';
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ru-RU';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    let isListening = false;
+    let lastCommand = '';
+    let commandCooldown = 0;
+
+    // Звук-щелчок (как в Telegram) вместо голоса
+    function playClick() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 1200;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.1);
+        } catch (e) {}
+    }
+
+    // Команды (без голосовых ответов, только статус)
+    const commands = {
+        'старт': () => {
+            const btn = document.querySelector('.start-timer:not([disabled])');
+            if (btn) {
+                btn.click();
+                voiceStatus.textContent = '✅ Таймер запущен';
+                playClick();
+            } else {
+                voiceStatus.textContent = '⚠️ Нет доступного таймера';
+            }
+        },
+        'стоп': () => {
+            const resetBtn = document.querySelector('.reset-timer:not([disabled])');
+            if (resetBtn) {
+                resetBtn.click();
+                voiceStatus.textContent = '⏸️ Таймер остановлен';
+                playClick();
+            } else {
+                voiceStatus.textContent = '⚠️ Нет активного таймера';
+            }
+        },
+        'сброс': () => {
+            const resetBtn = document.querySelector('.reset-timer:not([disabled])');
+            if (resetBtn) {
+                resetBtn.click();
+                voiceStatus.textContent = '🔄 Таймер сброшен';
+                playClick();
+            } else {
+                voiceStatus.textContent = '⚠️ Нет активного таймера';
+            }
+        },
+        'дальше': () => {
+            const startFullBtn = document.getElementById('startFullBtn');
+            if (startFullBtn && !startFullBtn.disabled) {
+                startFullBtn.click();
+                voiceStatus.textContent = '🚀 Полный цикл запущен';
+                playClick();
+            } else {
+                voiceStatus.textContent = '⚠️ Полный цикл уже запущен';
+            }
+        }
+    };
+
+    recognition.onstart = () => {
+        isListening = true;
+        voiceStatus.textContent = '🎙️ Слушаю... (скажите команду)';
+        voiceBtn.classList.add('btn-danger');
+        voiceBtn.innerHTML = '🎤 Остановить';
+        playClick();
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        voiceStatus.textContent = '🎤 Нажмите и говорите';
+        voiceBtn.classList.remove('btn-danger');
+        voiceBtn.innerHTML = '🎤 Голосовое управление';
+        if (!voiceBtn.dataset.manualStop) {
+            setTimeout(() => {
+                if (!isListening && !voiceBtn.disabled) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            }, 500);
+        }
+    };
+
+    recognition.onresult = (event) => {
+        const last = event.results.length - 1;
+        const transcript = event.results[last][0].transcript.toLowerCase().trim();
+        voiceStatus.textContent = `🎙️ Вы сказали: "${transcript}"`;
+
+        // Отфильтровываем пустые команды
+        if (!transcript) return;
+
+        for (const [cmd, action] of Object.entries(commands)) {
+            if (transcript.includes(cmd)) {
+                // Защита от повторного срабатывания одной команды
+                if (cmd === lastCommand && Date.now() - commandCooldown < 2000) {
+                    voiceStatus.textContent = `⏳ Уже выполнено: "${cmd}"`;
+                    return;
+                }
+                lastCommand = cmd;
+                commandCooldown = Date.now();
+                action();
+                break;
+            }
+        }
+    };
+
+    recognition.onerror = (event) => {
+        if (event.error === 'not-allowed') {
+            voiceStatus.textContent = '❌ Доступ к микрофону запрещён';
             voiceBtn.disabled = true;
-            return;
+        } else if (event.error === 'no-speech') {
+            voiceStatus.textContent = '🎙️ Не услышал, повторите';
+        } else {
+            voiceStatus.textContent = `⚠️ Ошибка: ${event.error}`;
         }
+    };
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'ru-RU';
-        recognition.continuous = true;
-        recognition.interimResults = true;
-
-        let isListening = false;
-
-        // Команды
-        const commands = {
-            'старт': () => {
-                const btn = document.querySelector('.start-timer:not([disabled])');
-                if (btn) {
-                    btn.click();
-                    speak('Таймер запущен');
-                } else {
-                    speak('Таймер уже работает или не выбран шаг');
-                }
-            },
-            'стоп': () => {
-                const resetBtn = document.querySelector('.reset-timer:not([disabled])');
-                if (resetBtn) {
-                    resetBtn.click();
-                    speak('Таймер остановлен');
-                } else {
-                    speak('Нет активного таймера');
-                }
-            },
-            'сброс': () => {
-                const resetBtn = document.querySelector('.reset-timer:not([disabled])');
-                if (resetBtn) {
-                    resetBtn.click();
-                    speak('Таймер сброшен');
-                } else {
-                    speak('Нет активного таймера');
-                }
-            },
-            'дальше': () => {
-                const startFullBtn = document.getElementById('startFullBtn');
-                if (startFullBtn && !startFullBtn.disabled) {
-                    startFullBtn.click();
-                    speak('Запускаю полный цикл');
-                } else {
-                    speak('Полный цикл уже запущен или кнопка неактивна');
-                }
-            }
-        };
-
-        function speak(text) {
-            const synth = window.speechSynthesis;
-            if (!synth) return;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ru-RU';
-            utterance.rate = 0.9;
-            synth.speak(utterance);
-        }
-
-        recognition.onstart = () => {
-            isListening = true;
-            voiceStatus.textContent = '🎙️ Слушаю...';
-            voiceBtn.classList.add('btn-danger');
-            voiceBtn.innerHTML = '🎤 Остановить';
-            speak('Голосовое управление активно');
-        };
-
-        recognition.onend = () => {
+    voiceBtn.addEventListener('click', () => {
+        if (isListening) {
+            voiceBtn.dataset.manualStop = 'true';
+            recognition.stop();
             isListening = false;
-            voiceStatus.textContent = 'Нажмите 🎤 и говорите';
-            voiceBtn.classList.remove('btn-danger');
+            voiceStatus.textContent = '⏸️ Остановлено';
             voiceBtn.innerHTML = '🎤 Голосовое управление';
-            if (!voiceBtn.dataset.manualStop) {
-                setTimeout(() => {
-                    if (!isListening && !voiceBtn.disabled) {
-                        try { recognition.start(); } catch(e) {}
-                    }
-                }, 500);
+            playClick();
+        } else {
+            voiceBtn.dataset.manualStop = '';
+            try {
+                recognition.start();
+            } catch(e) {
+                voiceStatus.textContent = '⚠️ Ошибка запуска микрофона';
             }
-        };
+        }
+    });
 
-        recognition.onresult = (event) => {
-            const last = event.results.length - 1;
-            const transcript = event.results[last][0].transcript.toLowerCase().trim();
-            voiceStatus.textContent = `🎙️ Вы сказали: "${transcript}"`;
-
-            for (const [cmd, action] of Object.entries(commands)) {
-                if (transcript.includes(cmd)) {
-                    action();
-                    break;
-                }
-            }
-        };
-
-        recognition.onerror = (event) => {
-            console.warn('Voice recognition error:', event.error);
-            if (event.error === 'not-allowed') {
-                voiceStatus.textContent = '❌ Доступ к микрофону запрещён';
-                voiceBtn.disabled = true;
-            } else {
-                voiceStatus.textContent = `⚠️ Ошибка: ${event.error}`;
-            }
-        };
-
-        voiceBtn.addEventListener('click', () => {
-            if (isListening) {
-                voiceBtn.dataset.manualStop = 'true';
-                recognition.stop();
-                isListening = false;
-                voiceStatus.textContent = '⏸️ Остановлено';
-                voiceBtn.innerHTML = '🎤 Голосовое управление';
-            } else {
-                voiceBtn.dataset.manualStop = '';
-                try {
-                    recognition.start();
-                } catch(e) {
-                    voiceStatus.textContent = '⚠️ Ошибка запуска микрофона';
-                }
-            }
-        });
-
-        window.addEventListener('beforeunload', () => {
-            if (isListening) recognition.stop();
-        });
-    })();
+    window.addEventListener('beforeunload', () => {
+        if (isListening) recognition.stop();
+    });
+})();
 
 </script>
 {% endblock %}
