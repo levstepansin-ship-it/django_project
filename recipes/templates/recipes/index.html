@@ -21,7 +21,7 @@
             <button type="submit">Найти</button>
         </form>
 
-        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель с автопрокруткой) -->
+        <!-- ПОПУЛЯРНЫЕ РЕЦЕПТЫ (карусель) -->
         <div class="welcome-section">
             <h2 class="welcome-section-title">📸 Популярные рецепты</h2>
             <div class="welcome-carousel-wrapper" id="carouselWrapper">
@@ -103,6 +103,17 @@
                         </div>
                         <span class="welcome-card-title">Гречневая</span>
                     </div>
+                    <!-- ОМЛЕТ (ID 9) — ДОБАВЛЕН -->
+                    <div class="welcome-card" data-recipe-id="9">
+                        <div class="welcome-card-image-wrapper">
+                            <img src="/media/images/omlet.jpg" 
+                                 alt="Омлет"
+                                 class="welcome-card-image"
+                                 loading="lazy"
+                                 onerror="this.src='https://via.placeholder.com/200x200?text=Омлет'">
+                        </div>
+                        <span class="welcome-card-title">Омлет</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -133,12 +144,19 @@
                         <a href="{% url 'recipe_detail' recipe_id=8 %}">Гречневая</a>
                     </div>
                 </div>
+                <div class="welcome-cat">
+                    <div class="welcome-cat-title">🍳 Завтраки</div>
+                    <div class="welcome-cat-links">
+                        <a href="{% url 'recipe_detail' recipe_id=9 %}">Омлет</a>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- ОТЗЫВ -->
         <div class="welcome-feedback">
-            <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" class="welcome-feedback-btn">📝 Оставить отзыв о сайте</button>        </div>
+            <button onclick="showFeedbackModal('Отзыв о сайте', true, false)" class="welcome-feedback-btn">📝 Оставить отзыв о сайте</button>
+        </div>
 
         <!-- СТАТИСТИКА -->
         <div class="welcome-stats">
@@ -176,7 +194,7 @@
         if (!wrapper || !carousel) return;
         
         let scrollAmount = 0;
-        const step = 0.3; // очень медленно
+        const step = 0.3;
         let animationId = null;
         let isHovering = false;
         let isPaused = false;
