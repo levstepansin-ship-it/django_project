@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/push/unsubscribe/', views.api_push_unsubscribe, name='api_push_unsubscribe'),
     path('api/notifications/', views.api_notification_settings, name='api_notification_settings'),
     path('api/vapid-key/', views.vapid_public_key, name='api_vapid_key'),
+    path('recipe/<int:recipe_id>/pdf/', views.download_recipe_pdf, name='download_recipe_pdf'),
 ]
